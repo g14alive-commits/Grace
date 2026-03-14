@@ -10,7 +10,17 @@ export default function Home() {
 
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
-  const userID = "user-" + Math.random().toString(36).slice(2);
+const [userID] = useState(() => {
+  if (typeof window !== "undefined") {
+    let id = localStorage.getItem("grace-user");
+    if (!id) {
+      id = "user-" + Math.random().toString(36).slice(2);
+      localStorage.setItem("grace-user", id);
+    }
+    return id;
+  }
+  return "user-temp";
+});
 
   // Start conversation automatically
   useEffect(() => {
