@@ -5,7 +5,13 @@ import ReactMarkdown from "react-markdown";
 
 export default function Home() {
 
-  const [messages, setMessages] = useState<string[]>([]);
+const [messages, setMessages] = useState<string[]>(() => {
+  if (typeof window !== "undefined") {
+    const saved = localStorage.getItem("grace-messages");
+    return saved ? JSON.parse(saved) : [];
+  }
+  return [];
+});
   const [input, setInput] = useState("");
 
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
@@ -56,9 +62,11 @@ const [userID] = useState(() => {
   }, []);
 
   // Auto scroll
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+useEffect(() => {
+  if (typeof window !== "undefined") {
+    localStorage.setItem("grace-messages", JSON.stringify(messages));
+  }
+}, [messages]);
 
   const sendMessage = async () => {
 
