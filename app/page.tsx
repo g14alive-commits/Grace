@@ -63,9 +63,11 @@ const [userID] = useState(() => {
 
   // Auto scroll
 useEffect(() => {
-  if (typeof window !== "undefined") {
-    localStorage.setItem("grace-messages", JSON.stringify(messages));
-  }
+  const timer = setTimeout(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, 50);
+
+  return () => clearTimeout(timer);
 }, [messages]);
 
   const sendMessage = async () => {
