@@ -4,48 +4,54 @@ import { useState, useEffect, useRef } from "react";
 import ReactMarkdown from "react-markdown";
 
 export default function Home() {
+
   const [messages, setMessages] = useState<string[]>([]);
   const [input, setInput] = useState("");
 
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
+  const userID = "user-" + Math.random().toString(36).slice(2);
+
+  // Start conversation automatically
   useEffect(() => {
+
     const startConversation = async () => {
-      const response = await fetch(
-        "https://general-runtime.voiceflow.com/state/user/geeta123/interact",
-        {
-          method: "POST",
-          headers: {
-            Authorization: "VF.DM.69af1ce2ef04c484809dca1c.X5z84GZsy7vQGndv",
-            versionID: "development",
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
+
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          userID,
+          payload: {
             request: {
-              type: "launch",
-            },
-          }),
-        }
-      );
+              type: "launch"
+            }
+          }
+        })
+      });
 
       const data = await response.json();
 
-const aiMessages = data
-  .filter((t: any) => t.type === "text")
-  .map((t: any) => t.payload.message);
+      const aiMessages = data
+        .filter((t: any) => t.type === "text")
+        .map((t: any) => t.payload.message);
 
-setMessages(aiMessages);
+      setMessages(aiMessages);
     };
 
     startConversation();
+
   }, []);
 
-  // 🔹 Auto-scroll when messages change
+  // Auto scroll
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
   const sendMessage = async () => {
+
     if (!input) return;
 
     const userMessage = input;
@@ -53,34 +59,34 @@ setMessages(aiMessages);
     setMessages((prev) => [...prev, "You: " + userMessage]);
     setInput("");
 
-    const response = await fetch(
-      "https://general-runtime.voiceflow.com/state/user/geeta123/interact",
-      {
-        method: "POST",
-        headers: {
-          Authorization: "VF.DM.69af1ce2ef04c484809dca1c.X5z84GZsy7vQGndv",
-          versionID: "development",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
+    const response = await fetch("/api/chat", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        userID,
+        payload: {
           request: {
             type: "text",
-            payload: userMessage,
-          },
-        }),
-      }
-    );
+            payload: userMessage
+          }
+        }
+      })
+    });
 
     const data = await response.json();
 
-const aiMessages = data
-  .filter((t: any) => t.type === "text")
-  .map((t: any) => "AI: " + t.payload.message);
+    const aiMessages = data
+      .filter((t: any) => t.type === "text")
+      .map((t: any) => "Grace: " + t.payload.message);
 
-setMessages((prev) => [...prev, ...aiMessages]);
+    setMessages((prev) => [...prev, ...aiMessages]);
+
   };
 
   return (
+
     <div
       style={{
         height: "100vh",
@@ -90,7 +96,9 @@ setMessages((prev) => [...prev, ...aiMessages]);
         fontFamily: "Arial",
       }}
     >
+
       {/* CHAT AREA */}
+
       <div
         style={{
           flex: 1,
@@ -101,11 +109,15 @@ setMessages((prev) => [...prev, ...aiMessages]);
           padding: "30px",
         }}
       >
+
         {messages.map((msg, i) => {
+
           const isUser = msg.startsWith("You:");
 
           return (
+
             <div key={i} style={{ marginBottom: "24px" }}>
+
               <div style={{ fontWeight: "600", marginBottom: "6px" }}>
                 {isUser ? "You" : "Grace"}
               </div>
@@ -120,23 +132,30 @@ setMessages((prev) => [...prev, ...aiMessages]);
                   whiteSpace: "pre-wrap"
                 }}
               >
-<ReactMarkdown>
-  {msg
-    .replace("You: ", "")
-    .replace("Grace: ", "")
-    .replace(/^AI:\s*/i, "")
-    .replace(/\n\s*\n/g, "\n")}
-</ReactMarkdown>
+
+                <ReactMarkdown>
+                  {msg
+                    .replace("You: ", "")
+                    .replace("Grace: ", "")
+                    .replace(/^AI:\s*/i, "")
+                    .replace(/\n\s*\n/g, "\n")}
+                </ReactMarkdown>
+
               </div>
+
             </div>
+
           );
+
         })}
 
-        {/* 🔹 Scroll target */}
         <div ref={messagesEndRef} />
+
       </div>
 
+
       {/* INPUT */}
+
       <div
         style={{
           borderTop: "1px solid #e5e5e5",
@@ -144,6 +163,7 @@ setMessages((prev) => [...prev, ...aiMessages]);
           background: "#fff",
         }}
       >
+
         <div
           style={{
             maxWidth: "800px",
@@ -152,6 +172,7 @@ setMessages((prev) => [...prev, ...aiMessages]);
             gap: "10px",
           }}
         >
+
           <input
             id="chat-input"
             value={input}
@@ -180,8 +201,13 @@ setMessages((prev) => [...prev, ...aiMessages]);
           >
             Send
           </button>
+
         </div>
+
       </div>
+
     </div>
+
   );
+
 }
