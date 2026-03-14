@@ -29,37 +29,39 @@ const [userID] = useState(() => {
 });
 
   // Start conversation automatically
-  useEffect(() => {
+useEffect(() => {
 
-    const startConversation = async () => {
+  if (messages.length > 0) return;
 
-      const response = await fetch("/api/chat", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          userID,
-          payload: {
-            request: {
-              type: "launch"
-            }
+  const startConversation = async () => {
+
+    const response = await fetch("/api/chat", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        userID,
+        payload: {
+          request: {
+            type: "launch"
           }
-        })
-      });
+        }
+      })
+    });
 
-      const data = await response.json();
+    const data = await response.json();
 
-      const aiMessages = data
-        .filter((t: any) => t.type === "text")
-        .map((t: any) => t.payload.message);
+    const aiMessages = data
+      .filter((t: any) => t.type === "text")
+      .map((t: any) => t.payload.message);
 
-      setMessages(aiMessages);
-    };
+    setMessages(aiMessages);
+  };
 
-    startConversation();
+  startConversation();
 
-  }, []);
+}, []);
 
   // Auto scroll
 useEffect(() => {
