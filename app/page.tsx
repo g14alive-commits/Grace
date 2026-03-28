@@ -22,22 +22,21 @@ export default function Home() {
   const [userProfile, setUserProfile] = useState<UserProfile>({});
   const [sessionNumber, setSessionNumber] = useState(1);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  const inputRef = useRef<HTMLTextAreaElement | null>(null);
   const initialized = useRef(false);
 
-  // Load everything from localStorage after mount
   useEffect(() => {
     if (initialized.current) return;
     initialized.current = true;
 
-    // User ID
     let id = localStorage.getItem("grace-user");
     if (!id) {
       id = "user-" + Math.random().toString(36).slice(2);
+      localStorage.getItem("grace-user");
       localStorage.setItem("grace-user", id);
     }
     setUserID(id);
 
-    // User profile
     const savedProfile = localStorage.getItem("grace-profile");
     if (savedProfile) {
       const profile = JSON.parse(savedProfile);
@@ -45,7 +44,6 @@ export default function Home() {
       setSessionNumber((profile.sessionCount || 0) + 1);
     }
 
-    // Messages
     const saved = localStorage.getItem("grace-messages");
     if (saved) {
       setMessages(JSON.parse(saved));
@@ -54,21 +52,18 @@ export default function Home() {
     }
   }, []);
 
-  // Save messages to localStorage
   useEffect(() => {
     if (messages.length > 0) {
       localStorage.setItem("grace-messages", JSON.stringify(messages));
     }
   }, [messages]);
 
-  // Save profile to localStorage
   useEffect(() => {
     if (Object.keys(userProfile).length > 0) {
       localStorage.setItem("grace-profile", JSON.stringify(userProfile));
     }
   }, [userProfile]);
 
-  // Auto scroll
   useEffect(() => {
     const timer = setTimeout(() => {
       messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -93,8 +88,8 @@ export default function Home() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         messages: [{ role: "user", content: "begin" }],
-        userProfile,
-        sessionNumber,
+        userProfile: {},
+        sessionNumber: 1,
       }),
     });
     const data = await response.json();
@@ -104,35 +99,6 @@ export default function Home() {
     setLoading(false);
   };
 
-  const mergeProfileUpdates = (existing: UserProfile, updates: any): UserProfile => {
-    if (!updates) return existing;
-
-    return {
-      ...existing,
-      userPattern: updates.userPattern || existing.userPattern,
-      partnerPattern: updates.partnerPattern || existing.partnerPattern,
-      assessmentComplete: updates.assessmentComplete ?? existing.assessmentComplete,
-      relationshipFacts: [
-        ...new Set([
-          ...(existing.relationshipFacts || []),
-          ...(updates.relationshipFacts || []),
-        ]),
-      ],
-      recurringThemes: [
-        ...new Set([
-          ...(existing.recurringThemes || []),
-          ...(updates.recurringThemes || []),
-        ]),
-      ],
-      growthSignals: [
-        ...new Set([
-          ...(existing.growthSignals || []),
-          ...(updates.growthSignals || []),
-        ]),
-      ],
-    };
-  };
-
   const sendMessage = async () => {
     if (!input.trim() || loading) return;
 
@@ -140,6 +106,7 @@ export default function Home() {
     const updatedMessages = [...messages, "You: " + userMessage];
     setMessages(updatedMessages);
     setInput("");
+    if (inputRef.current) inputRef.current.style.height = "44px";
     setLoading(true);
 
     const response = await fetch("/api/chat", {
@@ -153,124 +120,380 @@ export default function Home() {
     });
 
     const data = await response.json();
-
     if (data.result) {
       setMessages((prev) => [...prev, "Grace: " + data.result]);
     }
-
-    // Update profile if new information was extracted
     if (data.profileUpdates) {
-      setUserProfile((prev) => mergeProfileUpdates(prev, data.profileUpdates));
+      setUserProfile((prev) => ({ ...prev, ...data.profileUpdates }));
     }
-
     setLoading(false);
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  };
+
+  const handleInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setInput(e.target.value);
+    e.target.style.height = "44px";
+    e.target.style.height = Math.min(e.target.scrollHeight, 120) + "px";
+  };
+
   return (
-    <div style={{
-      height: "100vh",
-      display: "flex",
-      flexDirection: "column",
-      background: "#f7f7f8",
-      fontFamily: "Arial",
-    }}>
+    <>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500&display=swap');
 
-      {/* CHAT AREA */}
-      <div style={{
-        flex: 1,
-        overflowY: "auto",
-        maxWidth: "800px",
-        width: "100%",
-        margin: "0 auto",
-        padding: "30px",
-      }}>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-        {messages.map((msg, i) => {
-          const isUser = msg.startsWith("You:");
-          return (
-            <div key={i} style={{ marginBottom: "24px" }}>
-              <div style={{ fontWeight: "600", marginBottom: "6px" }}>
-                {isUser ? "You" : "Grace"}
+        :root {
+          --bg: #fdf6f0;
+          --bg-secondary: #fff8f3;
+          --surface: #ffffff;
+          --grace-bubble: #ffffff;
+          --grace-border: #f0e6dc;
+          --user-bubble: #e8d5c4;
+          --user-border: #d4b99e;
+          --text-primary: #2d1f17;
+          --text-secondary: #7a5c4a;
+          --text-muted: #b08070;
+          --accent: #c4785a;
+          --accent-soft: #f5e6dc;
+          --header-bg: rgba(253, 246, 240, 0.92);
+          --input-bg: #fff8f3;
+          --input-border: #e8d5c4;
+          --dot-color: #c4785a;
+          --label-grace: #9e6b52;
+          --label-you: #7a5c4a;
+          --scrollbar: #e8d5c4;
+        }
+
+        @media (prefers-color-scheme: dark) {
+          :root {
+            --bg: #1a1210;
+            --bg-secondary: #201715;
+            --surface: #261e1b;
+            --grace-bubble: #2e2320;
+            --grace-border: #3d2e28;
+            --user-bubble: #3d2e28;
+            --user-border: #5a4038;
+            --text-primary: #f5ede8;
+            --text-secondary: #c4a090;
+            --text-muted: #8a6a5a;
+            --accent: #d4886a;
+            --accent-soft: #2e2320;
+            --header-bg: rgba(26, 18, 16, 0.92);
+            --input-bg: #261e1b;
+            --input-border: #3d2e28;
+            --dot-color: #d4886a;
+            --label-grace: #c4a090;
+            --label-you: #a08070;
+            --scrollbar: #3d2e28;
+          }
+        }
+
+        html, body {
+          height: 100%;
+          background: var(--bg);
+          color: var(--text-primary);
+          font-family: 'DM Sans', sans-serif;
+          font-size: 16px;
+          -webkit-font-smoothing: antialiased;
+          overscroll-behavior: none;
+        }
+
+        .app {
+          display: flex;
+          flex-direction: column;
+          height: 100dvh;
+          height: 100vh;
+          max-width: 680px;
+          margin: 0 auto;
+          background: var(--bg);
+          position: relative;
+        }
+
+        .header {
+          position: sticky;
+          top: 0;
+          z-index: 10;
+          background: var(--header-bg);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          padding: 16px 20px 14px;
+          border-bottom: 1px solid var(--grace-border);
+          display: flex;
+          align-items: center;
+          gap: 12px;
+        }
+
+        .header-avatar {
+          width: 38px;
+          height: 38px;
+          border-radius: 50%;
+          background: linear-gradient(135deg, #d4886a, #c4785a);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-family: 'Lora', serif;
+          font-size: 16px;
+          color: white;
+          font-weight: 500;
+          flex-shrink: 0;
+        }
+
+        .header-info { flex: 1; }
+
+        .header-name {
+          font-family: 'Lora', serif;
+          font-size: 17px;
+          font-weight: 500;
+          color: var(--text-primary);
+          letter-spacing: -0.02em;
+        }
+
+        .header-subtitle {
+          font-size: 12px;
+          color: var(--text-muted);
+          font-weight: 300;
+          margin-top: 1px;
+        }
+
+        .messages {
+          flex: 1;
+          overflow-y: auto;
+          padding: 20px 16px 12px;
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+          scroll-behavior: smooth;
+        }
+
+        .messages::-webkit-scrollbar { width: 4px; }
+        .messages::-webkit-scrollbar-track { background: transparent; }
+        .messages::-webkit-scrollbar-thumb { background: var(--scrollbar); border-radius: 4px; }
+
+        .message-group { display: flex; flex-direction: column; gap: 4px; }
+
+        .message-label {
+          font-size: 11px;
+          font-weight: 500;
+          letter-spacing: 0.04em;
+          text-transform: uppercase;
+          padding: 0 4px;
+        }
+
+        .message-label.grace { color: var(--label-grace); }
+        .message-label.you { color: var(--label-you); text-align: right; }
+
+        .bubble {
+          padding: 12px 16px;
+          border-radius: 18px;
+          font-size: 15px;
+          line-height: 1.6;
+          font-family: 'DM Sans', sans-serif;
+          font-weight: 300;
+          max-width: 88%;
+          word-wrap: break-word;
+        }
+
+        .bubble.grace {
+          background: var(--grace-bubble);
+          border: 1px solid var(--grace-border);
+          border-bottom-left-radius: 4px;
+          align-self: flex-start;
+          color: var(--text-primary);
+          box-shadow: 0 1px 8px rgba(0,0,0,0.04);
+        }
+
+        .bubble.you {
+          background: var(--user-bubble);
+          border: 1px solid var(--user-border);
+          border-bottom-right-radius: 4px;
+          align-self: flex-end;
+          color: var(--text-primary);
+        }
+
+        .bubble p { margin: 0 0 8px; }
+        .bubble p:last-child { margin-bottom: 0; }
+        .bubble strong { font-weight: 500; }
+
+        .typing {
+          display: flex;
+          align-items: center;
+          gap: 5px;
+          padding: 14px 18px;
+          background: var(--grace-bubble);
+          border: 1px solid var(--grace-border);
+          border-radius: 18px;
+          border-bottom-left-radius: 4px;
+          align-self: flex-start;
+          box-shadow: 0 1px 8px rgba(0,0,0,0.04);
+        }
+
+        .dot {
+          width: 7px;
+          height: 7px;
+          border-radius: 50%;
+          background: var(--dot-color);
+          opacity: 0.4;
+          animation: pulse 1.4s ease-in-out infinite;
+        }
+
+        .dot:nth-child(2) { animation-delay: 0.2s; }
+        .dot:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes pulse {
+          0%, 80%, 100% { opacity: 0.4; transform: scale(1); }
+          40% { opacity: 1; transform: scale(1.2); }
+        }
+
+        .input-area {
+          padding: 12px 16px 20px;
+          background: var(--bg);
+          border-top: 1px solid var(--grace-border);
+        }
+
+        .input-row {
+          display: flex;
+          align-items: flex-end;
+          gap: 10px;
+          background: var(--input-bg);
+          border: 1.5px solid var(--input-border);
+          border-radius: 24px;
+          padding: 8px 8px 8px 16px;
+          transition: border-color 0.2s;
+        }
+
+        .input-row:focus-within {
+          border-color: var(--accent);
+        }
+
+        textarea {
+          flex: 1;
+          background: transparent;
+          border: none;
+          outline: none;
+          font-family: 'DM Sans', sans-serif;
+          font-size: 15px;
+          font-weight: 300;
+          color: var(--text-primary);
+          resize: none;
+          line-height: 1.5;
+          height: 44px;
+          max-height: 120px;
+          padding: 8px 0;
+          overflow-y: auto;
+        }
+
+        textarea::placeholder { color: var(--text-muted); }
+
+        textarea::-webkit-scrollbar { display: none; }
+
+        .send-btn {
+          width: 38px;
+          height: 38px;
+          border-radius: 50%;
+          background: var(--accent);
+          border: none;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+          transition: all 0.2s;
+          opacity: 1;
+        }
+
+        .send-btn:disabled {
+          opacity: 0.4;
+          cursor: not-allowed;
+        }
+
+        .send-btn:not(:disabled):active {
+          transform: scale(0.93);
+        }
+
+        .send-btn svg {
+          width: 18px;
+          height: 18px;
+          fill: white;
+          margin-left: 2px;
+        }
+
+        .safe-bottom { height: env(safe-area-inset-bottom, 0px); }
+      `}</style>
+
+      <div className="app">
+        <div className="header">
+          <div className="header-avatar">G</div>
+          <div className="header-info">
+            <div className="header-name">Grace</div>
+            <div className="header-subtitle">relationship companion</div>
+          </div>
+        </div>
+
+        <div className="messages">
+          {messages.map((msg, i) => {
+            const isUser = msg.startsWith("You:");
+            const content = msg
+              .replace("You: ", "")
+              .replace("Grace: ", "")
+              .replace(/^AI:\s*/i, "");
+
+            return (
+              <div key={i} className="message-group">
+                <div className={`message-label ${isUser ? "you" : "grace"}`}>
+                  {isUser ? "You" : "Grace"}
+                </div>
+                <div className={`bubble ${isUser ? "you" : "grace"}`}>
+                  <ReactMarkdown>{content}</ReactMarkdown>
+                </div>
               </div>
-              <div style={{
-                background: isUser ? "#e9eef6" : "#ffffff",
-                border: "1px solid #e5e5e5",
-                borderRadius: "10px",
-                padding: "14px 16px",
-                lineHeight: "1.5",
-                whiteSpace: "pre-wrap",
-              }}>
-                <ReactMarkdown>
-                  {msg
-                    .replace("You: ", "")
-                    .replace("Grace: ", "")
-                    .replace(/^AI:\s*/i, "")
-                    .replace(/\n\s*\n/g, "\n")}
-                </ReactMarkdown>
+            );
+          })}
+
+          {loading && (
+            <div className="message-group">
+              <div className="message-label grace">Grace</div>
+              <div className="typing">
+                <div className="dot" />
+                <div className="dot" />
+                <div className="dot" />
               </div>
             </div>
-          );
-        })}
+          )}
 
-        {loading && (
-          <div style={{ marginBottom: "24px" }}>
-            <div style={{ fontWeight: "600", marginBottom: "6px" }}>Grace</div>
-            <div style={{
-              background: "#ffffff",
-              border: "1px solid #e5e5e5",
-              borderRadius: "10px",
-              padding: "14px 16px",
-              color: "#999",
-            }}>...</div>
-          </div>
-        )}
-
-        <div ref={messagesEndRef} />
-      </div>
-
-      {/* INPUT */}
-      <div style={{
-        borderTop: "1px solid #e5e5e5",
-        padding: "16px",
-        background: "#fff",
-      }}>
-        <div style={{
-          maxWidth: "800px",
-          margin: "0 auto",
-          display: "flex",
-          gap: "10px",
-        }}>
-          <input
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => { if (e.key === "Enter") sendMessage(); }}
-            placeholder="Send a message..."
-            disabled={loading}
-            style={{
-              flex: 1,
-              padding: "12px",
-              borderRadius: "8px",
-              border: "1px solid #ccc",
-              opacity: loading ? 0.6 : 1,
-            }}
-          />
-          <button
-            onClick={sendMessage}
-            disabled={loading}
-            style={{
-              padding: "12px 18px",
-              background: "#111",
-              color: "#fff",
-              border: "none",
-              borderRadius: "8px",
-              opacity: loading ? 0.6 : 1,
-              cursor: loading ? "not-allowed" : "pointer",
-            }}
-          >
-            Send
-          </button>
+          <div ref={messagesEndRef} />
         </div>
+
+        <div className="input-area">
+          <div className="input-row">
+            <textarea
+              ref={inputRef}
+              value={input}
+              onChange={handleInput}
+              onKeyDown={handleKeyDown}
+              placeholder="Share what's on your mind..."
+              disabled={loading}
+              rows={1}
+            />
+            <button
+              className="send-btn"
+              onClick={sendMessage}
+              disabled={loading || !input.trim()}
+            >
+              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+        <div className="safe-bottom" />
       </div>
-    </div>
+    </>
   );
 }
