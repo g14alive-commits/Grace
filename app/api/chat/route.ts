@@ -21,7 +21,7 @@ export async function POST(req: Request) {
 
     // Main Grace response
     const response = await client.messages.create({
-      model: "claude-haiku-4-5",
+      model: "claude-haiku-4-5-20251001",
       max_tokens: 500,
       system: [
         {
@@ -83,6 +83,12 @@ ${recentExchange}
 ASSISTANT: ${latestResponse}
 
 Return a JSON object with ONLY new fields detected. Omit fields with no new info. Use null for unknown.
+
+IMPORTANT RULES:
+- Only set partnerPattern if the user has explicitly described their partner's behaviour in detail. Never infer it from the user's own pattern.
+- Only set userPattern if there is strong evidence from multiple answers. Never guess from one or two responses.
+- assessmentComplete should only be true if Grace has explicitly delivered the assessment result message.
+
 {
   "userPattern": "reaches harder | steps back | balanced | mixed | null",
   "partnerPattern": "reaches harder | steps back | steady | null",

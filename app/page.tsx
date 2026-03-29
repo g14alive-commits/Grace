@@ -398,6 +398,9 @@ export default function Home() {
 
         .bubble p { margin: 0 0 10px; }
         .bubble p:last-child { margin: 0; }
+        .bubble ul, .bubble ol { margin: 8px 0 10px 16px; }
+        .bubble li { margin: 4px 0; }
+        .bubble br { display: block; content: ""; margin: 4px 0; }
         .bubble strong { font-weight: 400; color: rgba(200, 180, 255, 0.95); }
 
         .typing {
