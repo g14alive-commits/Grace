@@ -25,11 +25,8 @@ export default function Home() {
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
   const initialized = useRef(false);
 
-  // Fix viewport height for mobile browsers
   useEffect(() => {
-    const setHeight = () => {
-      setVh(window.innerHeight);
-    };
+    const setHeight = () => setVh(window.innerHeight);
     setHeight();
     window.addEventListener("resize", setHeight);
     return () => window.removeEventListener("resize", setHeight);
@@ -115,9 +112,7 @@ export default function Home() {
     const updatedMessages = [...messages, "You: " + userMessage];
     setMessages(updatedMessages);
     setInput("");
-    if (inputRef.current) {
-      inputRef.current.style.height = "24px";
-    }
+    if (inputRef.current) inputRef.current.style.height = "24px";
     setLoading(true);
     try {
       const response = await fetch("/api/chat", {
@@ -172,53 +167,30 @@ export default function Home() {
         html, body {
           height: 100%;
           overflow: hidden;
-          background: #fdf6f0;
+          background: #1a1410;
           -webkit-font-smoothing: antialiased;
         }
 
-        @media (prefers-color-scheme: dark) {
-          html, body { background: #1a1210; }
+        :root {
+          --bg: #1a1410;
+          --bg-secondary: #221c16;
+          --grace-bubble: #2a2218;
+          --grace-border: #3a3028;
+          --user-bubble: #2e1e10;
+          --user-border: #4a3020;
+          --text-primary: #f0e8d8;
+          --text-secondary: #c0a880;
+          --text-muted: #806848;
+          --accent: #e8722a;
+          --accent-soft: #f0a860;
+          --header-bg: #141008;
+          --input-bg: #221c16;
+          --input-border: #3a3028;
+          --label: #a07848;
+          --dot: #f0a860;
+          --divider: #2e2820;
         }
 
-:root {
-  --bg: #f5f0f8;
-  --grace-bubble: #ffffff;
-  --grace-border: #e0d0f0;
-  --user-bubble: #eeddd8;
-  --user-border: #d8c0b8;
-  --text-primary: #221828;
-  --text-secondary: #6a5078;
-  --text-muted: #a888b0;
-  --accent: #7a60aa;
-  --header-bg: #f5f0f8;
-  --input-bg: #fdf8ff;
-  --input-border: #e0d0f0;
-  --label: #9070a8;
-  --dot: #d4886a;
-  --divider: #e8d8f4;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #150f1c;
-    --grace-bubble: #1e1628;
-    --grace-border: #302040;
-    --user-bubble: #2a1e20;
-    --user-border: #442e30;
-    --text-primary: #f0e8f8;
-    --text-secondary: #b090c8;
-    --text-muted: #806090;
-    --accent: #a080d0;
-    --header-bg: #150f1c;
-    --input-bg: #1a1220;
-    --input-border: #302040;
-    --label: #a080b8;
-    --dot: #d4886a;
-    --divider: #241830;
-  }
-}
-
-        
         .app {
           display: flex;
           flex-direction: column;
@@ -247,13 +219,13 @@ export default function Home() {
           width: 42px;
           height: 42px;
           border-radius: 50%;
-          background: linear-gradient(135deg, #d4886a 0%, #b86040 100%);
+          background: linear-gradient(135deg, #f0a860 0%, #e8722a 100%);
           display: flex;
           align-items: center;
           justify-content: center;
           font-family: 'Lora', serif;
           font-size: 18px;
-          color: white;
+          color: #1a1410;
           font-weight: 500;
           flex-shrink: 0;
         }
@@ -285,6 +257,10 @@ export default function Home() {
           gap: 18px;
           -webkit-overflow-scrolling: touch;
         }
+
+        .messages::-webkit-scrollbar { width: 3px; }
+        .messages::-webkit-scrollbar-track { background: transparent; }
+        .messages::-webkit-scrollbar-thumb { background: var(--divider); border-radius: 3px; }
 
         .msg-group {
           display: flex;
@@ -332,7 +308,7 @@ export default function Home() {
 
         .bubble p { margin: 0 0 10px; }
         .bubble p:last-child { margin: 0; }
-        .bubble strong { font-weight: 500; }
+        .bubble strong { font-weight: 500; color: var(--accent-soft); }
 
         .typing {
           display: flex;
@@ -351,7 +327,7 @@ export default function Home() {
           height: 8px;
           border-radius: 50%;
           background: var(--dot);
-          opacity: 0.35;
+          opacity: 0.4;
           animation: bounce 1.4s ease-in-out infinite;
         }
 
@@ -359,13 +335,13 @@ export default function Home() {
         .dot:nth-child(3) { animation-delay: 0.4s; }
 
         @keyframes bounce {
-          0%, 80%, 100% { opacity: 0.35; transform: translateY(0); }
+          0%, 80%, 100% { opacity: 0.4; transform: translateY(0); }
           40% { opacity: 1; transform: translateY(-4px); }
         }
 
         .input-area {
           flex-shrink: 0;
-          background: var(--bg);
+          background: var(--header-bg);
           border-top: 1px solid var(--divider);
           padding: 12px 16px 24px;
         }
@@ -402,12 +378,13 @@ export default function Home() {
         }
 
         textarea::placeholder { color: var(--text-muted); }
+        textarea::-webkit-scrollbar { display: none; }
 
         .send-btn {
           width: 42px;
           height: 42px;
           border-radius: 50%;
-          background: var(--accent);
+          background: linear-gradient(135deg, #f0a860 0%, #e8722a 100%);
           border: none;
           cursor: pointer;
           display: flex;
@@ -418,7 +395,7 @@ export default function Home() {
         }
 
         .send-btn:disabled {
-          opacity: 0.35;
+          opacity: 0.25;
           cursor: default;
         }
 
@@ -429,7 +406,7 @@ export default function Home() {
         .send-btn svg {
           width: 20px;
           height: 20px;
-          fill: white;
+          fill: #1a1410;
           margin-left: 2px;
         }
       `}</style>
