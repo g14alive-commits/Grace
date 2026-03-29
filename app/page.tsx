@@ -167,28 +167,52 @@ export default function Home() {
         html, body {
           height: 100%;
           overflow: hidden;
-          background: #0e1220;
+          background: #f7f4ee;
           -webkit-font-smoothing: antialiased;
         }
 
+        @media (prefers-color-scheme: dark) {
+          html, body { background: #0e160e; }
+        }
+
         :root {
-          --bg: #0e1220;
-          --bg-secondary: #141828;
-          --grace-bubble: #1a1e30;
-          --grace-border: #2a2e48;
-          --user-bubble: #1e1628;
-          --user-border: #342040;
-          --text-primary: #f0eaf8;
-          --text-secondary: #b090c8;
-          --text-muted: #706088;
-          --accent: #8060c0;
-          --accent-rose: #e890a0;
-          --header-bg: #0a0e18;
-          --input-bg: #141828;
-          --input-border: #2a2e48;
-          --label: #9070a8;
-          --dot: #e890a0;
-          --divider: #1e2238;
+          --bg: #f7f4ee;
+          --grace-bubble: #ffffff;
+          --grace-border: #ddd8c8;
+          --user-bubble: #e0ecd8;
+          --user-border: #b8d0a8;
+          --text-primary: #1a2418;
+          --text-secondary: #3a5035;
+          --text-muted: #7a9070;
+          --accent: #2a4a38;
+          --accent-light: #4a7a58;
+          --header-bg: #f2efe8;
+          --input-bg: #fdfbf6;
+          --input-border: #d8d0b8;
+          --label: #5a7850;
+          --dot: #2a4a38;
+          --divider: #e0d8c8;
+        }
+
+        @media (prefers-color-scheme: dark) {
+          :root {
+            --bg: #0e160e;
+            --grace-bubble: #162018;
+            --grace-border: #223428;
+            --user-bubble: #182818;
+            --user-border: #2a4030;
+            --text-primary: #e8f0e0;
+            --text-secondary: #90b880;
+            --text-muted: #507848;
+            --accent: #6aaa78;
+            --accent-light: #8acc90;
+            --header-bg: #0a100a;
+            --input-bg: #121a12;
+            --input-border: #223428;
+            --label: #70a060;
+            --dot: #6aaa78;
+            --divider: #1a2a1a;
+          }
         }
 
         .app {
@@ -219,13 +243,13 @@ export default function Home() {
           width: 42px;
           height: 42px;
           border-radius: 50%;
-          background: linear-gradient(135deg, #a880e0 0%, #8060c0 50%, #e890a0 100%);
+          background: linear-gradient(135deg, #4a7a58 0%, #2a4a38 100%);
           display: flex;
           align-items: center;
           justify-content: center;
           font-family: 'Lora', serif;
           font-size: 18px;
-          color: #ffffff;
+          color: #f0f8ec;
           font-weight: 500;
           flex-shrink: 0;
         }
@@ -308,7 +332,7 @@ export default function Home() {
 
         .bubble p { margin: 0 0 10px; }
         .bubble p:last-child { margin: 0; }
-        .bubble strong { font-weight: 500; color: #c8a0e8; }
+        .bubble strong { font-weight: 500; color: var(--accent-light); }
 
         .typing {
           display: flex;
@@ -384,7 +408,7 @@ export default function Home() {
           width: 42px;
           height: 42px;
           border-radius: 50%;
-          background: linear-gradient(135deg, #a880e0 0%, #8060c0 60%, #e890a0 100%);
+          background: linear-gradient(135deg, #4a7a58 0%, #2a4a38 100%);
           border: none;
           cursor: pointer;
           display: flex;
@@ -406,7 +430,7 @@ export default function Home() {
         .send-btn svg {
           width: 20px;
           height: 20px;
-          fill: #ffffff;
+          fill: #f0f8ec;
           margin-left: 2px;
         }
       `}</style>
