@@ -155,7 +155,7 @@ export default function Home() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;1,400&family=DM+Sans:wght@300;400;500&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Lora:wght@400;500&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap');
 
         *, *::before, *::after {
           box-sizing: border-box;
@@ -167,53 +167,51 @@ export default function Home() {
         html, body {
           height: 100%;
           overflow: hidden;
-          background: #f5f0e8;
+          background: #f4f6f8;
           -webkit-font-smoothing: antialiased;
         }
 
         @media (prefers-color-scheme: dark) {
-          html, body { background: #0e1410; }
+          html, body { background: #141820; }
         }
 
         :root {
-          --bg: #f5f0e8;
+          --bg: #f4f6f8;
           --grace-bubble: #ffffff;
-          --grace-border: #e0d8c4;
-          --user-bubble: #e8efe0;
-          --user-border: #c0d4a8;
-          --text-primary: #1c2818;
-          --text-secondary: #3a5030;
-          --text-muted: #8a9e78;
-          --accent-green: #2a4a30;
-          --accent-gold: #c8902a;
-          --accent-gold-light: #e8b84a;
-          --header-bg: #ede8dc;
-          --input-bg: #faf7f0;
-          --input-border: #d4ccb4;
-          --label: #6a8850;
-          --dot: #c8902a;
-          --divider: #ddd5c0;
+          --grace-border: #e2e8f0;
+          --user-bubble: #deeaf8;
+          --user-border: #b8d4ee;
+          --text-primary: #1a2332;
+          --text-secondary: #4a6080;
+          --text-muted: #8aa0b8;
+          --accent: #3a6ea8;
+          --accent-soft: #5a8ec8;
+          --header-bg: #ffffff;
+          --input-bg: #ffffff;
+          --input-border: #d8e2ee;
+          --label: #7a98b8;
+          --dot: #3a6ea8;
+          --divider: #e8eef5;
         }
 
         @media (prefers-color-scheme: dark) {
           :root {
-            --bg: #0e1410;
-            --grace-bubble: #162018;
-            --grace-border: #243828;
-            --user-bubble: #1a2a18;
-            --user-border: #2e4828;
-            --text-primary: #eaf2e0;
-            --text-secondary: #90b878;
-            --text-muted: #507840;
-            --accent-green: #6aaa60;
-            --accent-gold: #d4a040;
-            --accent-gold-light: #e8c060;
-            --header-bg: #0a1008;
-            --input-bg: #121a10;
-            --input-border: #243828;
-            --label: #70a858;
-            --dot: #d4a040;
-            --divider: #1c2e1c;
+            --bg: #141820;
+            --grace-bubble: #1e2430;
+            --grace-border: #2a3448;
+            --user-bubble: #1a2a40;
+            --user-border: #284060;
+            --text-primary: #e8f0f8;
+            --text-secondary: #88a8cc;
+            --text-muted: #506880;
+            --accent: #5a90d0;
+            --accent-soft: #78aae0;
+            --header-bg: #0e1218;
+            --input-bg: #1a2030;
+            --input-border: #2a3448;
+            --label: #6080a0;
+            --dot: #5a90d0;
+            --divider: #1e2838;
           }
         }
 
@@ -231,7 +229,7 @@ export default function Home() {
         .header {
           flex-shrink: 0;
           background: var(--header-bg);
-          border-bottom: 2px solid var(--accent-gold);
+          border-bottom: 1px solid var(--divider);
           padding: 14px 20px;
           display: flex;
           align-items: center;
@@ -239,39 +237,43 @@ export default function Home() {
         }
 
         .avatar {
-          width: 44px;
-          height: 44px;
-          border-radius: 50%;
-          background: var(--accent-green);
-          border: 2px solid var(--accent-gold);
+          width: 42px;
+          height: 42px;
+          border-radius: 14px;
+          background: var(--accent);
           display: flex;
           align-items: center;
           justify-content: center;
-          font-family: 'Playfair Display', serif;
-          font-style: italic;
-          font-size: 20px;
-          color: #f0f8e8;
+          font-family: 'Lora', serif;
+          font-size: 18px;
+          color: #ffffff;
+          font-weight: 500;
           flex-shrink: 0;
         }
 
         .header-text { flex: 1; }
 
         .header-name {
-          font-family: 'Playfair Display', serif;
-          font-size: 20px;
+          font-family: 'Lora', serif;
+          font-size: 19px;
           font-weight: 500;
           color: var(--text-primary);
           line-height: 1.2;
-          letter-spacing: -0.01em;
         }
 
         .header-sub {
-          font-size: 12px;
-          color: var(--accent-gold);
-          font-weight: 400;
-          margin-top: 2px;
-          letter-spacing: 0.06em;
-          text-transform: uppercase;
+          font-size: 13px;
+          color: var(--text-muted);
+          font-weight: 300;
+          margin-top: 1px;
+        }
+
+        .online-dot {
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          background: #48b878;
+          flex-shrink: 0;
         }
 
         .messages {
@@ -281,7 +283,7 @@ export default function Home() {
           padding: 20px 16px 16px;
           display: flex;
           flex-direction: column;
-          gap: 18px;
+          gap: 16px;
           -webkit-overflow-scrolling: touch;
         }
 
@@ -292,14 +294,14 @@ export default function Home() {
         .msg-group {
           display: flex;
           flex-direction: column;
-          gap: 5px;
+          gap: 4px;
           max-width: 100%;
         }
 
         .msg-label {
-          font-size: 10px;
+          font-size: 11px;
           font-weight: 500;
-          letter-spacing: 0.08em;
+          letter-spacing: 0.04em;
           text-transform: uppercase;
           color: var(--label);
           padding: 0 6px;
@@ -309,19 +311,18 @@ export default function Home() {
 
         .bubble {
           font-size: 16px;
-          line-height: 1.7;
+          line-height: 1.65;
           font-weight: 300;
-          padding: 14px 18px;
-          border-radius: 20px;
+          padding: 13px 17px;
+          border-radius: 18px;
           word-break: break-word;
-          max-width: 90%;
+          max-width: 88%;
         }
 
         .bubble.grace {
           background: var(--grace-bubble);
           border: 1px solid var(--grace-border);
-          border-left: 3px solid var(--accent-gold);
-          border-bottom-left-radius: 5px;
+          border-bottom-left-radius: 4px;
           align-self: flex-start;
           color: var(--text-primary);
         }
@@ -329,34 +330,33 @@ export default function Home() {
         .bubble.you {
           background: var(--user-bubble);
           border: 1px solid var(--user-border);
-          border-bottom-right-radius: 5px;
+          border-bottom-right-radius: 4px;
           align-self: flex-end;
           color: var(--text-primary);
         }
 
         .bubble p { margin: 0 0 10px; }
         .bubble p:last-child { margin: 0; }
-        .bubble strong { font-weight: 500; color: var(--accent-green); }
+        .bubble strong { font-weight: 500; }
 
         .typing {
           display: flex;
           align-items: center;
-          gap: 6px;
-          padding: 15px 20px;
+          gap: 5px;
+          padding: 14px 18px;
           background: var(--grace-bubble);
           border: 1px solid var(--grace-border);
-          border-left: 3px solid var(--accent-gold);
-          border-radius: 20px;
-          border-bottom-left-radius: 5px;
+          border-radius: 18px;
+          border-bottom-left-radius: 4px;
           align-self: flex-start;
         }
 
         .dot {
-          width: 8px;
-          height: 8px;
+          width: 7px;
+          height: 7px;
           border-radius: 50%;
           background: var(--dot);
-          opacity: 0.5;
+          opacity: 0.4;
           animation: bounce 1.4s ease-in-out infinite;
         }
 
@@ -364,8 +364,8 @@ export default function Home() {
         .dot:nth-child(3) { animation-delay: 0.4s; }
 
         @keyframes bounce {
-          0%, 80%, 100% { opacity: 0.5; transform: translateY(0); }
-          40% { opacity: 1; transform: translateY(-4px); }
+          0%, 80%, 100% { opacity: 0.4; transform: translateY(0); }
+          40% { opacity: 1; transform: translateY(-3px); }
         }
 
         .input-area {
@@ -381,13 +381,13 @@ export default function Home() {
           gap: 10px;
           background: var(--input-bg);
           border: 1.5px solid var(--input-border);
-          border-radius: 26px;
+          border-radius: 24px;
           padding: 10px 10px 10px 18px;
           transition: border-color 0.2s;
         }
 
         .input-row:focus-within {
-          border-color: var(--accent-gold);
+          border-color: var(--accent);
         }
 
         textarea {
@@ -410,11 +410,11 @@ export default function Home() {
         textarea::-webkit-scrollbar { display: none; }
 
         .send-btn {
-          width: 42px;
-          height: 42px;
+          width: 40px;
+          height: 40px;
           border-radius: 50%;
-          background: var(--accent-green);
-          border: 2px solid var(--accent-gold);
+          background: var(--accent);
+          border: none;
           cursor: pointer;
           display: flex;
           align-items: center;
@@ -424,7 +424,7 @@ export default function Home() {
         }
 
         .send-btn:disabled {
-          opacity: 0.25;
+          opacity: 0.3;
           cursor: default;
         }
 
@@ -435,7 +435,7 @@ export default function Home() {
         .send-btn svg {
           width: 18px;
           height: 18px;
-          fill: #f0f8e8;
+          fill: white;
           margin-left: 2px;
         }
       `}</style>
@@ -447,6 +447,7 @@ export default function Home() {
             <div className="header-name">Grace</div>
             <div className="header-sub">relationship companion</div>
           </div>
+          <div className="online-dot" />
         </div>
 
         <div className="messages">
