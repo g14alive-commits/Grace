@@ -167,28 +167,28 @@ export default function Home() {
         html, body {
           height: 100%;
           overflow: hidden;
-          background: #1a1410;
+          background: #0e1220;
           -webkit-font-smoothing: antialiased;
         }
 
         :root {
-          --bg: #1a1410;
-          --bg-secondary: #221c16;
-          --grace-bubble: #2a2218;
-          --grace-border: #3a3028;
-          --user-bubble: #2e1e10;
-          --user-border: #4a3020;
-          --text-primary: #f0e8d8;
-          --text-secondary: #c0a880;
-          --text-muted: #806848;
-          --accent: #e8722a;
-          --accent-soft: #f0a860;
-          --header-bg: #141008;
-          --input-bg: #221c16;
-          --input-border: #3a3028;
-          --label: #a07848;
-          --dot: #f0a860;
-          --divider: #2e2820;
+          --bg: #0e1220;
+          --bg-secondary: #141828;
+          --grace-bubble: #1a1e30;
+          --grace-border: #2a2e48;
+          --user-bubble: #1e1628;
+          --user-border: #342040;
+          --text-primary: #f0eaf8;
+          --text-secondary: #b090c8;
+          --text-muted: #706088;
+          --accent: #8060c0;
+          --accent-rose: #e890a0;
+          --header-bg: #0a0e18;
+          --input-bg: #141828;
+          --input-border: #2a2e48;
+          --label: #9070a8;
+          --dot: #e890a0;
+          --divider: #1e2238;
         }
 
         .app {
@@ -219,13 +219,13 @@ export default function Home() {
           width: 42px;
           height: 42px;
           border-radius: 50%;
-          background: linear-gradient(135deg, #f0a860 0%, #e8722a 100%);
+          background: linear-gradient(135deg, #a880e0 0%, #8060c0 50%, #e890a0 100%);
           display: flex;
           align-items: center;
           justify-content: center;
           font-family: 'Lora', serif;
           font-size: 18px;
-          color: #1a1410;
+          color: #ffffff;
           font-weight: 500;
           flex-shrink: 0;
         }
@@ -308,7 +308,7 @@ export default function Home() {
 
         .bubble p { margin: 0 0 10px; }
         .bubble p:last-child { margin: 0; }
-        .bubble strong { font-weight: 500; color: var(--accent-soft); }
+        .bubble strong { font-weight: 500; color: #c8a0e8; }
 
         .typing {
           display: flex;
@@ -384,7 +384,7 @@ export default function Home() {
           width: 42px;
           height: 42px;
           border-radius: 50%;
-          background: linear-gradient(135deg, #f0a860 0%, #e8722a 100%);
+          background: linear-gradient(135deg, #a880e0 0%, #8060c0 60%, #e890a0 100%);
           border: none;
           cursor: pointer;
           display: flex;
@@ -406,7 +406,7 @@ export default function Home() {
         .send-btn svg {
           width: 20px;
           height: 20px;
-          fill: #1a1410;
+          fill: #ffffff;
           margin-left: 2px;
         }
       `}</style>
