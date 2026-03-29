@@ -250,7 +250,7 @@ export default function Home() {
           align-items: center;
           justify-content: center;
           font-family: 'Fraunces', serif;
-          font-size: 28px;
+          font-size: 26px;
           font-weight: 700;
           color: #ffffff;
           flex-shrink: 0;
@@ -277,24 +277,12 @@ export default function Home() {
           letter-spacing: 0.01em;
         }
 
-        .header-right {
-          display: flex;
-          align-items: center;
-          gap: 6px;
-        }
-
         .online-dot {
           width: 8px;
           height: 8px;
           border-radius: 50%;
           background: var(--online);
           flex-shrink: 0;
-        }
-
-        .online-label {
-          font-size: 11px;
-          color: var(--online);
-          font-weight: 400;
         }
 
         .messages {
@@ -345,7 +333,7 @@ export default function Home() {
           border: 1px solid var(--grace-border);
           border-bottom-left-radius: 4px;
           align-self: flex-start;
-          color: var(--text-primary);
+          color: var(--accent-gold);
           box-shadow: var(--shadow);
         }
 
@@ -465,15 +453,12 @@ export default function Home() {
 
       <div className="app" style={{ height: appHeight }}>
         <div className="header">
-          <div className="avatar">g</div>
+          <div className="avatar">G</div>
           <div className="header-text">
             <div className="header-name">Grace</div>
             <div className="header-sub">your relationship companion</div>
           </div>
-          <div className="header-right">
-            <div className="online-dot" />
-            <span className="online-label">here</span>
-          </div>
+          <div className="online-dot" />
         </div>
 
         <div className="messages">
