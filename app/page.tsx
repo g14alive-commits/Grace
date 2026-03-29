@@ -180,44 +180,45 @@ export default function Home() {
           html, body { background: #1a1210; }
         }
 
-        :root {
-          --bg: #fdf6f0;
-          --grace-bubble: #ffffff;
-          --grace-border: #eeddd0;
-          --user-bubble: #e8d4c0;
-          --user-border: #d4b89a;
-          --text-primary: #2d1f17;
-          --text-secondary: #7a5c4a;
-          --text-muted: #b08878;
-          --accent: #c4785a;
-          --header-bg: #fdf6f0;
-          --input-bg: #fff8f2;
-          --input-border: #e0ccc0;
-          --label: #a07060;
-          --dot: #c4785a;
-          --divider: #eeddd0;
-        }
+:root {
+  --bg: #f0f2fa;
+  --grace-bubble: #ffffff;
+  --grace-border: #d0d8f0;
+  --user-bubble: #e8e4f8;
+  --user-border: #c8c0e8;
+  --text-primary: #1a1e3a;
+  --text-secondary: #5a6080;
+  --text-muted: #9098c0;
+  --accent: #5a6aaa;
+  --header-bg: #f0f2fa;
+  --input-bg: #f8f8ff;
+  --input-border: #d0d8f0;
+  --label: #7a80b0;
+  --dot: #f5c06a;
+  --divider: #d8dcf0;
+}
 
-        @media (prefers-color-scheme: dark) {
-          :root {
-            --bg: #1a1210;
-            --grace-bubble: #2a1e1a;
-            --grace-border: #3d2e26;
-            --user-bubble: #3a2a22;
-            --user-border: #54382c;
-            --text-primary: #f0e8e0;
-            --text-secondary: #c0a090;
-            --text-muted: #907060;
-            --accent: #d4886a;
-            --header-bg: #1a1210;
-            --input-bg: #221814;
-            --input-border: #3d2e26;
-            --label: #a88070;
-            --dot: #d4886a;
-            --divider: #2e2018;
-          }
-        }
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #12141f;
+    --grace-bubble: #1e2035;
+    --grace-border: #2e3258;
+    --user-bubble: #252840;
+    --user-border: #383c60;
+    --text-primary: #e8eaf8;
+    --text-secondary: #9098c8;
+    --text-muted: #606888;
+    --accent: #8090cc;
+    --header-bg: #12141f;
+    --input-bg: #1a1c30;
+    --input-border: #2e3258;
+    --label: #8088b8;
+    --dot: #f5c06a;
+    --divider: #252840;
+  }
+}
 
+        
         .app {
           display: flex;
           flex-direction: column;
