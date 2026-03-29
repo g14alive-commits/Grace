@@ -155,7 +155,7 @@ export default function Home() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Lora:wght@400;500&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap');
 
         *, *::before, *::after {
           box-sizing: border-box;
@@ -167,53 +167,55 @@ export default function Home() {
         html, body {
           height: 100%;
           overflow: hidden;
-          background: #eef1fa;
+          background: #e8ecf8;
           -webkit-font-smoothing: antialiased;
         }
 
         @media (prefers-color-scheme: dark) {
-          html, body { background: #12141f; }
+          html, body { background: #0e1020; }
         }
 
         :root {
-          --bg: #eef1fa;
+          --bg: #e8ecf8;
           --grace-bubble: #ffffff;
-          --grace-border: #d8dff0;
-          --user-bubble: #e4e8f8;
-          --user-border: #c0caf0;
-          --text-primary: #1a1e3a;
-          --text-secondary: #5a6080;
-          --text-muted: #9098c0;
-          --accent-blue: #5a6aaa;
-          --accent-gold: #e8b84a;
+          --grace-border: #d0d8f0;
+          --user-bubble: #d8e0f5;
+          --user-border: #b0c0e8;
+          --text-primary: #14183a;
+          --text-secondary: #484e80;
+          --text-muted: #8890c0;
+          --accent-blue: #4a5ca8;
+          --accent-gold: #e0a838;
           --header-bg: #ffffff;
-          --input-bg: #ffffff;
-          --input-border: #d0d8f0;
-          --label: #8890c0;
-          --dot: #5a6aaa;
-          --divider: #dde2f2;
-          --online: #48c878;
+          --input-bg: #f8f9fe;
+          --input-border: #c8d0ec;
+          --label: #8088b8;
+          --dot: #4a5ca8;
+          --divider: #d4daf0;
+          --online: #3ec878;
+          --shadow: 0 1px 12px rgba(74, 92, 168, 0.10);
         }
 
         @media (prefers-color-scheme: dark) {
           :root {
-            --bg: #12141f;
-            --grace-bubble: #1c2035;
-            --grace-border: #2a3058;
-            --user-bubble: #202848;
-            --user-border: #303868;
-            --text-primary: #e8eaf8;
-            --text-secondary: #9098c8;
-            --text-muted: #606888;
-            --accent-blue: #8090d0;
-            --accent-gold: #f0c860;
-            --header-bg: #0e1020;
-            --input-bg: #181c30;
-            --input-border: #2a3058;
-            --label: #6870a8;
-            --dot: #8090d0;
-            --divider: #1e2440;
-            --online: #48c878;
+            --bg: #0e1020;
+            --grace-bubble: #181c34;
+            --grace-border: #252d50;
+            --user-bubble: #1c2240;
+            --user-border: #2c3860;
+            --text-primary: #e8ecff;
+            --text-secondary: #8898d0;
+            --text-muted: #585e90;
+            --accent-blue: #7888d0;
+            --accent-gold: #e8b84a;
+            --header-bg: #080c1c;
+            --input-bg: #141828;
+            --input-border: #252d50;
+            --label: #6068a0;
+            --dot: #7888d0;
+            --divider: #1a2040;
+            --online: #3ec878;
+            --shadow: 0 1px 12px rgba(0,0,0,0.3);
           }
         }
 
@@ -236,39 +238,49 @@ export default function Home() {
           display: flex;
           align-items: center;
           gap: 14px;
+          box-shadow: var(--shadow);
         }
 
         .avatar {
-          width: 42px;
-          height: 42px;
+          width: 46px;
+          height: 46px;
           border-radius: 14px;
-          background: linear-gradient(135deg, #7888cc 0%, #5a6aaa 60%, #4a58a0 100%);
+          background: linear-gradient(145deg, #6878c8 0%, #4a5ca8 55%, #3a4c98 100%);
           display: flex;
           align-items: center;
           justify-content: center;
-          font-family: 'Lora', serif;
-          font-size: 20px;
+          font-family: 'Fraunces', serif;
+          font-size: 28px;
+          font-weight: 700;
           color: #ffffff;
-          font-weight: 400;
           flex-shrink: 0;
           letter-spacing: -0.02em;
+          line-height: 1;
         }
 
         .header-text { flex: 1; }
 
         .header-name {
-          font-family: 'Lora', serif;
-          font-size: 19px;
-          font-weight: 500;
+          font-family: 'Fraunces', serif;
+          font-size: 20px;
+          font-weight: 700;
           color: var(--text-primary);
-          line-height: 1.2;
+          line-height: 1.15;
+          letter-spacing: -0.02em;
         }
 
         .header-sub {
-          font-size: 13px;
+          font-size: 12px;
           color: var(--text-muted);
           font-weight: 300;
-          margin-top: 1px;
+          margin-top: 2px;
+          letter-spacing: 0.01em;
+        }
+
+        .header-right {
+          display: flex;
+          align-items: center;
+          gap: 6px;
         }
 
         .online-dot {
@@ -277,6 +289,12 @@ export default function Home() {
           border-radius: 50%;
           background: var(--online);
           flex-shrink: 0;
+        }
+
+        .online-label {
+          font-size: 11px;
+          color: var(--online);
+          font-weight: 400;
         }
 
         .messages {
@@ -328,6 +346,7 @@ export default function Home() {
           border-bottom-left-radius: 4px;
           align-self: flex-start;
           color: var(--text-primary);
+          box-shadow: var(--shadow);
         }
 
         .bubble.you {
@@ -352,6 +371,7 @@ export default function Home() {
           border-radius: 18px;
           border-bottom-left-radius: 4px;
           align-self: flex-start;
+          box-shadow: var(--shadow);
         }
 
         .dot {
@@ -416,7 +436,7 @@ export default function Home() {
           width: 40px;
           height: 40px;
           border-radius: 50%;
-          background: linear-gradient(135deg, #7888cc 0%, #5a6aaa 55%, #e8b84a 100%);
+          background: linear-gradient(145deg, #6878c8 0%, #4a5ca8 55%, #e0a838 100%);
           border: none;
           cursor: pointer;
           display: flex;
@@ -448,9 +468,12 @@ export default function Home() {
           <div className="avatar">g</div>
           <div className="header-text">
             <div className="header-name">Grace</div>
-            <div className="header-sub">relationship companion</div>
+            <div className="header-sub">your relationship companion</div>
           </div>
-          <div className="online-dot" />
+          <div className="header-right">
+            <div className="online-dot" />
+            <span className="online-label">here</span>
+          </div>
         </div>
 
         <div className="messages">
