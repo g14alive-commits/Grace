@@ -167,51 +167,53 @@ export default function Home() {
         html, body {
           height: 100%;
           overflow: hidden;
-          background: #f4f6f8;
+          background: #eef1fa;
           -webkit-font-smoothing: antialiased;
         }
 
         @media (prefers-color-scheme: dark) {
-          html, body { background: #141820; }
+          html, body { background: #12141f; }
         }
 
         :root {
-          --bg: #f4f6f8;
+          --bg: #eef1fa;
           --grace-bubble: #ffffff;
-          --grace-border: #e2e8f0;
-          --user-bubble: #deeaf8;
-          --user-border: #b8d4ee;
-          --text-primary: #1a2332;
-          --text-secondary: #4a6080;
-          --text-muted: #8aa0b8;
-          --accent: #3a6ea8;
-          --accent-soft: #5a8ec8;
+          --grace-border: #d8dff0;
+          --user-bubble: #e4e8f8;
+          --user-border: #c0caf0;
+          --text-primary: #1a1e3a;
+          --text-secondary: #5a6080;
+          --text-muted: #9098c0;
+          --accent-blue: #5a6aaa;
+          --accent-gold: #e8b84a;
           --header-bg: #ffffff;
           --input-bg: #ffffff;
-          --input-border: #d8e2ee;
-          --label: #7a98b8;
-          --dot: #3a6ea8;
-          --divider: #e8eef5;
+          --input-border: #d0d8f0;
+          --label: #8890c0;
+          --dot: #5a6aaa;
+          --divider: #dde2f2;
+          --online: #48c878;
         }
 
         @media (prefers-color-scheme: dark) {
           :root {
-            --bg: #141820;
-            --grace-bubble: #1e2430;
-            --grace-border: #2a3448;
-            --user-bubble: #1a2a40;
-            --user-border: #284060;
-            --text-primary: #e8f0f8;
-            --text-secondary: #88a8cc;
-            --text-muted: #506880;
-            --accent: #5a90d0;
-            --accent-soft: #78aae0;
-            --header-bg: #0e1218;
-            --input-bg: #1a2030;
-            --input-border: #2a3448;
-            --label: #6080a0;
-            --dot: #5a90d0;
-            --divider: #1e2838;
+            --bg: #12141f;
+            --grace-bubble: #1c2035;
+            --grace-border: #2a3058;
+            --user-bubble: #202848;
+            --user-border: #303868;
+            --text-primary: #e8eaf8;
+            --text-secondary: #9098c8;
+            --text-muted: #606888;
+            --accent-blue: #8090d0;
+            --accent-gold: #f0c860;
+            --header-bg: #0e1020;
+            --input-bg: #181c30;
+            --input-border: #2a3058;
+            --label: #6870a8;
+            --dot: #8090d0;
+            --divider: #1e2440;
+            --online: #48c878;
           }
         }
 
@@ -240,15 +242,16 @@ export default function Home() {
           width: 42px;
           height: 42px;
           border-radius: 14px;
-          background: var(--accent);
+          background: linear-gradient(135deg, #7888cc 0%, #5a6aaa 60%, #4a58a0 100%);
           display: flex;
           align-items: center;
           justify-content: center;
           font-family: 'Lora', serif;
-          font-size: 18px;
+          font-size: 20px;
           color: #ffffff;
-          font-weight: 500;
+          font-weight: 400;
           flex-shrink: 0;
+          letter-spacing: -0.02em;
         }
 
         .header-text { flex: 1; }
@@ -272,7 +275,7 @@ export default function Home() {
           width: 8px;
           height: 8px;
           border-radius: 50%;
-          background: #48b878;
+          background: var(--online);
           flex-shrink: 0;
         }
 
@@ -387,7 +390,7 @@ export default function Home() {
         }
 
         .input-row:focus-within {
-          border-color: var(--accent);
+          border-color: var(--accent-blue);
         }
 
         textarea {
@@ -413,7 +416,7 @@ export default function Home() {
           width: 40px;
           height: 40px;
           border-radius: 50%;
-          background: var(--accent);
+          background: linear-gradient(135deg, #7888cc 0%, #5a6aaa 55%, #e8b84a 100%);
           border: none;
           cursor: pointer;
           display: flex;
@@ -442,7 +445,7 @@ export default function Home() {
 
       <div className="app" style={{ height: appHeight }}>
         <div className="header">
-          <div className="avatar">G</div>
+          <div className="avatar">g</div>
           <div className="header-text">
             <div className="header-name">Grace</div>
             <div className="header-sub">relationship companion</div>
