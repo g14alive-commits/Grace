@@ -1,23 +1,34 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { systemPrompt } from "./system-prompt";
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
 
-console.log("Prompt length:", systemPrompt.length); // add this line
+const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
 
 export async function POST(req: Request) {
   try {
     const { messages, userProfile, sessionNumber } = await req.json();
 
+    // Ignore keep-alive pings silently
+    const lastMessage = messages[messages.length - 1];
+    if (lastMessage?.content === "__ping__") {
+      return Response.json({ result: null });
+    }
+
     const memoryBlock = buildMemoryBlock(userProfile, sessionNumber);
+    const fullPrompt = systemPrompt + (memoryBlock ? "\n\n" + memoryBlock : "");
 
     const MAX_MESSAGES = 20;
     const trimmedMessages = messages.slice(-MAX_MESSAGES);
 
     const response = await client.messages.create({
-      model: "claude-sonnet-4-5",
-      max_tokens: 1024,
-      temperature: 0.6,
-      system: systemPrompt + (memoryBlock ? "\n\n" + memoryBlock : ""),
+      model: "claude-haiku-4-5",
+      max_tokens: 500,
+      system: [
+        {
+          type: "text",
+          text: fullPrompt,
+          cache_control: { type: "ephemeral" },
+        },
+      ] as any,
       messages: trimmedMessages,
     });
 
@@ -65,4 +76,3 @@ function buildMemoryBlock(userProfile: any, sessionNumber: number): string {
 
   return lines.join("\n");
 }
-
