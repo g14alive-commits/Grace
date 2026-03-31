@@ -532,39 +532,37 @@ export default function Home() {
           margin-left: 2px;
         }
 
-        .tab-bar {
-          flex-shrink: 0;
-          position: relative;
-          z-index: 3;
-          background: rgba(13,14,26,0.92);
-          border-top: 1px solid rgba(255,255,255,0.07);
-          backdrop-filter: blur(20px);
-          -webkit-backdrop-filter: blur(20px);
-          display: flex;
-          padding: 6px 0 8px;
-        }
+.tab-bar {
+  flex-shrink: 0;
+  position: relative;
+  z-index: 3;
+  background: rgba(13,14,26,0.90);
+  border-top: 1px solid rgba(255,255,255,0.07);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  display: flex;
+  padding: 4px 0 6px;
+}
 
-        .tab {
-          flex: 1;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 4px;
-          cursor: pointer;
-          padding: 8px 0;
-        }
+.tab {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  cursor: pointer;
+  padding: 4px 0;
+}
 
-        .tab-icon {
-          width: 24px;
-          height: 24px;
-          opacity: 0.40;
-          transition: opacity 0.2s;
-        }
+.tab-icon {
+  width: 20px;
+  height: 20px;
+  opacity: 0.40;
+  transition: opacity 0.2s;
+}
 
-        .tab.active .tab-icon { opacity: 1; }
-
-        .tab-label {
-          font-size: 10px;
+.tab-label {
+  font-size: 9px;
           font-weight: 400;
           letter-spacing: 0.04em;
           color: rgba(140,130,180,0.50);
