@@ -13,6 +13,7 @@ export default function Rewrite() {
   const [copied, setCopied] = useState<string | null>(null);
   const [vh, setVh] = useState(0);
   const router = useRouter();
+  const resultRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const setHeight = () => setVh(window.innerHeight);
@@ -32,7 +33,12 @@ export default function Rewrite() {
         body: JSON.stringify({ message, receivedMessage, receiverPattern }),
       });
       const data = await response.json();
-      if (data.result) setResult(data.result);
+      if (data.result) {
+        setResult(data.result);
+        setTimeout(() => {
+          resultRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+        }, 100);
+      }
     } catch (e) {
       console.error(e);
     }
@@ -223,13 +229,13 @@ export default function Rewrite() {
 
         .receiver-btn {
           flex: 1;
-          padding: 10px 8px;
+          padding: 10px 6px;
           border-radius: 12px;
           background: var(--surface);
           border: 1px solid var(--border);
           color: var(--text-secondary);
           font-family: 'DM Sans', sans-serif;
-          font-size: 13px;
+          font-size: 11px;
           font-weight: 300;
           cursor: pointer;
           transition: all 0.2s;
@@ -505,19 +511,19 @@ export default function Rewrite() {
               className={`receiver-btn${receiverPattern === "A" ? " active" : ""}`}
               onClick={() => setReceiverPattern("A")}
             >
-              A — pulls away
+              someone who pulls away
             </button>
             <button
               className={`receiver-btn${receiverPattern === "B" ? " active" : ""}`}
               onClick={() => setReceiverPattern("B")}
             >
-              B — reaches hard
+              someone who reaches hard
             </button>
             <button
               className={`receiver-btn${receiverPattern === "C" ? " active" : ""}`}
               onClick={() => setReceiverPattern("C")}
             >
-              C — not sure
+              🤷 a person
             </button>
           </div>
 
@@ -562,7 +568,7 @@ export default function Rewrite() {
           )}
 
           {result && !loading && (
-            <div className="result-card">
+            <div className="result-card" ref={resultRef}>
               <div className="prose">
                 <ReactMarkdown>
                   {result.split("**Suggestions**")[0].split("Option 1")[0]}

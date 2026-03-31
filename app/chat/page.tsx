@@ -541,7 +541,7 @@ export default function Home() {
           backdrop-filter: blur(20px);
           -webkit-backdrop-filter: blur(20px);
           display: flex;
-          padding: 8px 0 20px;
+          padding: 6px 0 8px;
         }
 
         .tab {
