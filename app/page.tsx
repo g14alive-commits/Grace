@@ -7,19 +7,19 @@ const slides = [
   {
     id: 1,
     headline: "Relational hurt heals through relationship.",
-    body: "Healing takes time. But friction reduces, joy finds its way back in, and showing up better — even a little — changes everything between two people.",
+    body: "Healing takes time. But friction reduces, joy finds its way back in, and showing up better — even a little — changes everything.",
     ripple: true,
   },
   {
     id: 2,
     headline: "Understand yourself better.\nNavigate your relationship with clarity.\nRespond from a steadier place.",
-    body: "Attune is built on one belief: when you understand your own patterns and needs, you show up differently for the people you love.",
+    body: "When you understand your own patterns and needs, you show up differently for the people you love.",
     ripple: false,
   },
   {
     id: 3,
     headline: "Attune is for people who want to strengthen what they have.",
-    body: "Not for managing crisis or abuse. If you're in an unsafe situation, please reach out to a professional or emergency services.\n\nIf you're here because something between you and your partner isn't working — you're in the right place.",
+    body: "Not for managing crisis or abuse. If you're in an unsafe situation, please reach out to a professional.\n\nIf something between you and your partner isn't working — you're in the right place.",
     ripple: false,
   },
   {
@@ -137,6 +137,14 @@ export default function Home() {
     setHeight();
     window.addEventListener("resize", setHeight);
     return () => window.removeEventListener("resize", setHeight);
+  }, []);
+
+  // Returning users skip to last slide
+  useEffect(() => {
+    const hasMessages = localStorage.getItem("grace-messages");
+    if (hasMessages) {
+      setCurrent(slides.length - 1);
+    }
   }, []);
 
   const goTo = (index: number, dir: "left" | "right") => {
@@ -303,23 +311,29 @@ export default function Home() {
 
         .headline {
           font-family: 'Cormorant Garamond', serif;
-          font-size: 44px;
+          font-size: 32px;
           font-weight: 300;
-          line-height: 1.15;
+          line-height: 1.18;
           color: rgba(245, 238, 255, 0.96);
-          margin-bottom: 28px;
+          margin-bottom: 22px;
           letter-spacing: -0.01em;
           white-space: pre-line;
         }
 
         .body {
           font-family: 'Cormorant Garamond', serif;
-          font-size: 19px;
+          font-size: 17px;
           font-weight: 300;
-          line-height: 1.80;
+          line-height: 1.75;
           color: rgba(200, 185, 230, 0.65);
           white-space: pre-line;
           font-style: italic;
+        }
+
+        @media (max-width: 480px) {
+          .headline { font-size: 26px; margin-bottom: 18px; }
+          .body { font-size: 15px; line-height: 1.70; }
+          .slide-area { padding: 0 28px; }
         }
 
         .cta-btn {
