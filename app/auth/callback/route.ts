@@ -13,5 +13,20 @@ export async function GET(request: Request) {
     await supabase.auth.exchangeCodeForSession(code);
   }
 
-  return NextResponse.redirect(`${origin}/`);
+  const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
+const { data: { session } } = await supabase.auth.getSession();
+if (session) {
+  const { data: user } = await supabase
+    .from("users")
+    .select("onboarding_complete")
+    .eq("id", session.user.id)
+    .single();
+  if (!user?.onboarding_complete) {
+    return NextResponse.redirect(`${origin}/onboarding`);
+  }
+}
+return NextResponse.redirect(`${origin}/`);
 }

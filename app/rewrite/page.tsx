@@ -50,12 +50,26 @@ useEffect(() => {
         body: JSON.stringify({ message, receivedMessage, receiverPattern, senderPattern }),
       });
       const data = await response.json();
-      if (data.result) {
-        setResult(data.result);
-        setTimeout(() => {
-          resultRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-        }, 100);
-      }
+if (data.result) {
+  setResult(data.result);
+  setTimeout(() => {
+    resultRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, 100);
+  // Track rewrite usage
+  if (userId) {
+    const { data: userData } = await supabase
+      .from("users")
+      .select("rewrite_count")
+      .eq("id", userId)
+      .single();
+    await supabase
+      .from("users")
+      .update({ rewrite_count: (userData?.rewrite_count || 0) + 1 })
+      .eq("id", userId);
+  }
+}
+
+
     } catch (e) {
       console.error(e);
     }
@@ -839,6 +853,12 @@ useEffect(() => {
               <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
             </svg>
             <span className="tab-label">Rewrite</span>
+          </div>
+          <div className="tab" onClick={() => router.push("/profile")}>
+            <svg className="tab-icon" viewBox="0 0 24 24" fill="none" stroke="rgba(200,180,255,0.90)" strokeWidth="1.5">
+              <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/>
+            </svg>
+            <span className="tab-label">Profile</span>
           </div>
         </div>
       </div>

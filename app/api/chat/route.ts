@@ -5,7 +5,14 @@ const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
 
 export async function POST(req: Request) {
   try {
-    const { messages, userProfile, sessionNumber } = await req.json();
+    const {
+      messages,
+      userProfile,
+      sessionNumber,
+      sessionMemory,
+      isNewSession,
+      twoHourWarning,
+    } = await req.json();
 
     // Ignore keep-alive pings silently
     const lastMessage = messages[messages.length - 1];
@@ -14,14 +21,25 @@ export async function POST(req: Request) {
     }
 
     const memoryBlock = buildMemoryBlock(userProfile, sessionNumber);
-    const fullPrompt = systemPrompt + (memoryBlock ? "\n\n" + memoryBlock : "");
+
+    // Build full prompt — session memory takes priority over regular memory block
+    const contextBlock = sessionMemory || (memoryBlock ? memoryBlock : "");
+
+    // Add two hour warning to prompt if needed
+    const twoHourBlock = twoHourWarning
+      ? `\n\nSESSION TIME LIMIT: This user has been in active conversation for 2 hours. After your next response, gently close the session. Say something warm like: "We've covered a lot today. I think this is a good place to pause — take some time with what came up. I'll be here when you're ready. Want to stop here for today, or is there something else on your mind?" Then wait for their response. If they want to continue, honour that. If they say goodbye or indicate they're done, close warmly.`
+      : "";
+
+    const fullPrompt =
+      systemPrompt +
+      (contextBlock ? "\n\n" + contextBlock : "") +
+      twoHourBlock;
 
     const MAX_MESSAGES = 20;
     const trimmedMessages = messages.slice(-MAX_MESSAGES);
 
-    // Main Grace response
     const response = await client.messages.create({
-      model: "claude-haiku-4-5-20251001",
+      model: "claude-sonnet-4-5",
       max_tokens: 500,
       system: [
         {
@@ -38,22 +56,43 @@ export async function POST(req: Request) {
         ? response.content[0].text
         : "No response";
 
-    // Extract profile updates every 4 messages using Haiku (cheap)
+    // Detect if Grace is closing the session naturally
+    const sessionComplete = detectSessionClose(aiText);
+
+    // Extract profile updates every 4 messages
     let profileUpdates = null;
     if (messages.length % 4 === 0 && messages.length > 0) {
-      profileUpdates = await extractProfile(
-        trimmedMessages,
-        aiText,
-        userProfile
-      );
+      profileUpdates = await extractProfile(trimmedMessages, aiText, userProfile);
     }
 
-    return Response.json({ result: aiText, profileUpdates });
-
+    return Response.json({ result: aiText, profileUpdates, sessionComplete });
   } catch (error) {
     console.error(error);
     return Response.json({ error: "Something went wrong" }, { status: 500 });
   }
+}
+
+function detectSessionClose(text: string): boolean {
+  const closeSignals = [
+    "take some time with what came up",
+    "i'll be here when you're ready",
+    "that's enough for today",
+    "good place to pause",
+    "pick this up next time",
+    "take care of yourself",
+    "well done today",
+    "you've done real work today",
+    "sit with that",
+    "that's the work",
+    "come back when",
+    "see you next time",
+    "until next time",
+    "rest now",
+    "that's all for today",
+    "you've done enough today",
+  ];
+  const lower = text.toLowerCase();
+  return closeSignals.some((signal) => lower.includes(signal));
 }
 
 async function extractProfile(
@@ -82,19 +121,18 @@ RECENT CONVERSATION:
 ${recentExchange}
 ASSISTANT: ${latestResponse}
 
-Return a JSON object with ONLY new fields detected. Omit fields with no new info. Use null for unknown.
-
 IMPORTANT RULES:
 - Only set partnerPattern if the user has explicitly described their partner's behaviour in detail. Never infer it from the user's own pattern.
 - Only set userPattern if there is strong evidence from multiple answers. Never guess from one or two responses.
 - assessmentComplete should only be true if Grace has explicitly delivered the assessment result message.
 
+Return a JSON object with ONLY new fields detected. Omit fields with no new info. Use null for unknown.
 {
   "userPattern": "reaches harder | steps back | balanced | mixed | null",
   "partnerPattern": "reaches harder | steps back | steady | null",
-  "relationshipFacts": ["array of NEW facts only - e.g. trust issues, long distance, infidelity"],
-  "recurringThemes": ["array of NEW themes - e.g. fear of abandonment, hypervigilance"],
-  "growthSignals": ["array of growth signals detected in this exchange"],
+  "relationshipFacts": ["array of NEW facts only"],
+  "recurringThemes": ["array of NEW themes"],
+  "growthSignals": ["array of growth signals detected"],
   "assessmentComplete": true or false or null
 }
 
@@ -108,11 +146,9 @@ Return ONLY valid JSON. No explanation. No markdown backticks.`,
         ? extraction.content[0].text.trim()
         : "{}";
 
-    // Clean and parse
     const cleaned = raw.replace(/```json|```/g, "").trim();
     const parsed = JSON.parse(cleaned);
 
-    // Filter out null values
     const filtered: any = {};
     Object.entries(parsed).forEach(([key, value]) => {
       if (value !== null && value !== undefined) {
@@ -125,7 +161,6 @@ Return ONLY valid JSON. No explanation. No markdown backticks.`,
     });
 
     return Object.keys(filtered).length > 0 ? filtered : null;
-
   } catch (e) {
     console.error("Profile extraction failed silently:", e);
     return null;
@@ -137,12 +172,8 @@ function buildMemoryBlock(userProfile: any, sessionNumber: number): string {
 
   const lines = ["RETURNING USER — PROFILE LOADED:"];
 
-  if (userProfile.userPattern) {
-    lines.push(`- Pattern: ${userProfile.userPattern}`);
-  }
-  if (userProfile.partnerPattern) {
-    lines.push(`- Partner pattern: ${userProfile.partnerPattern}`);
-  }
+  if (userProfile.userPattern) lines.push(`- Pattern: ${userProfile.userPattern}`);
+  if (userProfile.partnerPattern) lines.push(`- Partner pattern: ${userProfile.partnerPattern}`);
   if (userProfile.relationshipFacts?.length > 0) {
     lines.push(`- Relationship facts: ${userProfile.relationshipFacts.join(", ")}`);
   }
@@ -155,9 +186,7 @@ function buildMemoryBlock(userProfile: any, sessionNumber: number): string {
   if (userProfile.lastSessionSummary) {
     lines.push(`- Last session: ${userProfile.lastSessionSummary}`);
   }
-  if (sessionNumber) {
-    lines.push(`- Session number: ${sessionNumber}`);
-  }
+  if (sessionNumber) lines.push(`- Session number: ${sessionNumber}`);
 
   lines.push("\nDo not ask for information already in this profile. Use it to personalise coaching from the first message.");
 

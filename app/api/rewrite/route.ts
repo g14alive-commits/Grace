@@ -97,23 +97,41 @@ EDGE CASES:
 
 export async function POST(req: Request) {
   try {
-    const { message, receivedMessage, receiverPattern } = await req.json();
+    const { message, receivedMessage, receiverPattern, senderPattern } = await req.json();
 
     if (!message || !message.trim()) {
       return Response.json({ error: "No message provided" }, { status: 400 });
     }
 
-    const receiverLabel =
-      receiverPattern === "A"
-        ? "The receiver tends to pull away or go quiet (steps back)."
-        : receiverPattern === "B"
-        ? "The receiver tends to reach hard or get anxious (reaches harder)."
-        : "The receiver pattern is unknown — apply neutral versions.";
+const receiverLabel =
+  receiverPattern === "A"
+    ? "The receiver tends to pull away or go quiet (steps back)."
+    : receiverPattern === "B"
+    ? "The receiver tends to reach hard or get anxious (reaches harder)."
+    : "The receiver pattern is unknown — apply neutral versions.";
+
+const senderLabel = senderPattern
+  ? `The sender's own pattern is: ${senderPattern}. Use this to understand why they wrote the message this way — someone who steps back will write differently than someone who reaches hard. Calibrate the suggestions accordingly.`
+  : "";
 
     const hasReceivedMessage = receivedMessage && receivedMessage.trim().length > 0;
 
-    const userMessage = hasReceivedMessage
-      ? `${receiverLabel}
+const userMessage = hasReceivedMessage
+  ? `${receiverLabel}${senderLabel ? "\n" + senderLabel : ""}
+
+REPLY MODE — they received this message:
+"${receivedMessage.trim()}"
+
+And they want to reply with:
+"${message.trim()}"
+
+Scan the reply they want to send in the context of the message they received. Give better reply options. In the Advice section, name what the received message is really expressing underneath, then advise how to reply.`
+  : `${receiverLabel}${senderLabel ? "\n" + senderLabel : ""}
+
+Message to scan:
+"${message.trim()}"
+
+Scan this message and respond in the exact structure specified.`;
 
 REPLY MODE — they received this message:
 "${receivedMessage.trim()}"
