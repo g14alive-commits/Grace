@@ -670,7 +670,7 @@ export default function Rewrite() {
                   <span className="overlay-item-text">Someone who tends to follow up, get anxious, or push for connection when uncertain.</span>
                 </div>
                 <div className="overlay-item">
-                  <span className="overlay-item-label">not sure, 🤷</span>
+                  <span className="overlay-item-label">🤷 not sure</span>
                   <span className="overlay-item-text">Not sure — Rewrite gives you a middle-ground version.</span>
                 </div>
               </div>
@@ -708,7 +708,7 @@ export default function Rewrite() {
               className={`receiver-btn${receiverPattern === "C" ? " active" : ""}`}
               onClick={() => setReceiverPattern("C")}
             >
-              not sure, 🤷
+              🤷 not sure
             </button>
           </div>
 
