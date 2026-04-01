@@ -42,7 +42,10 @@ Option 2 — Warm
 Option 3 — Honest
 [the real thing said plainly — SHORT, max 2 sentences, calibrated to receiver pattern, must still be 🟢 Low risk]
 
-IMPORTANT — write all suggestion options as plain text only. No quotes around them. No punctuation wrapping. Just the message itself.
+What each version sounds like:
+- Direct: shortest honest version. States the feeling and ask plainly. No build-up, no softening. Like someone who knows what they need and says it simply.
+- Warm: same honesty but more care in tone. Acknowledges the other person. Leaves room for them. Doesn't demand a response.
+- Honest: the real feeling underneath — not softened, not dressed up, not angry. The thing the person actually needs to say but hasn't found the right words for. Short, max 2 sentences. No qualifying, no "I realize", no "I know you're busy". Just the true thing said simply, in a way that a real human would say to someone they love. Calibrated to the receiver — if they pull away, it gives space. If they reach hard, it gives clarity.
 
 **Advice**
 One line. Calm. Grounding. Practical.

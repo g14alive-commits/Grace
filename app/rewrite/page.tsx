@@ -95,6 +95,7 @@ export default function Rewrite() {
           --border: rgba(255,255,255,0.10);
           --border-focus: rgba(160,120,240,0.45);
           --border-received: rgba(80,200,180,0.30);
+          --border-send: rgba(80,200,120,0.40);
           --text-primary: rgba(240,235,255,0.95);
           --text-secondary: rgba(180,170,220,0.75);
           --text-muted: rgba(140,130,180,0.55);
@@ -178,6 +179,35 @@ export default function Rewrite() {
           font-weight: 500;
           color: var(--text-primary);
           line-height: 1.2;
+          position: relative;
+          display: inline-flex;
+          align-items: flex-start;
+        }
+
+        .info-btn {
+          width: 12px; height: 12px;
+          border-radius: 50%;
+          background: rgba(255,255,255,0.08);
+          border: 1px solid rgba(255,255,255,0.15);
+          cursor: pointer;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+          color: rgba(200,180,255,0.50);
+          font-family: 'DM Sans', sans-serif;
+          font-size: 7px;
+          font-weight: 600;
+          vertical-align: super;
+          margin-left: 3px;
+          position: relative;
+          top: -6px;
+          transition: all 0.2s;
+          line-height: 1;
+        }
+
+        .info-btn:active {
+          background: rgba(255,255,255,0.14);
         }
 
         .header-sub {
@@ -258,23 +288,19 @@ export default function Rewrite() {
           border-radius: 16px;
           padding: 14px 16px;
           margin-bottom: 10px;
-          transition: border-color 0.2s;
+          transition: border-color 0.2s, box-shadow 0.2s;
         }
 
-        .message-box:focus-within { border-color: var(--border-focus); }
+        .message-box:focus-within { border-color: var(--border); }
 
-        .message-box.received:focus-within { border-color: var(--border-received); }
-
-        .box-label {
-          font-size: 10px;
-          font-weight: 500;
-          letter-spacing: 0.08em;
-          text-transform: uppercase;
-          color: var(--text-muted);
-          margin-bottom: 8px;
+        .message-box.send:focus-within {
+          border-color: rgba(80,200,120,0.45);
+          box-shadow: 0 0 12px rgba(80,200,120,0.06);
         }
 
-        .box-label.teal { color: rgba(80,200,180,0.60); }
+        .box-label { color: var(--text-muted); }
+
+        .box-label.send { color: rgba(80,200,120,0.65); }
 
         textarea {
           width: 100%;
@@ -451,7 +477,7 @@ export default function Rewrite() {
           backdrop-filter: blur(20px);
           -webkit-backdrop-filter: blur(20px);
           display: flex;
-          padding: 8px 0 20px;
+          padding: 4px 0 6px;
         }
 
         .tab {
@@ -459,14 +485,13 @@ export default function Rewrite() {
           display: flex;
           flex-direction: column;
           align-items: center;
-          gap: 4px;
+          gap: 3px;
           cursor: pointer;
-          padding: 8px 0;
+          padding: 4px 0;
         }
 
         .tab-icon {
-          width: 24px;
-          height: 24px;
+          width: 20px; height: 20px;
           opacity: 0.40;
           transition: opacity 0.2s;
         }
@@ -474,7 +499,7 @@ export default function Rewrite() {
         .tab.active .tab-icon { opacity: 1; }
 
         .tab-label {
-          font-size: 10px;
+          font-size: 9px;
           font-weight: 400;
           letter-spacing: 0.04em;
           color: rgba(140,130,180,0.50);
@@ -482,28 +507,6 @@ export default function Rewrite() {
         }
 
         .tab.active .tab-label { color: rgba(200,180,255,0.90); }
-
-        .info-btn {
-          width: 28px; height: 28px;
-          border-radius: 50%;
-          background: rgba(255,255,255,0.06);
-          border: 1px solid rgba(255,255,255,0.12);
-          cursor: pointer;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          flex-shrink: 0;
-          color: rgba(200,180,255,0.60);
-          font-family: 'DM Sans', sans-serif;
-          font-size: 13px;
-          font-weight: 400;
-          transition: all 0.2s;
-        }
-
-        .info-btn:active {
-          background: rgba(255,255,255,0.10);
-          transform: scale(0.95);
-        }
 
         .overlay {
           position: fixed;
@@ -632,14 +635,14 @@ export default function Rewrite() {
 
         <div className="header">
           <div className="header-left">
-            <div className="header-name">Rewrite</div>
+            <div className="header-name">
+              Rewrite
+              <button className="info-btn" onClick={() => setShowInfo(true)}>i</button>
+            </div>
             <div className="header-sub">scan your message before you send it</div>
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            <div className={`reply-badge${isReplyMode ? "" : " hidden"}`}>
-              reply mode
-            </div>
-            <button className="info-btn" onClick={() => setShowInfo(true)}>i</button>
+          <div className={`reply-badge${isReplyMode ? "" : " hidden"}`}>
+            reply mode
           </div>
         </div>
 
@@ -652,7 +655,7 @@ export default function Rewrite() {
               <div className="overlay-section">
                 <div className="overlay-section-title">What it does</div>
                 <div className="overlay-text">
-                  Rewrite reads the message you're about to send and tells you what tone it carries, how risky it is to send, and gives you 2-3 cleaner versions that say the same thing without the damage. It also gives you one piece of grounding advice.
+                  Paste what you're about to send. Rewrite reads the tone, tells you the risk level, and gives you cleaner versions that say the same thing without the damage.
                 </div>
               </div>
 
@@ -660,22 +663,22 @@ export default function Rewrite() {
                 <div className="overlay-section-title">Who are you sending to?</div>
                 <div className="overlay-item">
                   <span className="overlay-item-label">pulls away</span>
-                  <span className="overlay-item-text">Someone who tends to go quiet, need space, or withdraw when things get hard. Your message needs to feel like an open door — not a demand.</span>
+                  <span className="overlay-item-text">Someone who tends to go quiet or need space when things get hard.</span>
                 </div>
                 <div className="overlay-item">
                   <span className="overlay-item-label">reaches hard</span>
-                  <span className="overlay-item-text">Someone who tends to follow up, get anxious, or push for connection when things feel uncertain. Your message needs to be clear and concrete — ambiguity is where their fear lives.</span>
+                  <span className="overlay-item-text">Someone who tends to follow up, get anxious, or push for connection when uncertain.</span>
                 </div>
                 <div className="overlay-item">
-                  <span className="overlay-item-label">🤷 a person</span>
-                  <span className="overlay-item-text">Not sure which one. Rewrite will give you a middle-ground version — honest but not demanding, clear but not cold.</span>
+                  <span className="overlay-item-label">not sure, 🤷</span>
+                  <span className="overlay-item-text">Not sure — Rewrite gives you a middle-ground version.</span>
                 </div>
               </div>
 
               <div className="overlay-section">
                 <div className="overlay-section-title">The received message box</div>
                 <div className="overlay-text">
-                  Optional. If you paste the message they sent you, Rewrite switches to reply mode — it reads what they actually said, understands the real need or fear underneath it, and helps you reply to that instead of just reacting to the surface. The advice section will also tell you what their message was really expressing.
+                  Optional. Paste what they sent you and Rewrite switches to reply mode — it reads what they actually said and helps you reply to their actual need.
                 </div>
               </div>
 
@@ -705,12 +708,12 @@ export default function Rewrite() {
               className={`receiver-btn${receiverPattern === "C" ? " active" : ""}`}
               onClick={() => setReceiverPattern("C")}
             >
-              not sure
+              not sure, 🤷
             </button>
           </div>
 
           <div className="message-box received">
-            <div className="box-label teal">Message you received (optional)</div>
+            <div className="box-label">Message you received (optional)</div>
             <textarea
               value={receivedMessage}
               onChange={(e) => setReceivedMessage(e.target.value)}
@@ -726,8 +729,8 @@ export default function Rewrite() {
             <div className="connector-line" />
           </div>
 
-          <div className="message-box">
-            <div className="box-label">Message you want to send</div>
+          <div className="message-box send">
+            <div className="box-label send">Message you want to send</div>
             <textarea
               value={message}
               onChange={(e) => setMessage(e.target.value)}
