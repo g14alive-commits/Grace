@@ -2,6 +2,8 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
+import { supabase } from "../../lib/supabase";
+import { getOrCreateUser, profileFromDb } from "../../lib/db";
 import ReactMarkdown from "react-markdown";
 
 export default function Rewrite() {
@@ -13,6 +15,8 @@ export default function Rewrite() {
   const [copied, setCopied] = useState<string | null>(null);
   const [vh, setVh] = useState(0);
   const [showInfo, setShowInfo] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [senderPattern, setSenderPattern] = useState<string>("");
   const router = useRouter();
   const resultRef = useRef<HTMLDivElement | null>(null);
 
@@ -23,6 +27,18 @@ export default function Rewrite() {
     return () => window.removeEventListener("resize", setHeight);
   }, []);
 
+useEffect(() => {
+  supabase.auth.getSession().then(async ({ data }) => {
+    if (!data.session) return;
+    const user = data.session.user;
+    setUserId(user.id);
+    const dbUser = await getOrCreateUser(user.id, user.email || "");
+    if (dbUser?.user_pattern) {
+      setSenderPattern(dbUser.user_pattern);
+    }
+  });
+}, []);
+
   const handleScan = async () => {
     if (!message.trim() || loading) return;
     setLoading(true);
@@ -31,7 +47,7 @@ export default function Rewrite() {
       const response = await fetch("/api/rewrite", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message, receivedMessage, receiverPattern }),
+        body: JSON.stringify({ message, receivedMessage, receiverPattern, senderPattern }),
       });
       const data = await response.json();
       if (data.result) {
