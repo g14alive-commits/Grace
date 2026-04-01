@@ -1,5 +1,6 @@
 "use client";
 
+import { supabase } from "../lib/supabase";
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
@@ -140,12 +141,13 @@ export default function Home() {
   }, []);
 
   // Returning users skip to last slide
-  useEffect(() => {
-    const hasMessages = localStorage.getItem("grace-messages");
-    if (hasMessages) {
+useEffect(() => {
+  supabase.auth.getSession().then(({ data }) => {
+    if (data.session) {
       setCurrent(slides.length - 1);
     }
-  }, []);
+  });
+}, []);
 
   const goTo = (index: number, dir: "left" | "right") => {
     if (animating || index < 0 || index >= slides.length) return;
@@ -444,7 +446,14 @@ export default function Home() {
             {slide.cta && (
               <button
                 className="cta-btn"
-                onClick={() => router.push("/chat")}
+                onClick={async () => {
+  const { data } = await supabase.auth.getSession();
+  if (data.session) {
+    router.push("/chat");
+  } else {
+    router.push("/login");
+  }
+}}
               >
                 Talk to Grace
                 <svg className="cta-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">

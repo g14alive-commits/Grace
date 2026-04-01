@@ -3,6 +3,14 @@
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import ReactMarkdown from "react-markdown";
+import { supabase } from "../../lib/supabase";
+import {
+  getOrCreateUser,
+  updateUserProfile,
+  getConversation,
+  saveConversation,
+  profileFromDb,
+} from "../../lib/db";
 
 interface UserProfile {
   userPattern?: string;
@@ -15,13 +23,15 @@ interface UserProfile {
   sessionCount?: number;
 }
 
-export default function Home() {
+export default function Chat() {
   const [messages, setMessages] = useState<string[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [userProfile, setUserProfile] = useState<UserProfile>({});
   const [sessionNumber, setSessionNumber] = useState(1);
   const [vh, setVh] = useState(0);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [authLoading, setAuthLoading] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
   const initialized = useRef(false);
@@ -34,42 +44,49 @@ export default function Home() {
     return () => window.removeEventListener("resize", setHeight);
   }, []);
 
+  // Auth check and data load
   useEffect(() => {
     if (initialized.current) return;
     initialized.current = true;
 
-    let id = localStorage.getItem("grace-user");
-    if (!id) {
-      id = "user-" + Math.random().toString(36).slice(2);
-      localStorage.setItem("grace-user", id);
-    }
+    supabase.auth.getSession().then(async ({ data }) => {
+      if (!data.session) {
+        router.replace("/login");
+        return;
+      }
 
-    const savedProfile = localStorage.getItem("grace-profile");
-    if (savedProfile) {
-      const profile = JSON.parse(savedProfile);
+      const user = data.session.user;
+      setUserId(user.id);
+
+      // Load or create user profile
+      const dbUser = await getOrCreateUser(user.id, user.email || "");
+      const profile = profileFromDb(dbUser);
       setUserProfile(profile);
       setSessionNumber((profile.sessionCount || 0) + 1);
-    }
 
-    const saved = localStorage.getItem("grace-messages");
-    if (saved) {
-      setMessages(JSON.parse(saved));
-    } else {
-      startConversation();
-    }
+      // Load conversation
+      const conversation = await getConversation(user.id);
+      if (conversation && conversation.messages && conversation.messages.length > 0) {
+        setMessages(conversation.messages);
+      } else {
+        startConversation(profile);
+      }
+
+      setAuthLoading(false);
+    });
   }, []);
 
+  // Save messages to Supabase whenever they change
   useEffect(() => {
-    if (messages.length > 0) {
-      localStorage.setItem("grace-messages", JSON.stringify(messages));
-    }
-  }, [messages]);
+    if (!userId || messages.length === 0) return;
+    saveConversation(userId, messages);
+  }, [messages, userId]);
 
+  // Save profile to Supabase whenever it changes
   useEffect(() => {
-    if (Object.keys(userProfile).length > 0) {
-      localStorage.setItem("grace-profile", JSON.stringify(userProfile));
-    }
-  }, [userProfile]);
+    if (!userId || Object.keys(userProfile).length === 0) return;
+    updateUserProfile(userId, userProfile);
+  }, [userProfile, userId]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -78,6 +95,7 @@ export default function Home() {
     return () => clearTimeout(timer);
   }, [messages, loading]);
 
+  // Keep-alive ping
   useEffect(() => {
     if (messages.length === 0) return;
     const keepAlive = setInterval(async () => {
@@ -107,7 +125,7 @@ export default function Home() {
     });
   };
 
-  const startConversation = async () => {
+  const startConversation = async (profile?: UserProfile) => {
     setLoading(true);
     try {
       const response = await fetch("/api/chat", {
@@ -115,7 +133,7 @@ export default function Home() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           messages: [{ role: "user", content: "begin" }],
-          userProfile: {},
+          userProfile: profile || {},
           sessionNumber: 1,
         }),
       });
@@ -232,6 +250,21 @@ export default function Home() {
 
   const appHeight = vh > 0 ? `${vh}px` : "100vh";
 
+  if (authLoading) {
+    return (
+      <div style={{
+        position: "fixed", top: 0, left: 0, right: 0, bottom: 0,
+        background: "#0d0e1a",
+        display: "flex", alignItems: "center", justifyContent: "center",
+        fontFamily: "DM Sans, sans-serif",
+        color: "rgba(200,180,255,0.60)",
+        fontSize: "14px", fontWeight: 300,
+      }}>
+        Loading...
+      </div>
+    );
+  }
+
   return (
     <>
       <style>{`
@@ -253,22 +286,22 @@ export default function Home() {
 
         :root {
           --bg-deep: #0d0e1a;
-          --grace-bubble: rgba(255, 255, 255, 0.06);
-          --grace-border: rgba(255, 255, 255, 0.12);
-          --grace-text: rgba(240, 235, 255, 0.95);
-          --user-bubble: rgba(100, 120, 220, 0.18);
-          --user-border: rgba(120, 140, 240, 0.25);
-          --user-text: rgba(220, 230, 255, 0.90);
-          --text-primary: rgba(240, 235, 255, 0.95);
-          --text-muted: rgba(140, 130, 180, 0.60);
-          --accent: rgba(160, 120, 240, 0.90);
-          --label-grace: rgba(160, 140, 220, 0.55);
-          --label-you: rgba(120, 150, 220, 0.55);
-          --divider: rgba(255, 255, 255, 0.07);
-          --input-bg: rgba(255, 255, 255, 0.05);
-          --input-border: rgba(255, 255, 255, 0.10);
-          --input-focus: rgba(160, 120, 240, 0.40);
-          --dot: rgba(200, 160, 255, 0.80);
+          --grace-bubble: rgba(255,255,255,0.06);
+          --grace-border: rgba(255,255,255,0.12);
+          --grace-text: rgba(240,235,255,0.95);
+          --user-bubble: rgba(100,120,220,0.18);
+          --user-border: rgba(120,140,240,0.25);
+          --user-text: rgba(220,230,255,0.90);
+          --text-primary: rgba(240,235,255,0.95);
+          --text-muted: rgba(140,130,180,0.60);
+          --accent: rgba(160,120,240,0.90);
+          --label-grace: rgba(160,140,220,0.55);
+          --label-you: rgba(120,150,220,0.55);
+          --divider: rgba(255,255,255,0.07);
+          --input-bg: rgba(255,255,255,0.05);
+          --input-border: rgba(255,255,255,0.10);
+          --input-focus: rgba(160,120,240,0.40);
+          --dot: rgba(200,160,255,0.80);
           --shadow: 0 1px 12px rgba(0,0,0,0.3);
         }
 
@@ -398,11 +431,7 @@ export default function Home() {
           margin-right: 4px;
         }
 
-        .download-btn:disabled {
-          opacity: 0.25;
-          cursor: default;
-        }
-
+        .download-btn:disabled { opacity: 0.25; cursor: default; }
         .download-btn:not(:disabled):active {
           transform: scale(0.9);
           background: rgba(255,255,255,0.10);
@@ -453,10 +482,7 @@ export default function Home() {
         }
 
         .msg-label.grace { color: var(--label-grace); }
-        .msg-label.right {
-          text-align: right;
-          color: var(--label-you);
-        }
+        .msg-label.right { text-align: right; color: var(--label-you); }
 
         .bubble {
           font-size: 16px;
@@ -584,12 +610,7 @@ export default function Home() {
           box-shadow: 0 0 16px rgba(160,120,240,0.25);
         }
 
-        .send-btn:disabled {
-          opacity: 0.25;
-          cursor: default;
-          box-shadow: none;
-        }
-
+        .send-btn:disabled { opacity: 0.25; cursor: default; box-shadow: none; }
         .send-btn:not(:disabled):active { transform: scale(0.9); }
 
         .send-btn svg {
