@@ -369,6 +369,11 @@ export default function Rewrite() {
           font-style: italic;
         }
 
+{result && !loading && (
+  <div style={{color: "white", fontSize: "12px", padding: "10px", whiteSpace: "pre-wrap"}}>
+    {result}
+  </div>
+)}
         .result-card {
           background: var(--surface);
           border: 1px solid var(--border);
