@@ -12,6 +12,7 @@ export default function Rewrite() {
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState<string | null>(null);
   const [vh, setVh] = useState(0);
+  const [showInfo, setShowInfo] = useState(false);
   const router = useRouter();
   const resultRef = useRef<HTMLDivElement | null>(null);
 
@@ -441,37 +442,39 @@ export default function Rewrite() {
           font-style: italic;
         }
 
-.tab-bar {
-  flex-shrink: 0;
-  position: relative;
-  z-index: 3;
-  background: rgba(13,14,26,0.90);
-  border-top: 1px solid rgba(255,255,255,0.07);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  display: flex;
-  padding: 4px 0 6px;
-}
+        .tab-bar {
+          flex-shrink: 0;
+          position: relative;
+          z-index: 3;
+          background: var(--tab-bg);
+          border-top: 1px solid var(--divider);
+          backdrop-filter: blur(20px);
+          -webkit-backdrop-filter: blur(20px);
+          display: flex;
+          padding: 8px 0 20px;
+        }
 
-.tab {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 3px;
-  cursor: pointer;
-  padding: 4px 0;
-}
+        .tab {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 4px;
+          cursor: pointer;
+          padding: 8px 0;
+        }
 
-.tab-icon {
-  width: 20px;
-  height: 20px;
-  opacity: 0.40;
-  transition: opacity 0.2s;
-}
+        .tab-icon {
+          width: 24px;
+          height: 24px;
+          opacity: 0.40;
+          transition: opacity 0.2s;
+        }
 
-.tab-label {
-  font-size: 9px;
+        .tab.active .tab-icon { opacity: 1; }
+
+        .tab-label {
+          font-size: 10px;
           font-weight: 400;
           letter-spacing: 0.04em;
           color: rgba(140,130,180,0.50);
@@ -480,8 +483,143 @@ export default function Rewrite() {
 
         .tab.active .tab-label { color: rgba(200,180,255,0.90); }
 
+        .info-btn {
+          width: 28px; height: 28px;
+          border-radius: 50%;
+          background: rgba(255,255,255,0.06);
+          border: 1px solid rgba(255,255,255,0.12);
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+          color: rgba(200,180,255,0.60);
+          font-family: 'DM Sans', sans-serif;
+          font-size: 13px;
+          font-weight: 400;
+          transition: all 0.2s;
+        }
+
+        .info-btn:active {
+          background: rgba(255,255,255,0.10);
+          transform: scale(0.95);
+        }
+
+        .overlay {
+          position: fixed;
+          top: 0; left: 0; right: 0; bottom: 0;
+          background: rgba(10,10,20,0.88);
+          z-index: 10;
+          display: flex;
+          flex-direction: column;
+          justify-content: flex-end;
+          backdrop-filter: blur(8px);
+          -webkit-backdrop-filter: blur(8px);
+          animation: fadeIn 0.2s ease;
+        }
+
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+
+        .overlay-sheet {
+          background: #16142a;
+          border-top: 1px solid rgba(255,255,255,0.10);
+          border-radius: 24px 24px 0 0;
+          padding: 28px 24px 40px;
+          max-height: 85vh;
+          overflow-y: auto;
+          animation: slideUp 0.25s ease;
+        }
+
+        @keyframes slideUp {
+          from { transform: translateY(30px); opacity: 0; }
+          to { transform: translateY(0); opacity: 1; }
+        }
+
+        .overlay-sheet::-webkit-scrollbar { width: 0; }
+
+        .overlay-handle {
+          width: 36px; height: 4px;
+          border-radius: 2px;
+          background: rgba(255,255,255,0.15);
+          margin: 0 auto 24px;
+        }
+
+        .overlay-title {
+          font-family: 'Cormorant Garamond', serif;
+          font-size: 22px;
+          font-weight: 500;
+          color: rgba(240,235,255,0.95);
+          margin-bottom: 20px;
+        }
+
+        .overlay-section {
+          margin-bottom: 22px;
+        }
+
+        .overlay-section-title {
+          font-size: 10px;
+          font-weight: 500;
+          letter-spacing: 0.10em;
+          text-transform: uppercase;
+          color: rgba(160,140,220,0.55);
+          margin-bottom: 8px;
+        }
+
+        .overlay-text {
+          font-size: 15px;
+          font-weight: 300;
+          line-height: 1.70;
+          color: rgba(180,170,220,0.75);
+        }
+
+        .overlay-item {
+          display: flex;
+          gap: 12px;
+          margin-bottom: 10px;
+          align-items: flex-start;
+        }
+
+        .overlay-item-label {
+          font-size: 12px;
+          font-weight: 500;
+          color: rgba(200,180,255,0.80);
+          background: rgba(160,120,240,0.12);
+          border: 1px solid rgba(160,120,240,0.20);
+          border-radius: 6px;
+          padding: 2px 8px;
+          flex-shrink: 0;
+          margin-top: 2px;
+        }
+
+        .overlay-item-text {
+          font-size: 14px;
+          font-weight: 300;
+          line-height: 1.60;
+          color: rgba(180,170,220,0.70);
+        }
+
+        .overlay-close {
+          width: 100%;
+          padding: 14px;
+          border-radius: 14px;
+          background: rgba(160,120,240,0.12);
+          border: 1px solid rgba(160,120,240,0.25);
+          color: rgba(210,190,255,0.90);
+          font-family: 'DM Sans', sans-serif;
+          font-size: 15px;
+          font-weight: 400;
+          cursor: pointer;
+          margin-top: 8px;
+          transition: all 0.2s;
+        }
+
+        .overlay-close:active { transform: scale(0.98); }
+
         @media (max-width: 480px) {
-          .receiver-btn { font-size: 12px; padding: 9px 6px; }
+          .receiver-btn { font-size: 11px; padding: 9px 6px; }
           .scan-btn { font-size: 14px; padding: 14px; }
         }
       `}</style>
@@ -497,10 +635,56 @@ export default function Rewrite() {
             <div className="header-name">Rewrite</div>
             <div className="header-sub">scan your message before you send it</div>
           </div>
-          <div className={`reply-badge${isReplyMode ? "" : " hidden"}`}>
-            reply mode
+          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <div className={`reply-badge${isReplyMode ? "" : " hidden"}`}>
+              reply mode
+            </div>
+            <button className="info-btn" onClick={() => setShowInfo(true)}>i</button>
           </div>
         </div>
+
+        {showInfo && (
+          <div className="overlay" onClick={() => setShowInfo(false)}>
+            <div className="overlay-sheet" onClick={(e) => e.stopPropagation()}>
+              <div className="overlay-handle" />
+              <div className="overlay-title">How Rewrite works</div>
+
+              <div className="overlay-section">
+                <div className="overlay-section-title">What it does</div>
+                <div className="overlay-text">
+                  Rewrite reads the message you're about to send and tells you what tone it carries, how risky it is to send, and gives you 2-3 cleaner versions that say the same thing without the damage. It also gives you one piece of grounding advice.
+                </div>
+              </div>
+
+              <div className="overlay-section">
+                <div className="overlay-section-title">Who are you sending to?</div>
+                <div className="overlay-item">
+                  <span className="overlay-item-label">pulls away</span>
+                  <span className="overlay-item-text">Someone who tends to go quiet, need space, or withdraw when things get hard. Your message needs to feel like an open door — not a demand.</span>
+                </div>
+                <div className="overlay-item">
+                  <span className="overlay-item-label">reaches hard</span>
+                  <span className="overlay-item-text">Someone who tends to follow up, get anxious, or push for connection when things feel uncertain. Your message needs to be clear and concrete — ambiguity is where their fear lives.</span>
+                </div>
+                <div className="overlay-item">
+                  <span className="overlay-item-label">🤷 a person</span>
+                  <span className="overlay-item-text">Not sure which one. Rewrite will give you a middle-ground version — honest but not demanding, clear but not cold.</span>
+                </div>
+              </div>
+
+              <div className="overlay-section">
+                <div className="overlay-section-title">The received message box</div>
+                <div className="overlay-text">
+                  Optional. If you paste the message they sent you, Rewrite switches to reply mode — it reads what they actually said, understands the real need or fear underneath it, and helps you reply to that instead of just reacting to the surface. The advice section will also tell you what their message was really expressing.
+                </div>
+              </div>
+
+              <button className="overlay-close" onClick={() => setShowInfo(false)}>
+                Got it
+              </button>
+            </div>
+          </div>
+        )}
 
         <div className="scroll-area">
           <div className="section-label">Who are you sending this to?</div>
@@ -521,7 +705,7 @@ export default function Rewrite() {
               className={`receiver-btn${receiverPattern === "C" ? " active" : ""}`}
               onClick={() => setReceiverPattern("C")}
             >
-              🤷 a person
+              not sure
             </button>
           </div>
 
