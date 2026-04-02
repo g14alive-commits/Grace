@@ -31,7 +31,7 @@ export default function Privacy() {
           <h2>Your data</h2>
           <p>You can remove all your history or delete your account at any time from your Profile page. Deletion is permanent and immediate.</p>
           <h2>AI and data</h2>
-          <p>Conversations with Grace are processed by Anthropic's API. Anthropic's privacy policy applies to that processing. We do not use your conversations to train any AI models.</p>
+          <p>Conversations with Grace are processed securely by our AI provider. We do not use your conversations to train any AI models.</p>
           <h2>Contact</h2>
           <p>If you have any questions about your data, please reach out to us through the app.</p>
         </div>
