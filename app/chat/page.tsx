@@ -527,40 +527,30 @@ export default function Chat() {
         .tab-label { font-size: 9px; font-weight: 400; letter-spacing: 0.04em; color: rgba(140,130,180,0.50); transition: color 0.2s; }
         .tab.active .tab-label { color: rgba(200,180,255,0.90); }
 
-        .drawer-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(8,8,18,0.70); z-index: 10; backdrop-filter: blur(4px); animation: fadeIn 0.2s ease; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        .drawer { position: fixed; top: 0; left: 0; bottom: 0; width: 92%; max-width: 420px; background: #0f0e1f; border-right: 1px solid rgba(255,255,255,0.08); z-index: 11; display: flex; flex-direction: column; animation: slideIn 0.25s ease; }
-        @keyframes slideIn { from { transform: translateX(-100%); } to { transform: translateX(0); } }
-
+        .drawer { position: fixed; top: 0; left: 0; bottom: 0; width: 100%; background: transparent; z-index: 11; display: flex; flex-direction: row; pointer-events: none; }
+        .drawer-list-panel { width: 44%; max-width: 200px; background: #0f0e1f; border-right: 1px solid rgba(255,255,255,0.08); display: flex; flex-direction: column; pointer-events: all; animation: slideIn 0.25s ease; }
+        .drawer-detail-panel-outer { flex: 1; background: #12112299; backdrop-filter: blur(8px); display: flex; flex-direction: column; pointer-events: all; animation: fadeIn 0.2s ease; }
         .drawer-header { padding: 52px 20px 16px; border-bottom: 1px solid rgba(255,255,255,0.07); display: flex; align-items: center; justify-content: space-between; }
         .drawer-title { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 400; color: rgba(240,235,255,0.90); }
+        .drawer-back { background: none; border: none; color: rgba(160,140,220,0.70); font-size: 14px; font-weight: 300; cursor: pointer; padding: 0; font-family: 'DM Sans', sans-serif; }
         .drawer-close { background: none; border: none; color: rgba(160,140,220,0.55); font-size: 20px; cursor: pointer; padding: 4px; }
-
-        .drawer-body { flex: 1; display: flex; overflow: hidden; }
-
-        .drawer-list { width: 42%; border-right: 1px solid rgba(255,255,255,0.06); overflow-y: auto; }
-        .drawer-list::-webkit-scrollbar { width: 0; }
-        
-        .drawer-detail-panel { flex: 1; overflow-y: auto; padding: 20px 18px; }
-        .drawer-detail-panel::-webkit-scrollbar { width: 0; }
-
-        .session-item { padding: 12px 14px; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer; transition: background 0.2s; }
+        .drawer-list-full { flex: 1; overflow-y: auto; }
+        .drawer-list-full::-webkit-scrollbar { width: 0; }
+        .session-item { padding: 16px 20px; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer; transition: background 0.2s; }
         .session-item:active { background: rgba(255,255,255,0.03); }
-        .session-item.selected { background: rgba(160,120,240,0.08); border-left: 2px solid rgba(160,120,240,0.40); }
-
-        .session-item-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
-        .session-number { font-size: 9px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(160,140,220,0.45); }
-        .session-date { font-size: 10px; font-weight: 300; color: rgba(140,130,180,0.45); }
-        .session-headline { font-family: 'Cormorant Garamond', serif; font-size: 14px; font-weight: 400; font-style: italic; color: rgba(220,210,255,0.85); line-height: 1.3; }
-
-        .detail-empty { padding: 30px 16px; text-align: center; font-size: 13px; font-weight: 300; color: rgba(140,130,180,0.40); font-style: italic; line-height: 1.6; }
-        .detail-headline { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 400; font-style: italic; color: rgba(220,210,255,0.90); line-height: 1.3; margin-bottom: 16px; }
-        .detail-section { margin-bottom: 14px; }
-        .detail-label { font-size: 9px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(160,140,220,0.40); margin-bottom: 5px; }
-        .detail-text { font-size: 13px; font-weight: 300; line-height: 1.60; color: rgba(180,170,220,0.70); }
-
-        .drawer-empty { padding: 40px 20px; text-align: center; font-size: 14px; font-weight: 300; color: rgba(140,130,180,0.45); font-style: italic; line-height: 1.6; }
+        .session-item-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px; }
+        .session-number { font-size: 10px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(160,140,220,0.45); }
+        .session-date { font-size: 11px; font-weight: 300; color: rgba(140,130,180,0.45); }
+        .session-headline { font-family: 'Cormorant Garamond', serif; font-size: 17px; font-weight: 400; font-style: italic; color: rgba(220,210,255,0.85); line-height: 1.35; }
+        .drawer-detail-full { flex: 1; overflow-y: auto; padding: 52px 20px 24px; }
+        .drawer-detail-full::-webkit-scrollbar { width: 0; }
+        .session-item.selected { background: rgba(160,120,240,0.10); border-left: 2px solid rgba(160,120,240,0.40); }
+        .detail-headline { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 400; font-style: italic; color: rgba(220,210,255,0.90); line-height: 1.3; margin-bottom: 20px; }
+       .detail-incomplete { font-size: 11px; color: rgba(160,140,220,0.35); margin-bottom: 16px; }
+       .detail-section { margin-bottom: 18px; }
+       .detail-label { font-size: 9px; font-weight: 500; letter-spacing: 0.09em; text-transform: uppercase; color: rgba(160,140,220,0.40); margin-bottom: 6px; }
+       .detail-text { font-size: 14px; font-weight: 300; line-height: 1.65; color: rgba(180,170,220,0.75); }
+       .drawer-empty { padding: 40px 20px; text-align: center; font-size: 14px; font-weight: 300; color: rgba(140,130,180,0.45); font-style: italic; line-height: 1.6; }
       `}</style>
 
       <div className="bg-orbs">
@@ -602,82 +592,51 @@ export default function Chat() {
       )}
 
       {showDrawer && (
-  <>
-    <div className="drawer-overlay" onClick={() => { setShowDrawer(false); setExpandedSession(null); }} />
-    <div className="drawer">
-      <div className="drawer-header">
-        {expandedSession ? (
-          <button className="drawer-back" onClick={() => setExpandedSession(null)}>← Back</button>
-        ) : (
-          <div className="drawer-title">Your sessions</div>
-        )}
-        <button className="drawer-close" onClick={() => { setShowDrawer(false); setExpandedSession(null); }}>×</button>
-      </div>
-
-      {!expandedSession ? (
-        <div className="drawer-list-full">
-          {pastSessions.length === 0 ? (
-            <div className="drawer-empty">
-              Complete a session with Grace to see your history here.
-            </div>
-          ) : (
-            pastSessions.map((s) => {
-              const date = new Date(s.started_at).toLocaleDateString("en-GB", { day: "numeric", month: "short" });
-              return (
-                <div key={s.id} className="session-item" onClick={() => setExpandedSession(s.id)}>
-                  <div className="session-item-header">
-                    <span className="session-number">Session {s.session_number}</span>
-                    <span className="session-date">{date}</span>
-                  </div>
-                  <div className="session-headline">
-                    {s.headline || (s.is_complete ? "Session " + s.session_number : "Incomplete session")}
-                  </div>
-                </div>
-              );
-            })
-          )}
-        </div>
-      ) : (() => {
-        const s = pastSessions.find(x => x.id === expandedSession);
-        if (!s) return null;
+        <>
+          <div className="drawer-overlay" onClick={() => { setShowDrawer(false); setExpandedSession(null); }} style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(8,8,18,0.70)", zIndex: 10, backdropFilter: "blur(4px)" }} />
+          <div className="drawer">
+       <div className="drawer-list-panel">
+    <div className="drawer-header">
+      <div className="drawer-title">Sessions</div>
+      <button className="drawer-close" onClick={() => { setShowDrawer(false); setExpandedSession(null); }}>×</button>
+    </div>
+    <div className="drawer-list-full">
+      {pastSessions.map((s) => {
+        const date = new Date(s.started_at).toLocaleDateString("en-GB", { day: "numeric", month: "short" });
         return (
-          <div className="drawer-detail-full">
-            <div className="detail-headline">
-              {s.headline || "Session " + s.session_number}
+          <div key={s.id} className={`session-item${expandedSession === s.id ? " selected" : ""}`} onClick={() => setExpandedSession(s.id)}>
+            <div className="session-item-header">
+              <span className="session-number">#{s.session_number}</span>
+              <span className="session-date">{date}</span>
             </div>
-            {!s.is_complete && (
-              <div className="detail-incomplete">session ended without summary</div>
-            )}
-            {s.summary && (
-              <div className="detail-section">
-                <div className="detail-label">What you worked through</div>
-                <div className="detail-text">{s.summary}</div>
-              </div>
-            )}
-            {s.action_taken && (
-              <div className="detail-section">
-                <div className="detail-label">What you decided</div>
-                <div className="detail-text">{s.action_taken}</div>
-              </div>
-            )}
-            {s.growth_signals?.length > 0 && (
-              <div className="detail-section">
-                <div className="detail-label">Growth signals</div>
-                <div className="detail-text">{s.growth_signals.join(" · ")}</div>
-              </div>
-            )}
-            {s.themes?.length > 0 && (
-              <div className="detail-section">
-                <div className="detail-label">Themes</div>
-                <div className="detail-text">{s.themes.join(", ")}</div>
-              </div>
-            )}
+            <div className="session-headline">
+              {s.headline || (s.is_complete ? "Session " + s.session_number : "Incomplete")}
+            </div>
           </div>
         );
-      })()}
+      })}
     </div>
-  </>
-)}
+  </div>
+
+  {expandedSession && (() => {
+    const s = pastSessions.find(x => x.id === expandedSession);
+    if (!s) return null;
+    return (
+      <div className="drawer-detail-panel-outer">
+        <div className="drawer-detail-full">
+          <div className="detail-headline">{s.headline || "Session " + s.session_number}</div>
+          {s.summary && <div className="detail-section"><div className="detail-label">What you worked through</div><div className="detail-text">{s.summary}</div></div>}
+          {s.action_taken && <div className="detail-section"><div className="detail-label">What you decided</div><div className="detail-text">{s.action_taken}</div></div>}
+          {s.growth_signals?.length > 0 && <div className="detail-section"><div className="detail-label">Growth signals</div><div className="detail-text">{s.growth_signals.join(" · ")}</div></div>}
+          {s.themes?.length > 0 && <div className="detail-section"><div className="detail-label">Themes</div><div className="detail-text">{s.themes.join(", ")}</div></div>}
+        </div>
+      </div>
+    );
+  })()}
+          </div>
+        </>
+      )}
+
       <div className="messages">
         {messages.map((msg, i) => {
           if (msg === "__SESSION_END__") {
