@@ -1,24 +1,20 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { systemPrompt } from "./system-prompt";
+import { createClient } from "@supabase/supabase-js";
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
 
 export async function POST(req: Request) {
   try {
-    const { messages, userProfile, sessionNumber, sessionMemory, isNewSession, twoHourWarning, userId } = await req.json();
-
-if (profileUpdates?.suggestedAction && userId) {
-  const { createClient } = await import("@supabase/supabase-js");
-  const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  );
-  await supabase
-    .from("users")
-    .update({ last_session_action: profileUpdates.suggestedAction })
-    .eq("id", userId);
-}
-
+    const {
+      messages,
+      userProfile,
+      sessionNumber,
+      sessionMemory,
+      isNewSession,
+      twoHourWarning,
+      userId,
+    } = await req.json();
 
     // Ignore keep-alive pings silently
     const lastMessage = messages[messages.length - 1];
@@ -27,11 +23,8 @@ if (profileUpdates?.suggestedAction && userId) {
     }
 
     const memoryBlock = buildMemoryBlock(userProfile, sessionNumber);
-
-    // Build full prompt — session memory takes priority over regular memory block
     const contextBlock = sessionMemory || (memoryBlock ? memoryBlock : "");
 
-    // Add two hour warning to prompt if needed
     const twoHourBlock = twoHourWarning
       ? `\n\nSESSION TIME LIMIT: This user has been in active conversation for 2 hours. After your next response, gently close the session. Say something warm like: "We've covered a lot today. I think this is a good place to pause — take some time with what came up. I'll be here when you're ready. Want to stop here for today, or is there something else on your mind?" Then wait for their response. If they want to continue, honour that. If they say goodbye or indicate they're done, close warmly.`
       : "";
@@ -62,13 +55,28 @@ if (profileUpdates?.suggestedAction && userId) {
         ? response.content[0].text
         : "No response";
 
-    // Detect if Grace is closing the session naturally
     const sessionComplete = detectSessionClose(aiText);
 
     // Extract profile updates every 4 messages
     let profileUpdates = null;
     if (messages.length % 4 === 0 && messages.length > 0) {
       profileUpdates = await extractProfile(trimmedMessages, aiText, userProfile);
+    }
+
+    // Save suggested action immediately if detected
+    if (profileUpdates?.suggestedAction && userId) {
+      try {
+        const supabase = createClient(
+          process.env.NEXT_PUBLIC_SUPABASE_URL!,
+          process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+        );
+        await supabase
+          .from("users")
+          .update({ last_session_action: profileUpdates.suggestedAction })
+          .eq("id", userId);
+      } catch (e) {
+        console.error("Failed to save suggested action:", e);
+      }
     }
 
     return Response.json({ result: aiText, profileUpdates, sessionComplete });
@@ -139,8 +147,8 @@ Return a JSON object with ONLY new fields detected. Omit fields with no new info
   "relationshipFacts": ["array of NEW facts only"],
   "recurringThemes": ["array of NEW themes"],
   "growthSignals": ["array of growth signals detected"],
-"assessmentComplete": true or false or null,
-"suggestedAction": "the specific action or next step Grace most recently suggested to the user, if any — null if none detected"
+  "assessmentComplete": true or false or null,
+  "suggestedAction": "the specific action or next step Grace most recently suggested to the user, if any — null if none detected"
 }
 
 Return ONLY valid JSON. No explanation. No markdown backticks.`,
@@ -156,21 +164,16 @@ Return ONLY valid JSON. No explanation. No markdown backticks.`,
     const cleaned = raw.replace(/```json|```/g, "").trim();
     const parsed = JSON.parse(cleaned);
 
-// Save suggested action to users table immediately
-if (parsed.suggestedAction && userId) {
-  const { supabase } = await import("../../../lib/supabase");
-  await supabase
-    .from("users")
-    .update({ last_session_action: parsed.suggestedAction })
-    .eq("id", userId);
-}
+    const filtered: any = {};
+    Object.entries(parsed).forEach(([key, value]) => {
       if (value !== null && value !== undefined) {
         if (Array.isArray(value) && value.length > 0) {
           filtered[key] = value;
         } else if (!Array.isArray(value)) {
           filtered[key] = value;
         }
-      };
+      }
+    });
 
     return Object.keys(filtered).length > 0 ? filtered : null;
   } catch (e) {
