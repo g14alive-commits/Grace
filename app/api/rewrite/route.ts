@@ -133,7 +133,7 @@ Message to scan:
 
 Scan this message and respond in the exact structure specified.`;
 
-REPLY MODE — they received this message:
+REPLY MODE - they received this message:
 "${receivedMessage.trim()}"
 
 And they want to reply with:
