@@ -602,114 +602,82 @@ export default function Chat() {
       )}
 
       {showDrawer && (
-        <>
-          <div className="drawer-overlay" onClick={() => setShowDrawer(false)} />
-          <div className="drawer">
-            <div className="drawer-header">
-              <div className="drawer-title">Your sessions</div>
-              <button className="drawer-close" onClick={() => setShowDrawer(false)}>×</button>
+  <>
+    <div className="drawer-overlay" onClick={() => { setShowDrawer(false); setExpandedSession(null); }} />
+    <div className="drawer">
+      <div className="drawer-header">
+        {expandedSession ? (
+          <button className="drawer-back" onClick={() => setExpandedSession(null)}>← Back</button>
+        ) : (
+          <div className="drawer-title">Your sessions</div>
+        )}
+        <button className="drawer-close" onClick={() => { setShowDrawer(false); setExpandedSession(null); }}>×</button>
+      </div>
+
+      {!expandedSession ? (
+        <div className="drawer-list-full">
+          {pastSessions.length === 0 ? (
+            <div className="drawer-empty">
+              Complete a session with Grace to see your history here.
             </div>
-            <div className="drawer-body">
-              {pastSessions.length === 0 ? (
-                <div className="drawer-empty">
-                  Your session summaries will appear here after you complete a session with Grace.
+          ) : (
+            pastSessions.map((s) => {
+              const date = new Date(s.started_at).toLocaleDateString("en-GB", { day: "numeric", month: "short" });
+              return (
+                <div key={s.id} className="session-item" onClick={() => setExpandedSession(s.id)}>
+                  <div className="session-item-header">
+                    <span className="session-number">Session {s.session_number}</span>
+                    <span className="session-date">{date}</span>
+                  </div>
+                  <div className="session-headline">
+                    {s.headline || (s.is_complete ? "Session " + s.session_number : "Incomplete session")}
+                  </div>
                 </div>
-              ) : (
-                <>
-                  <div className="drawer-list">
-                    {pastSessions.map((s) => {
-                      const date = new Date(s.started_at).toLocaleDateString("en-GB", {
-                        day: "numeric", month: "short"
-                      });
-                      return (
-                        <div
-                          key={s.id}
-                          className={`session-item${expandedSession === s.id ? " selected" : ""}`}
-                          onClick={() => setExpandedSession(s.id)}
-                        >
-                          <div className="session-item-header">
-                            <span className="session-number">#{s.session_number}</span>
-                            <span className="session-date">{date}</span>
-                          </div>
-                          <div className="session-headline">
-                            {s.headline || (s.is_complete ? "Session " + s.session_number : "Incomplete")}
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-
-                  <div className="drawer-detail-panel">
-                    {!expandedSession ? (
-                      <div className="detail-empty">
-                        Tap a session to see what you worked through.
-                      </div>
-                    ) : (() => {
-                      const s = pastSessions.find(x => x.id === expandedSession);
-                      if (!s) return null;
-                      return (
-                        <>
-                          {(s.headline || s.action_taken) && (
-                            <div className="detail-headline">
-                              {s.headline || "Session " + s.session_number}
-```
-
-**Also fix "nervous system" in the summary** — that's clinical language. Add to the session summary prompt in `app\api\session\route.ts`:
-
-Find the content prompt and add:
-```
-
-```
-
-Save and push:
-```
-git add .
-git commit -m "fix session counter drawer width headline"
-git push
-                            </div>
-                          )}
-                          {!s.is_complete && (
-                            <div className="detail-section">
-                              <div className="detail-text" style={{ color: "rgba(160,140,220,0.40)", fontSize: "11px" }}>
-                                session ended without summary
-                              </div>
-                            </div>
-                          )}
-                          {s.summary && (
-                            <div className="detail-section">
-                              <div className="detail-label">What you worked through</div>
-                              <div className="detail-text">{s.summary}</div>
-                            </div>
-                          )}
-                          {s.action_taken && (
-                            <div className="detail-section">
-                              <div className="detail-label">What you decided</div>
-                              <div className="detail-text">{s.action_taken}</div>
-                            </div>
-                          )}
-                          {s.growth_signals?.length > 0 && (
-                            <div className="detail-section">
-                              <div className="detail-label">Growth signals</div>
-                              <div className="detail-text">{s.growth_signals.join(" · ")}</div>
-                            </div>
-                          )}
-                          {s.themes?.length > 0 && (
-                            <div className="detail-section">
-                              <div className="detail-label">Themes</div>
-                              <div className="detail-text">{s.themes.join(", ")}</div>
-                            </div>
-                          )}
-                        </>
-                      );
-                    })()}
-                  </div>
-                </>
-              )}
+              );
+            })
+          )}
+        </div>
+      ) : (() => {
+        const s = pastSessions.find(x => x.id === expandedSession);
+        if (!s) return null;
+        return (
+          <div className="drawer-detail-full">
+            <div className="detail-headline">
+              {s.headline || "Session " + s.session_number}
             </div>
+            {!s.is_complete && (
+              <div className="detail-incomplete">session ended without summary</div>
+            )}
+            {s.summary && (
+              <div className="detail-section">
+                <div className="detail-label">What you worked through</div>
+                <div className="detail-text">{s.summary}</div>
+              </div>
+            )}
+            {s.action_taken && (
+              <div className="detail-section">
+                <div className="detail-label">What you decided</div>
+                <div className="detail-text">{s.action_taken}</div>
+              </div>
+            )}
+            {s.growth_signals?.length > 0 && (
+              <div className="detail-section">
+                <div className="detail-label">Growth signals</div>
+                <div className="detail-text">{s.growth_signals.join(" · ")}</div>
+              </div>
+            )}
+            {s.themes?.length > 0 && (
+              <div className="detail-section">
+                <div className="detail-label">Themes</div>
+                <div className="detail-text">{s.themes.join(", ")}</div>
+              </div>
+            )}
           </div>
-        </>
-      )}
-
+        );
+      })()}
+    </div>
+  </>
+)}
       <div className="messages">
         {messages.map((msg, i) => {
           if (msg === "__SESSION_END__") {
