@@ -170,8 +170,7 @@ if (parsed.suggestedAction && userId) {
         } else if (!Array.isArray(value)) {
           filtered[key] = value;
         }
-      }
-    });
+      };
 
     return Object.keys(filtered).length > 0 ? filtered : null;
   } catch (e) {
