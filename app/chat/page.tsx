@@ -197,7 +197,8 @@ export default function Chat() {
   };
 
   const handleSessionClose = async (msgs: string[], uId: string, sId: string) => {
-    try {
+  console.log("handleSessionClose called", { sId, uId, msgCount: msgs.length });
+  try {
       const response = await fetch("/api/session", {
         method: "POST",
         headers: { "Content-Type": "application/json" },

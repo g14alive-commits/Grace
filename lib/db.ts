@@ -8,7 +8,6 @@ export async function getOrCreateUser(userId: string, email: string) {
     .single();
 
   if (error && error.code === "PGRST116") {
-    // User doesn't exist yet — create them
     const { data: newUser } = await supabase
       .from("users")
       .insert({ id: userId, email })
@@ -60,18 +59,12 @@ export async function saveConversation(userId: string, messages: string[]) {
   if (existing) {
     await supabase
       .from("conversations")
-      .update({
-        messages,
-        updated_at: new Date().toISOString(),
-      })
+      .update({ messages, updated_at: new Date().toISOString() })
       .eq("id", existing.id);
   } else {
     await supabase
       .from("conversations")
-      .insert({
-        user_id: userId,
-        messages,
-      });
+      .insert({ user_id: userId, messages });
   }
 }
 
@@ -91,7 +84,7 @@ export function profileFromDb(dbUser: any) {
 
 export async function getActiveSession(userId: string) {
   const threeHoursAgo = new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString();
-  
+
   const { data } = await supabase
     .from("sessions")
     .select("*")
@@ -101,7 +94,7 @@ export async function getActiveSession(userId: string) {
     .order("started_at", { ascending: false })
     .limit(1)
     .single();
-  
+
   return data;
 }
 
@@ -138,6 +131,7 @@ export async function closeSession(
   actionTaken: string,
   growthSignals: string[]
 ) {
+  // Update session record
   await supabase
     .from("sessions")
     .update({
@@ -151,6 +145,13 @@ export async function closeSession(
     })
     .eq("id", sessionId);
 
+  // Update user's quick access fields and increment session count
+  const { data: currentUser } = await supabase
+    .from("users")
+    .select("session_count")
+    .eq("id", userId)
+    .single();
+
   await supabase
     .from("users")
     .update({
@@ -158,10 +159,11 @@ export async function closeSession(
       last_session_themes: themes,
       last_session_action: actionTaken,
       last_session_key_words: keyWords,
+      session_count: (currentUser?.session_count || 0) + 1,
+      updated_at: new Date().toISOString(),
     })
     .eq("id", userId);
 }
-
 
 export function buildSessionMemoryBlock(dbUser: any): string {
   if (!dbUser?.last_session_summary) return "";
