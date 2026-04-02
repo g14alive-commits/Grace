@@ -92,7 +92,6 @@ export default function Chat() {
           startConversation(profile, dbUserData, activeSession.session_number, false);
         }
       } else {
-        const newSessionNumber = (dbUserData?.session_count || 0) + 1;
         setSessionNumber(newSessionNumber);
         const newSession = await createSession(user.id, newSessionNumber);
         if (newSession) {
@@ -115,6 +114,14 @@ export default function Chat() {
       .order("started_at", { ascending: false });
     if (data) setPastSessions(data);
   };
+
+const { count } = await supabase
+  .from("sessions")
+  .select("*", { count: "exact", head: true })
+  .eq("user_id", user.id);
+
+const newSessionNumber = (count || 0) + 1;
+setSessionNumber(newSessionNumber);
 
   useEffect(() => {
     if (!sessionId || messages.length === 0) return;
@@ -217,13 +224,14 @@ export default function Chat() {
       }
 
       await closeSession(
-        sId, uId,
-        data.summary || "",
-        data.themes || [],
-        data.key_words || [],
-        data.action_taken || "",
-        data.growth_signals || []
-      );
+  sId, uId,
+  data.summary || "",
+  data.themes || [],
+  data.key_words || [],
+  data.action_taken || "",
+  data.growth_signals || [],
+  data.headline || ""
+);
 
       localStorage.removeItem(`grace-session-${sId}`);
       setSessionId(null);
@@ -535,8 +543,8 @@ export default function Chat() {
 
         .drawer-list { width: 42%; border-right: 1px solid rgba(255,255,255,0.06); overflow-y: auto; }
         .drawer-list::-webkit-scrollbar { width: 0; }
-
-        .drawer-detail-panel { flex: 1; overflow-y: auto; padding: 16px; }
+        
+        .drawer-detail-panel { flex: 1; overflow-y: auto; padding: 20px 18px; }
         .drawer-detail-panel::-webkit-scrollbar { width: 0; }
 
         .session-item { padding: 12px 14px; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer; transition: background 0.2s; }
@@ -626,7 +634,7 @@ export default function Chat() {
                             <span className="session-date">{date}</span>
                           </div>
                           <div className="session-headline">
-                            {s.headline || s.action_taken?.substring(0, 40) || (s.is_complete ? "Session" : "Incomplete")}
+                            {s.headline || (s.is_complete ? "Session " + s.session_number : "Incomplete")}
                           </div>
                         </div>
                       );
@@ -645,7 +653,21 @@ export default function Chat() {
                         <>
                           {(s.headline || s.action_taken) && (
                             <div className="detail-headline">
-                              {s.headline || s.action_taken}
+                              {s.headline || "Session " + s.session_number}
+```
+
+**Also fix "nervous system" in the summary** — that's clinical language. Add to the session summary prompt in `app\api\session\route.ts`:
+
+Find the content prompt and add:
+```
+
+```
+
+Save and push:
+```
+git add .
+git commit -m "fix session counter drawer width headline"
+git push
                             </div>
                           )}
                           {!s.is_complete && (
