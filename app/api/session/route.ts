@@ -30,7 +30,7 @@ Return this exact JSON:
   "key_words": ["significant phrase the user said"],
   "action_taken": "the one action or insight Grace anchored at the close",
   "growth_signals": ["any positive shifts detected"],
-  "closing_message": "A warm closing message from Grace to the user. Start with what was covered today in 1-2 plain sentences. Then say the one thing they should take with them (the action). End with something warm and human like a real therapist would. Address them by name if name is provided: ${userName || ""}. Do not use clinical language. Keep it under 80 words total."
+  "closing_message": "A warm closing message from Grace. Follow this structure exactly — no more: (1) One plain sentence on why they came today. (2) One key insight from the session — only include if there was a genuinely meaningful one, skip it entirely if not. (3) The one action or decision they made. End with one warm human line. Address them by name if provided: ${userName || ""}. No clinical language. No lists. No bullet points. Under 80 words total. Should feel like a real person closing a real conversation."
 }`,
         },
       ],
