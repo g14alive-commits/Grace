@@ -92,6 +92,13 @@ export default function Chat() {
           startConversation(profile, dbUserData, activeSession.session_number, false);
         }
       } else {
+        // Count existing sessions to get correct session number
+        const { count: sessionCount } = await supabase
+          .from("sessions")
+          .select("*", { count: "exact", head: true })
+          .eq("user_id", user.id);
+
+        const newSessionNumber = (sessionCount || 0) + 1;
         setSessionNumber(newSessionNumber);
         const newSession = await createSession(user.id, newSessionNumber);
         if (newSession) {
@@ -100,7 +107,6 @@ export default function Chat() {
         }
         startConversation(profile, dbUserData, newSessionNumber, true);
       }
-
       setAuthLoading(false);
     });
   }, []);
@@ -114,14 +120,6 @@ export default function Chat() {
       .order("started_at", { ascending: false });
     if (data) setPastSessions(data);
   };
-
-const { count } = await supabase
-  .from("sessions")
-  .select("*", { count: "exact", head: true })
-  .eq("user_id", user.id);
-
-const newSessionNumber = (count || 0) + 1;
-setSessionNumber(newSessionNumber);
 
   useEffect(() => {
     if (!sessionId || messages.length === 0) return;
