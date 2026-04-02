@@ -663,15 +663,6 @@ export default function Chat() {
 
         .tab.active .tab-label { color: rgba(200,180,255,0.90); }
 
-        .history-btn {
-          width: 32px; height: 32px; border-radius: 50%;
-          background: rgba(255,255,255,0.06);
-          border: 1px solid rgba(255,255,255,0.12);
-          cursor: pointer; display: flex; align-items: center;
-          justify-content: center; flex-shrink: 0;
-          color: rgba(200,180,255,0.70); transition: all 0.2s;
-        }
-
         .history-btn:active { background: rgba(255,255,255,0.10); transform: scale(0.93); }
 
         .drawer-overlay {
@@ -790,11 +781,6 @@ export default function Chat() {
         </div>
 
         <div className="header">
-          <button className="history-btn" onClick={() => { setShowDrawer(true); loadPastSessions(userId!); }}>
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-            </svg>
-          </button>
           <div className="avatar">G</div>
           <div className="header-text">
             <div className="header-name">Grace</div>
@@ -885,6 +871,26 @@ export default function Chat() {
         )}
 
         <div className="messages">
+  {pastSessions.length > 0 && (
+    <div
+      onClick={() => setShowDrawer(true)}
+      style={{
+        textAlign: "center", padding: "4px 0 8px",
+        cursor: "pointer",
+      }}
+    >
+      <span style={{
+        fontSize: "11px", fontWeight: 400,
+        letterSpacing: "0.06em", textTransform: "uppercase",
+        color: "rgba(160,140,220,0.35)",
+        borderBottom: "1px solid rgba(160,140,220,0.20)",
+        paddingBottom: "2px",
+      }}>
+        session history
+      </span>
+    </div>
+  )}
+
           {messages.map((msg, i) => {
             const isUser = msg.startsWith("You:");
             const content = msg
