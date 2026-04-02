@@ -5,14 +5,20 @@ const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
 
 export async function POST(req: Request) {
   try {
-    const {
-      messages,
-      userProfile,
-      sessionNumber,
-      sessionMemory,
-      isNewSession,
-      twoHourWarning,
-    } = await req.json();
+    const { messages, userProfile, sessionNumber, sessionMemory, isNewSession, twoHourWarning, userId } = await req.json();
+
+if (profileUpdates?.suggestedAction && userId) {
+  const { createClient } = await import("@supabase/supabase-js");
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  );
+  await supabase
+    .from("users")
+    .update({ last_session_action: profileUpdates.suggestedAction })
+    .eq("id", userId);
+}
+
 
     // Ignore keep-alive pings silently
     const lastMessage = messages[messages.length - 1];
@@ -39,7 +45,7 @@ export async function POST(req: Request) {
     const trimmedMessages = messages.slice(-MAX_MESSAGES);
 
     const response = await client.messages.create({
-      model: "claude-sonnet-4-5",
+      model: "claude-haiku-4-5-20251001",
       max_tokens: 500,
       system: [
         {
@@ -133,7 +139,8 @@ Return a JSON object with ONLY new fields detected. Omit fields with no new info
   "relationshipFacts": ["array of NEW facts only"],
   "recurringThemes": ["array of NEW themes"],
   "growthSignals": ["array of growth signals detected"],
-  "assessmentComplete": true or false or null
+"assessmentComplete": true or false or null,
+"suggestedAction": "the specific action or next step Grace most recently suggested to the user, if any — null if none detected"
 }
 
 Return ONLY valid JSON. No explanation. No markdown backticks.`,
@@ -149,8 +156,14 @@ Return ONLY valid JSON. No explanation. No markdown backticks.`,
     const cleaned = raw.replace(/```json|```/g, "").trim();
     const parsed = JSON.parse(cleaned);
 
-    const filtered: any = {};
-    Object.entries(parsed).forEach(([key, value]) => {
+// Save suggested action to users table immediately
+if (parsed.suggestedAction && userId) {
+  const { supabase } = await import("../../../lib/supabase");
+  await supabase
+    .from("users")
+    .update({ last_session_action: parsed.suggestedAction })
+    .eq("id", userId);
+}
       if (value !== null && value !== undefined) {
         if (Array.isArray(value) && value.length > 0) {
           filtered[key] = value;

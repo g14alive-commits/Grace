@@ -172,6 +172,13 @@ export default function Chat() {
     try {
       const sessionMemory = isNewSession ? buildSessionMemoryBlock(dbUserData) : "";
       const response = await fetch("/api/chat", {
+        body: JSON.stringify({
+        messages: toApiMessages(updatedMessages),
+        userProfile,
+        sessionNumber,
+        userId, // add this
+        }),
+
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -258,6 +265,13 @@ if (isClosing && sessionId && userId) {
 
     try {
       const response = await fetch("/api/chat", {
+
+body: JSON.stringify({
+  messages: toApiMessages(updatedMessages),
+  userProfile,
+  sessionNumber,
+  userId, // add this
+}),
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

@@ -7,9 +7,15 @@ import { supabase } from "../../lib/supabase";
 export default function Profile() {
   const [dbUser, setDbUser] = useState<any>(null);
   const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [newEmail, setNewEmail] = useState("");
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [showChangeEmail, setShowChangeEmail] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showRemoveConfirm, setShowRemoveConfirm] = useState(false);
+  const [showAbout, setShowAbout] = useState(false);
   const [vh, setVh] = useState(0);
   const router = useRouter();
 
@@ -23,6 +29,7 @@ export default function Profile() {
   useEffect(() => {
     supabase.auth.getSession().then(async ({ data }) => {
       if (!data.session) { router.replace("/login"); return; }
+      setEmail(data.session.user.email || "");
       const { data: user } = await supabase
         .from("users")
         .select("*")
@@ -36,17 +43,58 @@ export default function Profile() {
     });
   }, []);
 
-  const handleSave = async () => {
+  const handleSaveName = async () => {
     setSaving(true);
     const { data } = await supabase.auth.getSession();
     if (!data.session) return;
-    await supabase
-      .from("users")
-      .update({ name: name.trim() })
-      .eq("id", data.session.user.id);
+    await supabase.from("users").update({ name: name.trim() }).eq("id", data.session.user.id);
     setSaved(true);
     setSaving(false);
     setTimeout(() => setSaved(false), 2000);
+  };
+
+  const handleChangeEmail = async () => {
+    if (!newEmail.trim()) return;
+    const { error } = await supabase.auth.updateUser({ email: newEmail.trim() });
+    if (!error) {
+      alert("Confirmation sent to your new email. Please check your inbox.");
+      setShowChangeEmail(false);
+      setNewEmail("");
+    }
+  };
+
+  const handleRemoveHistory = async () => {
+    const { data } = await supabase.auth.getSession();
+    if (!data.session) return;
+    const userId = data.session.user.id;
+    await supabase.from("conversations").delete().eq("user_id", userId);
+    await supabase.from("sessions").delete().eq("user_id", userId);
+    await supabase.from("users").update({
+      user_pattern: null,
+      partner_pattern: null,
+      relationship_facts: [],
+      recurring_themes: [],
+      growth_signals: [],
+      last_session_summary: null,
+      last_session_action: null,
+      last_session_themes: [],
+      last_session_key_words: [],
+      assessment_complete: false,
+      session_count: 0,
+    }).eq("id", userId);
+    localStorage.clear();
+    setShowRemoveConfirm(false);
+    router.replace("/chat");
+  };
+
+  const handleDeleteAccount = async () => {
+    const { data } = await supabase.auth.getSession();
+    if (!data.session) return;
+    const userId = data.session.user.id;
+    await supabase.from("users").delete().eq("id", userId);
+    await supabase.auth.signOut();
+    localStorage.clear();
+    router.replace("/login");
   };
 
   const handleSignOut = async () => {
@@ -73,7 +121,6 @@ export default function Profile() {
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap');
 
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-
         html, body { height: 100%; overflow: hidden; background: #0d0e1a; -webkit-font-smoothing: antialiased; }
 
         :root {
@@ -86,6 +133,7 @@ export default function Profile() {
           --accent: rgba(160,120,240,0.90);
           --divider: rgba(255,255,255,0.07);
           --header-bg: rgba(13,14,26,0.85);
+          --danger: rgba(240,80,80,0.80);
         }
 
         .page {
@@ -100,9 +148,7 @@ export default function Profile() {
           pointer-events: none; z-index: 0;
         }
 
-        .orb {
-          position: absolute; border-radius: 50%; filter: blur(60px);
-        }
+        .orb { position: absolute; border-radius: 50%; filter: blur(60px); }
 
         .orb1 {
           width: 300px; height: 300px; top: -60px; right: -40px;
@@ -116,15 +162,8 @@ export default function Profile() {
           animation: drift2 24s ease-in-out infinite;
         }
 
-        @keyframes drift1 {
-          0%,100% { transform: translate(0,0); }
-          50% { transform: translate(-15px,20px); }
-        }
-
-        @keyframes drift2 {
-          0%,100% { transform: translate(0,0); }
-          50% { transform: translate(20px,-15px); }
-        }
+        @keyframes drift1 { 0%,100% { transform: translate(0,0); } 50% { transform: translate(-15px,20px); } }
+        @keyframes drift2 { 0%,100% { transform: translate(0,0); } 50% { transform: translate(20px,-15px); } }
 
         .header {
           flex-shrink: 0; position: relative; z-index: 2;
@@ -155,28 +194,29 @@ export default function Profile() {
         .greeting {
           font-family: 'Cormorant Garamond', serif;
           font-size: 32px; font-weight: 300;
-          color: var(--text-primary); margin-bottom: 6px;
-          line-height: 1.2;
+          color: var(--text-primary); margin-bottom: 6px; line-height: 1.2;
         }
 
         .greeting-sub {
           font-size: 14px; font-weight: 300;
-          color: var(--text-muted); margin-bottom: 36px;
+          color: var(--text-muted); margin-bottom: 32px;
         }
-
-        .name-section { margin-bottom: 32px; }
 
         .field-label {
           font-size: 10px; font-weight: 500; letter-spacing: 0.10em;
           text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px;
         }
 
+        .name-row {
+          display: flex; gap: 10px; align-items: center; margin-bottom: 28px;
+        }
+
         .name-input {
-          width: 100%;
+          flex: 1;
           background: var(--surface); border: 1px solid var(--border);
-          border-radius: 14px; padding: 14px 18px;
+          border-radius: 14px; padding: 13px 16px;
           font-family: 'DM Sans', sans-serif;
-          font-size: 17px; font-weight: 300; color: var(--text-primary);
+          font-size: 16px; font-weight: 300; color: var(--text-primary);
           outline: none; transition: border-color 0.2s;
         }
 
@@ -184,49 +224,26 @@ export default function Profile() {
         .name-input::placeholder { color: var(--text-muted); }
 
         .save-btn {
-          margin-top: 10px;
-          padding: 10px 24px; border-radius: 50px;
+          padding: 13px 20px; border-radius: 14px;
           background: rgba(160,120,240,0.12);
           border: 1px solid rgba(160,120,240,0.25);
           color: rgba(200,180,255,0.90);
           font-family: 'DM Sans', sans-serif;
           font-size: 13px; font-weight: 400;
-          cursor: pointer; transition: all 0.2s;
+          cursor: pointer; transition: all 0.2s; white-space: nowrap;
         }
 
-        .save-btn:disabled { opacity: 0.35; cursor: default; }
+        .save-btn:disabled { opacity: 0.30; cursor: default; }
         .save-btn:not(:disabled):active { transform: scale(0.97); }
-
-        .stats-row {
-          display: flex; gap: 12px; margin-bottom: 32px;
-        }
-
-        .stat-card {
-          flex: 1; background: var(--surface);
-          border: 1px solid var(--border); border-radius: 18px;
-          padding: 18px 16px; text-align: center;
-        }
-
-        .stat-value {
-          font-family: 'Cormorant Garamond', serif;
-          font-size: 36px; font-weight: 300;
-          color: var(--text-primary); line-height: 1; margin-bottom: 6px;
-        }
-
-        .stat-label {
-          font-size: 11px; font-weight: 300; color: var(--text-muted);
-          letter-spacing: 0.04em;
-        }
 
         .action-card {
           background: var(--surface); border: 1px solid var(--border);
-          border-radius: 18px; padding: 20px;
-          margin-bottom: 32px;
+          border-radius: 18px; padding: 18px 20px; margin-bottom: 16px;
         }
 
-        .action-card-label {
+        .action-label {
           font-size: 10px; font-weight: 500; letter-spacing: 0.10em;
-          text-transform: uppercase; color: rgba(160,140,220,0.55);
+          text-transform: uppercase; color: rgba(160,140,220,0.50);
           margin-bottom: 10px;
         }
 
@@ -241,11 +258,184 @@ export default function Profile() {
           color: var(--text-muted); font-style: italic;
         }
 
+        .stat-card {
+          background: var(--surface); border: 1px solid var(--border);
+          border-radius: 18px; padding: 18px 20px;
+          margin-bottom: 28px; display: flex; align-items: center;
+          justify-content: space-between;
+        }
+
+        .stat-label-text {
+          font-size: 14px; font-weight: 300; color: var(--text-secondary);
+        }
+
+        .stat-value {
+          font-family: 'DM Sans', sans-serif;
+          font-size: 24px; font-weight: 400; color: var(--text-primary);
+        }
+
+        .divider {
+          height: 1px; background: var(--divider); margin: 4px 0 24px;
+        }
+
+        .section-title {
+          font-size: 10px; font-weight: 500; letter-spacing: 0.10em;
+          text-transform: uppercase; color: var(--text-muted); margin-bottom: 14px;
+        }
+
+        .about-card {
+          background: var(--surface); border: 1px solid var(--border);
+          border-radius: 18px; overflow: hidden; margin-bottom: 28px;
+        }
+
+        .about-row {
+          padding: 16px 20px;
+          display: flex; align-items: center; justify-content: space-between;
+          cursor: pointer; transition: background 0.2s;
+          border-bottom: 1px solid var(--divider);
+        }
+
+        .about-row:last-child { border-bottom: none; }
+        .about-row:active { background: rgba(255,255,255,0.03); }
+
+        .about-row-label {
+          font-size: 15px; font-weight: 300; color: var(--text-primary);
+        }
+
+        .about-row-arrow {
+          font-size: 12px; color: var(--text-muted);
+        }
+
+        .about-content {
+          padding: 0 20px 20px;
+          font-size: 14px; font-weight: 300; line-height: 1.70;
+          color: var(--text-secondary);
+        }
+
+        .account-card {
+          background: var(--surface); border: 1px solid var(--border);
+          border-radius: 18px; overflow: hidden; margin-bottom: 12px;
+        }
+
+        .account-row {
+          padding: 16px 20px;
+          border-bottom: 1px solid var(--divider);
+        }
+
+        .account-row:last-child { border-bottom: none; }
+
+        .account-row-label {
+          font-size: 10px; font-weight: 500; letter-spacing: 0.08em;
+          text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px;
+        }
+
+        .account-row-value {
+          font-size: 15px; font-weight: 300; color: var(--text-secondary);
+        }
+
+        .change-link {
+          font-size: 13px; font-weight: 300;
+          color: rgba(160,140,220,0.70);
+          background: none; border: none;
+          cursor: pointer; padding: 0; margin-top: 4px;
+          display: block;
+        }
+
+        .email-input {
+          width: 100%; margin-top: 10px;
+          background: rgba(255,255,255,0.06);
+          border: 1px solid rgba(255,255,255,0.12);
+          border-radius: 10px; padding: 10px 14px;
+          font-family: 'DM Sans', sans-serif;
+          font-size: 14px; font-weight: 300; color: var(--text-primary);
+          outline: none;
+        }
+
+        .email-input:focus { border-color: rgba(160,120,240,0.45); }
+
+        .confirm-btn {
+          margin-top: 8px; padding: 9px 18px; border-radius: 10px;
+          background: rgba(160,120,240,0.12);
+          border: 1px solid rgba(160,120,240,0.25);
+          color: rgba(200,180,255,0.90);
+          font-family: 'DM Sans', sans-serif;
+          font-size: 13px; cursor: pointer;
+        }
+
+        .danger-card {
+          background: var(--surface); border: 1px solid var(--border);
+          border-radius: 18px; overflow: hidden; margin-bottom: 40px;
+        }
+
+        .danger-row {
+          padding: 16px 20px;
+          border-bottom: 1px solid var(--divider);
+          cursor: pointer; transition: background 0.2s;
+        }
+
+        .danger-row:last-child { border-bottom: none; }
+        .danger-row:active { background: rgba(240,80,80,0.05); }
+
+        .danger-label {
+         font-size: 15px; font-weight: 300; color: rgba(180,170,220,0.55);
+        }
+
+        .danger-sub {
+          font-size: 12px; font-weight: 300; color: var(--text-muted);
+          margin-top: 3px;
+        }
+
+        .confirm-overlay {
+          position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+          background: rgba(10,10,20,0.88); z-index: 10;
+          display: flex; flex-direction: column;
+          justify-content: flex-end;
+          backdrop-filter: blur(8px);
+        }
+
+        .confirm-sheet {
+          background: #16142a;
+          border-top: 1px solid rgba(255,255,255,0.10);
+          border-radius: 24px 24px 0 0;
+          padding: 28px 24px 40px;
+        }
+
+        .confirm-title {
+          font-family: 'Cormorant Garamond', serif;
+          font-size: 22px; font-weight: 400;
+          color: var(--text-primary); margin-bottom: 10px;
+        }
+
+        .confirm-body {
+          font-size: 14px; font-weight: 300; line-height: 1.65;
+          color: var(--text-muted); margin-bottom: 24px;
+        }
+
+        .confirm-btns { display: flex; gap: 10px; }
+
+        .cancel-btn {
+          flex: 1; padding: 14px; border-radius: 14px;
+          background: rgba(255,255,255,0.06);
+          border: 1px solid rgba(255,255,255,0.12);
+          color: var(--text-secondary);
+          font-family: 'DM Sans', sans-serif;
+          font-size: 15px; cursor: pointer;
+        }
+
+        .danger-confirm-btn {
+          flex: 1; padding: 14px; border-radius: 14px;
+          background: rgba(240,80,80,0.12);
+          border: 1px solid rgba(240,80,80,0.25);
+          color: rgba(240,120,120,0.95);
+          font-family: 'DM Sans', sans-serif;
+          font-size: 15px; cursor: pointer;
+        }
+
         .tab-bar {
           flex-shrink: 0; position: relative; z-index: 3;
           background: rgba(13,14,26,0.92);
           border-top: 1px solid rgba(255,255,255,0.07);
-          backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+          backdrop-filter: blur(20px);
           display: flex; padding: 4px 0 6px;
         }
 
@@ -286,54 +476,137 @@ export default function Profile() {
               : "Your journey with Grace starts here."}
           </div>
 
-          <div className="name-section">
-            <div className="field-label">Your name</div>
+          {/* Name */}
+          <div className="field-label">Your name</div>
+          <div className="name-row">
             <input
               className="name-input"
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="What should Grace call you?"
             />
-            <div>
-              <button
-                className="save-btn"
-                onClick={handleSave}
-                disabled={saving || name.trim() === (dbUser?.name || "")}
-              >
-                {saved ? "Saved ✓" : saving ? "Saving..." : "Save"}
-              </button>
-            </div>
+            <button
+              className="save-btn"
+              onClick={handleSaveName}
+              disabled={saving || name.trim() === (dbUser?.name || "")}
+            >
+              {saved ? "Saved ✓" : saving ? "..." : "Save"}
+            </button>
           </div>
 
-          <div className="stats-row">
-            <div className="stat-card">
-              <div className="stat-value">{dbUser?.session_count || 0}</div>
-              <div className="stat-label">sessions</div>
-            </div>
-            <div className="stat-card">
-              <div className="stat-value">
-                {dbUser?.last_session_summary ? "✓" : "—"}
-              </div>
-              <div className="stat-label">last session</div>
-            </div>
-          </div>
-
-          {dbUser?.last_session_action && (
-            <div className="action-card">
-              <div className="action-card-label">Your last action from Grace</div>
+          {/* Last action */}
+          <div className="action-card">
+            <div className="action-label">Last action from Grace</div>
+            {dbUser?.last_session_action ? (
               <div className="action-text">"{dbUser.last_session_action}"</div>
-            </div>
-          )}
+            ) : (
+              <div className="action-empty">Complete a session with Grace and she'll leave you with something to work on.</div>
+            )}
+          </div>
 
-          {!dbUser?.last_session_action && (
-            <div className="action-card">
-              <div className="action-card-label">Your last action from Grace</div>
-              <div className="action-empty">
-                Complete a session with Grace and she'll leave you with something to work on.
+          {/* Sessions */}
+          <div className="stat-card">
+            <div className="stat-label-text">Sessions with Grace</div>
+            <div className="stat-value">{dbUser?.session_count || 0}</div>
+          </div>
+
+          <div className="divider" />
+
+          {/* About Attune */}
+          <div className="section-title">About Attune</div>
+          <div className="about-card">
+            <div className="about-row" onClick={() => setShowAbout(!showAbout)}>
+              <span className="about-row-label">What is Attune?</span>
+              <span className="about-row-arrow">{showAbout ? "▴" : "▾"}</span>
+            </div>
+            {showAbout && (
+              <div className="about-content">
+                Attune is a relationship intelligence platform built on the belief that relational hurt heals through relationship — not in isolation.<br /><br />
+                Grace is your AI relationship companion. Rewrite helps you communicate better in difficult moments.<br /><br />
+                Your conversations are private. We don't share your data with anyone.
+              </div>
+            )}
+            <div className="about-row" onClick={() => router.push("/privacy")}>
+              <span className="about-row-label">Privacy policy</span>
+              <span className="about-row-arrow">›</span>
+            </div>
+            <div className="about-row">
+              <span className="about-row-label">Version</span>
+              <span className="about-row-arrow" style={{ fontSize: "13px" }}>1.0 beta</span>
+            </div>
+          </div>
+
+          <div className="divider" />
+
+          {/* Account */}
+          <div className="section-title">Account</div>
+          <div className="account-card">
+            <div className="account-row">
+              <div className="account-row-label">Email</div>
+              <div className="account-row-value">{email}</div>
+              <button className="change-link" onClick={() => setShowChangeEmail(!showChangeEmail)}>
+                Change email
+              </button>
+              {showChangeEmail && (
+                <>
+                  <input
+                    className="email-input"
+                    type="email"
+                    value={newEmail}
+                    onChange={(e) => setNewEmail(e.target.value)}
+                    placeholder="New email address"
+                  />
+                  <button className="confirm-btn" onClick={handleChangeEmail}>
+                    Send confirmation
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
+
+          <div className="danger-card">
+            <div className="danger-row" onClick={() => setShowRemoveConfirm(true)}>
+              <div className="danger-label">Remove history</div>
+              <div className="danger-sub">Clears all conversations and resets Grace's memory. Your account stays.</div>
+            </div>
+            <div className="danger-row" onClick={() => setShowDeleteConfirm(true)}>
+              <div className="danger-label">Delete account</div>
+              <div className="danger-sub">Permanently deletes your account and all data.</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Remove history confirmation */}
+        {showRemoveConfirm && (
+          <div className="confirm-overlay" onClick={() => setShowRemoveConfirm(false)}>
+            <div className="confirm-sheet" onClick={(e) => e.stopPropagation()}>
+              <div className="confirm-title">Remove all history?</div>
+              <div className="confirm-body">
+                This will delete all your conversations with Grace and reset her memory of you. Your account stays. This cannot be undone.
+              </div>
+              <div className="confirm-btns">
+                <button className="cancel-btn" onClick={() => setShowRemoveConfirm(false)}>Cancel</button>
+                <button className="danger-confirm-btn" onClick={handleRemoveHistory}>Remove history</button>
               </div>
             </div>
-          )}
-        </div>
+          </div>
+        )}
+
+        {/* Delete account confirmation */}
+        {showDeleteConfirm && (
+          <div className="confirm-overlay" onClick={() => setShowDeleteConfirm(false)}>
+            <div className="confirm-sheet" onClick={(e) => e.stopPropagation()}>
+              <div className="confirm-title">Delete your account?</div>
+              <div className="confirm-body">
+                This will permanently delete your account, all conversations, and all data. This cannot be undone.
+              </div>
+              <div className="confirm-btns">
+                <button className="cancel-btn" onClick={() => setShowDeleteConfirm(false)}>Cancel</button>
+                <button className="danger-confirm-btn" onClick={handleDeleteAccount}>Delete account</button>
+              </div>
+            </div>
+          </div>
+        )}
 
         <div className="tab-bar">
           <div className="tab" onClick={() => router.push("/chat")}>
