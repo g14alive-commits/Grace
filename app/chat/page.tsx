@@ -229,7 +229,8 @@ export default function Chat() {
   data.key_words || [],
   data.action_taken || "",
   data.growth_signals || [],
-  data.headline || ""
+  data.headline || "",
+  data.last_ten_messages || []
 );
 
       localStorage.removeItem(`grace-session-${sId}`);

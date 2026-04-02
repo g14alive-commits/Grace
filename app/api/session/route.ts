@@ -43,7 +43,8 @@ Return this exact JSON:
         : "{}";
     const parsed = JSON.parse(raw.replace(/```json|```/g, "").trim());
 
-    return Response.json(parsed);
+    const lastTen = messages.slice(-10);
+return Response.json({ ...parsed, last_ten_messages: lastTen });
   } catch (error) {
     console.error(error);
     return Response.json({ error: "Failed to generate summary" }, { status: 500 });

@@ -140,6 +140,7 @@ export async function closeSession(
       headline,
       summary,
       themes,
+      key_excerpts: keyExcerpts,
       key_words: keyWords,
       action_taken: actionTaken,
       growth_signals: growthSignals,
