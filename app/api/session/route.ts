@@ -25,13 +25,12 @@ ${allMessages}
 
 Return this exact JSON:
 {
-  "headline": "4-6 word italic session title, self-focused like 'Understanding why I go quiet' — never mention partner by name",
   "summary": "2-3 sentence summary of what was covered and where the person landed",
   "themes": ["theme1", "theme2"],
   "key_words": ["significant phrase the user said"],
   "action_taken": "the one action or insight Grace anchored at the close",
   "growth_signals": ["any positive shifts detected"],
-  "headline": "A short 4-6 word italic headline for this session, self-focused and action-oriented like 'Understanding why I go quiet' or 'The fear underneath the anger'. Never mention the partner by name.",
+  "headline": "A 4-6 word session title written like a chapter heading — self-focused, action-oriented, never mentioning the partner by name. Examples: 'Understanding why I go quiet', 'The fear underneath the anger', 'First time I didn't run', 'Staying in the conversation'. Write in this style only."
   "closing_message": "A warm closing message from Grace. Follow this structure exactly — no more: (1) One plain sentence on why they came today. (2) One key insight from the session — only include if there was a genuinely meaningful one, skip it entirely if not. (3) The one action or decision they made. End with one warm human line. Address them by name if provided: ${userName || ""}. No clinical language. No lists. No bullet points. Under 80 words total. Should feel like a real person closing a real conversation."
 }`,
         },

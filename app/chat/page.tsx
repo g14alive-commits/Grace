@@ -96,8 +96,9 @@ export default function Chat() {
         const { count: sessionCount } = await supabase
           .from("sessions")
           .select("*", { count: "exact", head: true })
-          .eq("user_id", user.id);
-
+          .eq("user_id", user.id)
+          .eq("is_complete", true);
+  
         const newSessionNumber = (sessionCount || 0) + 1;
         setSessionNumber(newSessionNumber);
         const newSession = await createSession(user.id, newSessionNumber);
