@@ -107,14 +107,14 @@ export default function Chat() {
   }, []);
 
   const loadPastSessions = async (uId: string) => {
-    const { data } = await supabase
-      .from("sessions")
-      .select("id, session_number, summary, themes, action_taken, growth_signals, key_words, started_at, is_complete")
-      .eq("user_id", uId)
-      .eq("is_complete", true)
-      .order("started_at", { ascending: false });
-    if (data) setPastSessions(data);
-  };
+  const { data } = await supabase
+    .from("sessions")
+    .select("id, session_number, summary, themes, action_taken, growth_signals, key_words, started_at, is_complete, user_message_count")
+    .eq("user_id", uId)
+    .gte("user_message_count", 5)
+    .order("started_at", { ascending: false });
+  if (data) setPastSessions(data);
+};
 
   useEffect(() => {
     if (!sessionId || messages.length === 0) return;
@@ -618,8 +618,14 @@ export default function Chat() {
                         <span className="session-date">{date}</span>
                       </div>
                       <div className="session-headline">
-                        {s.action_taken || "Session summary"}
-                      </div>
+  {s.action_taken || (s.is_complete ? "Session summary" : "Incomplete session")}
+</div>
+{!s.is_complete && (
+  <div style={{ fontSize: "10px", color: "rgba(160,140,220,0.35)", marginBottom: "4px" }}>
+    session ended without summary
+  </div>
+)}
+
                       <div className="session-expand-arrow">{isExpanded ? "▴" : "▾"}</div>
                       {isExpanded && (
                         <div className="session-detail">
