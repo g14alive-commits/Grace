@@ -129,12 +129,15 @@ export async function closeSession(
   themes: string[],
   keyWords: string[],
   actionTaken: string,
-  growthSignals: string[]
-) {
+  growthSignals: string[],
+  headline: string
+)
+{
   // Update session record
   await supabase
     .from("sessions")
     .update({
+      headline,
       summary,
       themes,
       key_words: keyWords,

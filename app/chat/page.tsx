@@ -107,14 +107,14 @@ export default function Chat() {
   }, []);
 
   const loadPastSessions = async (uId: string) => {
-  const { data } = await supabase
-    .from("sessions")
-    .select("id, session_number, summary, themes, action_taken, growth_signals, key_words, started_at, is_complete, user_message_count")
-    .eq("user_id", uId)
-    .gte("user_message_count", 5)
-    .order("started_at", { ascending: false });
-  if (data) setPastSessions(data);
-};
+    const { data } = await supabase
+      .from("sessions")
+      .select("id, session_number, summary, themes, action_taken, growth_signals, key_words, headline, started_at, is_complete, user_message_count")
+      .eq("user_id", uId)
+      .gte("user_message_count", 3)
+      .order("started_at", { ascending: false });
+    if (data) setPastSessions(data);
+  };
 
   useEffect(() => {
     if (!sessionId || messages.length === 0) return;
@@ -197,8 +197,7 @@ export default function Chat() {
   };
 
   const handleSessionClose = async (msgs: string[], uId: string, sId: string) => {
-  console.log("handleSessionClose called", { sId, uId, msgCount: msgs.length });
-  try {
+    try {
       const response = await fetch("/api/session", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -525,28 +524,35 @@ export default function Chat() {
         .drawer-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(8,8,18,0.70); z-index: 10; backdrop-filter: blur(4px); animation: fadeIn 0.2s ease; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        .drawer { position: fixed; top: 0; left: 0; bottom: 0; width: 82%; max-width: 340px; background: #0f0e1f; border-right: 1px solid rgba(255,255,255,0.08); z-index: 11; display: flex; flex-direction: column; animation: slideIn 0.25s ease; }
+        .drawer { position: fixed; top: 0; left: 0; bottom: 0; width: 92%; max-width: 420px; background: #0f0e1f; border-right: 1px solid rgba(255,255,255,0.08); z-index: 11; display: flex; flex-direction: column; animation: slideIn 0.25s ease; }
         @keyframes slideIn { from { transform: translateX(-100%); } to { transform: translateX(0); } }
 
         .drawer-header { padding: 52px 20px 16px; border-bottom: 1px solid rgba(255,255,255,0.07); display: flex; align-items: center; justify-content: space-between; }
         .drawer-title { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 400; color: rgba(240,235,255,0.90); }
         .drawer-close { background: none; border: none; color: rgba(160,140,220,0.55); font-size: 20px; cursor: pointer; padding: 4px; }
 
-        .drawer-scroll { flex: 1; overflow-y: auto; padding: 12px 0; }
-        .drawer-scroll::-webkit-scrollbar { width: 0; }
+        .drawer-body { flex: 1; display: flex; overflow: hidden; }
 
-        .session-item { padding: 14px 20px; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer; transition: background 0.2s; }
+        .drawer-list { width: 42%; border-right: 1px solid rgba(255,255,255,0.06); overflow-y: auto; }
+        .drawer-list::-webkit-scrollbar { width: 0; }
+
+        .drawer-detail-panel { flex: 1; overflow-y: auto; padding: 16px; }
+        .drawer-detail-panel::-webkit-scrollbar { width: 0; }
+
+        .session-item { padding: 12px 14px; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer; transition: background 0.2s; }
         .session-item:active { background: rgba(255,255,255,0.03); }
-        .session-item-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
-        .session-number { font-size: 10px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(160,140,220,0.45); }
-        .session-date { font-size: 11px; font-weight: 300; color: rgba(140,130,180,0.45); }
-        .session-headline { font-family: 'Cormorant Garamond', serif; font-size: 17px; font-weight: 400; font-style: italic; color: rgba(220,210,255,0.85); line-height: 1.3; margin-bottom: 4px; }
-        .session-expand-arrow { font-size: 10px; color: rgba(160,140,220,0.35); margin-top: 2px; }
+        .session-item.selected { background: rgba(160,120,240,0.08); border-left: 2px solid rgba(160,120,240,0.40); }
 
-        .session-detail { margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.06); }
-        .session-detail-section { margin-bottom: 10px; }
-        .session-detail-label { font-size: 9px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(160,140,220,0.40); margin-bottom: 4px; }
-        .session-detail-text { font-size: 13px; font-weight: 300; line-height: 1.55; color: rgba(180,170,220,0.65); }
+        .session-item-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+        .session-number { font-size: 9px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(160,140,220,0.45); }
+        .session-date { font-size: 10px; font-weight: 300; color: rgba(140,130,180,0.45); }
+        .session-headline { font-family: 'Cormorant Garamond', serif; font-size: 14px; font-weight: 400; font-style: italic; color: rgba(220,210,255,0.85); line-height: 1.3; }
+
+        .detail-empty { padding: 30px 16px; text-align: center; font-size: 13px; font-weight: 300; color: rgba(140,130,180,0.40); font-style: italic; line-height: 1.6; }
+        .detail-headline { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 400; font-style: italic; color: rgba(220,210,255,0.90); line-height: 1.3; margin-bottom: 16px; }
+        .detail-section { margin-bottom: 14px; }
+        .detail-label { font-size: 9px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(160,140,220,0.40); margin-bottom: 5px; }
+        .detail-text { font-size: 13px; font-weight: 300; line-height: 1.60; color: rgba(180,170,220,0.70); }
 
         .drawer-empty { padding: 40px 20px; text-align: center; font-size: 14px; font-weight: 300; color: rgba(140,130,180,0.45); font-style: italic; line-height: 1.6; }
       `}</style>
@@ -597,68 +603,87 @@ export default function Chat() {
               <div className="drawer-title">Your sessions</div>
               <button className="drawer-close" onClick={() => setShowDrawer(false)}>×</button>
             </div>
-            <div className="drawer-scroll">
+            <div className="drawer-body">
               {pastSessions.length === 0 ? (
                 <div className="drawer-empty">
                   Your session summaries will appear here after you complete a session with Grace.
                 </div>
               ) : (
-                pastSessions.map((s) => {
-                  const isExpanded = expandedSession === s.id;
-                  const date = new Date(s.started_at).toLocaleDateString("en-GB", {
-                    day: "numeric", month: "short"
-                  });
-                  return (
-                    <div
-                      key={s.id}
-                      className="session-item"
-                      onClick={() => setExpandedSession(isExpanded ? null : s.id)}
-                    >
-                      <div className="session-item-header">
-                        <span className="session-number">Session {s.session_number}</span>
-                        <span className="session-date">{date}</span>
-                      </div>
-                      <div className="session-headline">
-  {s.action_taken || (s.is_complete ? "Session summary" : "Incomplete session")}
-</div>
-{!s.is_complete && (
-  <div style={{ fontSize: "10px", color: "rgba(160,140,220,0.35)", marginBottom: "4px" }}>
-    session ended without summary
-  </div>
-)}
+                <>
+                  <div className="drawer-list">
+                    {pastSessions.map((s) => {
+                      const date = new Date(s.started_at).toLocaleDateString("en-GB", {
+                        day: "numeric", month: "short"
+                      });
+                      return (
+                        <div
+                          key={s.id}
+                          className={`session-item${expandedSession === s.id ? " selected" : ""}`}
+                          onClick={() => setExpandedSession(s.id)}
+                        >
+                          <div className="session-item-header">
+                            <span className="session-number">#{s.session_number}</span>
+                            <span className="session-date">{date}</span>
+                          </div>
+                          <div className="session-headline">
+                            {s.headline || s.action_taken?.substring(0, 40) || (s.is_complete ? "Session" : "Incomplete")}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
 
-                      <div className="session-expand-arrow">{isExpanded ? "▴" : "▾"}</div>
-                      {isExpanded && (
-                        <div className="session-detail">
+                  <div className="drawer-detail-panel">
+                    {!expandedSession ? (
+                      <div className="detail-empty">
+                        Tap a session to see what you worked through.
+                      </div>
+                    ) : (() => {
+                      const s = pastSessions.find(x => x.id === expandedSession);
+                      if (!s) return null;
+                      return (
+                        <>
+                          {(s.headline || s.action_taken) && (
+                            <div className="detail-headline">
+                              {s.headline || s.action_taken}
+                            </div>
+                          )}
+                          {!s.is_complete && (
+                            <div className="detail-section">
+                              <div className="detail-text" style={{ color: "rgba(160,140,220,0.40)", fontSize: "11px" }}>
+                                session ended without summary
+                              </div>
+                            </div>
+                          )}
                           {s.summary && (
-                            <div className="session-detail-section">
-                              <div className="session-detail-label">What you worked through</div>
-                              <div className="session-detail-text">{s.summary}</div>
+                            <div className="detail-section">
+                              <div className="detail-label">What you worked through</div>
+                              <div className="detail-text">{s.summary}</div>
                             </div>
                           )}
                           {s.action_taken && (
-                            <div className="session-detail-section">
-                              <div className="session-detail-label">What you decided</div>
-                              <div className="session-detail-text">{s.action_taken}</div>
+                            <div className="detail-section">
+                              <div className="detail-label">What you decided</div>
+                              <div className="detail-text">{s.action_taken}</div>
                             </div>
                           )}
                           {s.growth_signals?.length > 0 && (
-                            <div className="session-detail-section">
-                              <div className="session-detail-label">Growth signals</div>
-                              <div className="session-detail-text">{s.growth_signals.join(" · ")}</div>
+                            <div className="detail-section">
+                              <div className="detail-label">Growth signals</div>
+                              <div className="detail-text">{s.growth_signals.join(" · ")}</div>
                             </div>
                           )}
                           {s.themes?.length > 0 && (
-                            <div className="session-detail-section">
-                              <div className="session-detail-label">Themes</div>
-                              <div className="session-detail-text">{s.themes.join(", ")}</div>
+                            <div className="detail-section">
+                              <div className="detail-label">Themes</div>
+                              <div className="detail-text">{s.themes.join(", ")}</div>
                             </div>
                           )}
-                        </div>
-                      )}
-                    </div>
-                  );
-                })
+                        </>
+                      );
+                    })()}
+                  </div>
+                </>
               )}
             </div>
           </div>
