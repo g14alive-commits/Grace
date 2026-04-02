@@ -119,7 +119,7 @@ const senderLabel = senderPattern
 const userMessage = hasReceivedMessage
   ? `${receiverLabel}${senderLabel ? "\n" + senderLabel : ""}
 
-REPLY MODE — they received this message:
+REPLY MODE - they received this message:
 "${receivedMessage.trim()}"
 
 And they want to reply with:
