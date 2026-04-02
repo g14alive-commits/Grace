@@ -126,20 +126,6 @@ And they want to reply with:
 "${message.trim()}"
 
 Scan the reply they want to send in the context of the message they received. Give better reply options. In the Advice section, name what the received message is really expressing underneath, then advise how to reply.`
-  : `${receiverLabel}${senderLabel ? "\n" + senderLabel : ""}
-
-Message to scan:
-"${message.trim()}"
-
-Scan this message and respond in the exact structure specified.`;
-
-REPLY MODE - they received this message:
-"${receivedMessage.trim()}"
-
-And they want to reply with:
-"${message.trim()}"
-
-Scan the reply they want to send in the context of the message they received. Give better reply options. In the Advice section, name what the received message is really expressing underneath, then advise how to reply.`
       : `${receiverLabel}
 
 Message to scan:
