@@ -989,3 +989,6 @@ export default function Chat() {
             <span className="tab-label">Profile</span>
           </div>
         </div>
+   </>
+  );
+}
