@@ -80,13 +80,14 @@ export default function Onboarding() {
 
         html, body {
           height: 100%; overflow: hidden;
-          background: #f5f0ee;
+          background: #110f1e;
           -webkit-font-smoothing: antialiased;
         }
 
         .page {
           position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-          background: #f5f0ee;
+          background: #110f1e;
+          color: rgba(245,238,255,0.95);
           display: flex; flex-direction: column;
           font-family: 'DM Sans', sans-serif;
           overflow: hidden;
@@ -102,25 +103,25 @@ export default function Onboarding() {
         }
 
         .warm-orb1 {
-          width: 350px; height: 350px; top: -80px; right: -60px;
-          background: radial-gradient(circle, rgba(220,160,120,0.20) 0%, transparent 70%);
-          animation: wo1 20s ease-in-out infinite;
+          width: 380px; height: 380px; top: -100px; left: -60px;
+          background: radial-gradient(circle, rgba(180,100,120,0.18) 0%, transparent 70%);
+          animation: wo1 22s ease-in-out infinite;
         }
 
         .warm-orb2 {
-          width: 280px; height: 280px; bottom: 10%; left: -60px;
-          background: radial-gradient(circle, rgba(180,140,200,0.16) 0%, transparent 70%);
-          animation: wo2 25s ease-in-out infinite;
+          width: 300px; height: 300px; bottom: 10%; right: -80px;
+          background: radial-gradient(circle, rgba(120,80,200,0.16) 0%, transparent 70%);
+          animation: wo2 26s ease-in-out infinite;
         }
 
         @keyframes wo1 {
           0%,100% { transform: translate(0,0); }
-          50% { transform: translate(-20px,25px); }
+          50% { transform: translate(20px,30px); }
         }
 
         @keyframes wo2 {
           0%,100% { transform: translate(0,0); }
-          50% { transform: translate(20px,-20px); }
+          50% { transform: translate(-20px,-25px); }
         }
 
         .progress-bar {
@@ -130,12 +131,12 @@ export default function Onboarding() {
         }
 
         .progress-dot {
-          height: 3px; border-radius: 2px; flex: 1;
-          background: rgba(0,0,0,0.10); transition: background 0.3s;
+          height: 2px; border-radius: 2px; flex: 1;
+          background: rgba(255,255,255,0.10); transition: background 0.3s;
         }
 
-        .progress-dot.active { background: rgba(160,100,80,0.60); }
-        .progress-dot.done { background: rgba(160,100,80,0.40); }
+        .progress-dot.active { background: rgba(160,140,220,0.70); }
+        .progress-dot.done { background: rgba(160,140,220,0.35); }
 
         .content {
           position: relative; z-index: 1;
@@ -145,32 +146,32 @@ export default function Onboarding() {
         }
 
         .step-label {
-          font-size: 11px; font-weight: 500;
+          font-size: 11px; font-weight: 400;
           letter-spacing: 0.10em; text-transform: uppercase;
-          color: rgba(160,100,80,0.55); margin-bottom: 12px;
+          color: rgba(160,140,220,0.50); margin-bottom: 12px;
         }
 
         .question {
           font-family: 'Cormorant Garamond', serif;
           font-size: 30px; font-weight: 300;
-          color: rgba(40,25,20,0.90); line-height: 1.25;
-          margin-bottom: 32px; letter-spacing: -0.01em;
+          color: rgba(245,238,255,0.95); line-height: 1.25;
+          margin-bottom: 28px; letter-spacing: -0.01em;
         }
 
         .name-input {
           width: 100%;
-          background: rgba(255,255,255,0.70);
-          border: 1px solid rgba(160,100,80,0.20);
+          background: rgba(255,255,255,0.06);
+          border: 1px solid rgba(255,255,255,0.12);
           border-radius: 14px; padding: 16px 18px;
           font-family: 'DM Sans', sans-serif;
-          font-size: 18px; font-weight: 300;
-          color: rgba(40,25,20,0.90);
+          font-size: 17px; font-weight: 300;
+          color: rgba(240,235,255,0.95);
           outline: none; transition: border-color 0.2s;
           margin-bottom: 20px;
         }
 
-        .name-input:focus { border-color: rgba(160,100,80,0.45); }
-        .name-input::placeholder { color: rgba(160,120,100,0.45); }
+        .name-input:focus { border-color: rgba(160,120,240,0.45); }
+        .name-input::placeholder { color: rgba(140,130,180,0.50); }
 
         .options-grid {
           display: flex; flex-wrap: wrap; gap: 10px;
@@ -178,19 +179,19 @@ export default function Onboarding() {
         }
 
         .option-btn {
-          padding: 11px 18px; border-radius: 50px;
-          background: rgba(255,255,255,0.65);
-          border: 1px solid rgba(160,100,80,0.18);
+          padding: 10px 18px; border-radius: 50px;
+          background: rgba(255,255,255,0.05);
+          border: 1px solid rgba(255,255,255,0.12);
           font-family: 'DM Sans', sans-serif;
           font-size: 14px; font-weight: 300;
-          color: rgba(80,50,40,0.80);
+          color: rgba(180,170,220,0.80);
           cursor: pointer; transition: all 0.2s;
         }
 
         .option-btn.selected {
-          background: rgba(160,100,80,0.12);
-          border-color: rgba(160,100,80,0.45);
-          color: rgba(120,60,40,0.95);
+          background: rgba(160,120,240,0.15);
+          border-color: rgba(160,120,240,0.40);
+          color: rgba(210,190,255,0.95);
         }
 
         .option-btn:active { transform: scale(0.97); }
@@ -201,28 +202,29 @@ export default function Onboarding() {
 
         select {
           width: 100%;
-          background: rgba(255,255,255,0.70);
-          border: 1px solid rgba(160,100,80,0.20);
+          background: rgba(255,255,255,0.06);
+          border: 1px solid rgba(255,255,255,0.12);
           border-radius: 14px; padding: 14px 18px;
           font-family: 'DM Sans', sans-serif;
           font-size: 15px; font-weight: 300;
-          color: rgba(40,25,20,0.90);
+          color: rgba(240,235,255,0.90);
           outline: none; appearance: none;
           cursor: pointer;
         }
 
-        select:focus { border-color: rgba(160,100,80,0.45); }
+        select:focus { border-color: rgba(160,120,240,0.45); }
+        select option { background: #1a1628; }
 
         .select-arrow {
           position: absolute; right: 16px; top: 50%;
           transform: translateY(-50%);
           pointer-events: none;
-          color: rgba(160,100,80,0.50);
+          color: rgba(160,140,220,0.50);
           font-size: 12px;
         }
 
         .optional-label {
-          font-size: 11px; color: rgba(160,120,100,0.55);
+          font-size: 11px; color: rgba(140,130,180,0.50);
           margin-bottom: 6px; font-weight: 300;
         }
 
@@ -234,22 +236,23 @@ export default function Onboarding() {
 
         .skip-btn {
           font-size: 13px; font-weight: 300;
-          color: rgba(160,120,100,0.55);
+          color: rgba(140,130,180,0.45);
           background: none; border: none;
           cursor: pointer; padding: 8px 0;
         }
 
         .next-btn {
           padding: 14px 32px; border-radius: 50px;
-          background: rgba(140,80,60,0.85);
-          border: none; color: rgba(255,248,244,0.95);
+          background: rgba(160,120,240,0.15);
+          border: 1px solid rgba(160,120,240,0.30);
+          color: rgba(210,190,255,0.95);
           font-family: 'DM Sans', sans-serif;
           font-size: 15px; font-weight: 400;
           cursor: pointer; transition: all 0.2s;
           letter-spacing: 0.02em;
         }
 
-        .next-btn:disabled { opacity: 0.35; cursor: default; }
+        .next-btn:disabled { opacity: 0.30; cursor: default; }
         .next-btn:not(:disabled):active { transform: scale(0.97); }
       `}</style>
 
