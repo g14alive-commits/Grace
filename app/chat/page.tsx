@@ -206,11 +206,41 @@ export default function Chat() {
   };
 
   const handleSessionClose = async (msgs: string[], uId: string, sId: string) => {
-    await closeSession(sId, uId, msgs);
-    // Clear localStorage for this session
-    localStorage.removeItem(`grace-session-${sId}`);
-  };
+  try {
+    const response = await fetch("/api/session", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        messages: msgs,
+        userName: dbUser?.name || "",
+      }),
+    });
+    const data = await response.json();
 
+    if (data.closing_message) {
+      setMessages((prev) => [
+        ...prev,
+        `__SESSION_END__`,
+        `Grace: ${data.closing_message}`,
+      ]);
+    }
+
+    await closeSession(
+      sId, uId,
+      data.summary || "",
+      data.themes || [],
+      data.key_words || [],
+      data.action_taken || "",
+      data.growth_signals || []
+    );
+
+    localStorage.removeItem(`grace-session-${sId}`);
+    setSessionId(null);
+    setActiveMessageCount(0);
+  } catch (e) {
+    console.error("Session close failed:", e);
+  }
+};
   const sendMessage = async () => {
     if (!input.trim() || loading) return;
     const userMessage = input;
