@@ -870,7 +870,30 @@ export default function Chat() {
           </>
         )}
 
-        <div className="messages">
+        {pastSessions.length > 0 && (
+  <div style={{
+    flexShrink: 0, position: "relative", zIndex: 2,
+    padding: "6px 16px",
+    background: "rgba(13,14,26,0.60)",
+    borderBottom: "1px solid rgba(255,255,255,0.05)",
+  }}>
+    <button
+      onClick={() => setShowDrawer(true)}
+      style={{
+        background: "none", border: "none",
+        cursor: "pointer", padding: "4px",
+        display: "flex", flexDirection: "column",
+        gap: "4px", opacity: 0.45,
+      }}
+    >
+      <div style={{ width: "18px", height: "1.5px", background: "rgba(200,180,255,0.90)", borderRadius: "2px" }} />
+      <div style={{ width: "14px", height: "1.5px", background: "rgba(200,180,255,0.90)", borderRadius: "2px" }} />
+      <div style={{ width: "18px", height: "1.5px", background: "rgba(200,180,255,0.90)", borderRadius: "2px" }} />
+    </button>
+  </div>
+)}
+
+<div className="messages">
   {pastSessions.length > 0 && (
     <div
       onClick={() => setShowDrawer(true)}
@@ -959,8 +982,10 @@ export default function Chat() {
             </svg>
             <span className="tab-label">Rewrite</span>
           </div>
+          <div className="tab" onClick={() => router.push("/profile")}>
+            <svg className="tab-icon" viewBox="0 0 24 24" fill="none" stroke="rgba(200,180,255,0.90)" strokeWidth="1.5">
+              <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/>
+            </svg>
+            <span className="tab-label">Profile</span>
+          </div>
         </div>
-      </div>
-    </>
-  );
-}
