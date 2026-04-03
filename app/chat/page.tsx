@@ -432,23 +432,23 @@ export default function Chat() {
         @keyframes drift3 { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(-25px,-30px) scale(1.1); } }
 
         .header {
-          flex-shrink: 0; position: relative; z-index: 2;
-          background: rgba(13,14,26,0.80); border-bottom: 1px solid var(--divider);
-          padding: 14px 20px; display: flex; align-items: center; gap: 14px;
-          backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-        }
+  flex-shrink: 0; position: relative; z-index: 2;
+  background: rgba(13,14,26,0.80); border-bottom: 1px solid var(--divider);
+  padding: 8px 16px; display: flex; align-items: center; gap: 10px;
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+}
 
-        .avatar {
-          width: 44px; height: 44px; border-radius: 50%;
-          background: rgba(160,120,240,0.15); border: 1px solid rgba(160,120,240,0.35);
-          display: flex; align-items: center; justify-content: center;
-          font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 600;
-          color: rgba(200,180,255,0.90); flex-shrink: 0;
-        }
+.avatar {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: rgba(160,120,240,0.15); border: 1px solid rgba(160,120,240,0.35);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Cormorant Garamond', serif; font-size: 16px; font-weight: 600;
+  color: rgba(200,180,255,0.90); flex-shrink: 0;
+}
 
         .header-text { flex: 1; }
-        .header-name { font-family: 'Cormorant Garamond', serif; font-size: 21px; font-weight: 600; color: var(--text-primary); line-height: 1.2; letter-spacing: 0.01em; }
-        .header-sub { font-size: 12px; color: var(--text-muted); font-weight: 300; margin-top: 2px; letter-spacing: 0.03em; }
+        .header-name { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 600; color: var(--text-primary); line-height: 1.2; letter-spacing: 0.01em; }
+        .header-sub { font-size: 11px; color: var(--text-muted); font-weight: 300; margin-top: 1px; letter-spacing: 0.03em; }
 
         .download-btn {
           width: 32px; height: 32px; border-radius: 50%;
@@ -462,19 +462,19 @@ export default function Chat() {
         .online-dot { width: 7px; height: 7px; border-radius: 50%; background: rgba(100,220,150,0.90); box-shadow: 0 0 8px rgba(100,220,150,0.50); flex-shrink: 0; }
 
         .hamburger-bar {
-          flex-shrink: 0; position: relative; z-index: 2;
-          padding: 6px 16px;
-          background: rgba(13,14,26,0.60);
-          border-bottom: 1px solid rgba(255,255,255,0.04);
-        }
+  flex-shrink: 0; position: relative; z-index: 2;
+  padding: 3px 16px;
+  background: rgba(13,14,26,0.60);
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
 
-        .hamburger-btn {
-          background: none; border: none; cursor: pointer; padding: 4px;
-          display: flex; flex-direction: column; gap: 4px; opacity: 0.40;
-          transition: opacity 0.2s;
-        }
+.hamburger-btn {
+  background: none; border: none; cursor: pointer; padding: 2px;
+  display: flex; flex-direction: column; gap: 3px; opacity: 0.40;
+  transition: opacity 0.2s;
+}
         .hamburger-btn:active { opacity: 0.70; }
-        .hamburger-line { height: 1.5px; background: rgba(200,180,255,0.90); border-radius: 2px; }
+        .hamburger-line { height: 1px; background: rgba(200,180,255,0.90); border-radius: 2px; }
 
         .messages {
           flex: 1; overflow-y: auto; overflow-x: hidden;
@@ -709,7 +709,7 @@ export default function Chat() {
       </div>
 
       {messages.length >= 5 && !sessionEnded && (
-        <div style={{ textAlign: "center", padding: "4px 0 2px", background: "rgba(13,14,26,0.80)" }}>
+        <div style={{ textAlign: "center", padding: "2px 0 1px", background: "rgba(13,14,26,0.80)" }}>
           <button
              onClick={async () => {
   setShowEndSession(true);
@@ -721,7 +721,7 @@ export default function Chat() {
 }}
             style={{
               background: "none", border: "none",
-              fontSize: "11px",
+              fontSize: "10px",
               color: showEndSession ? "rgba(160,140,220,0.60)" : "rgba(140,130,180,0.35)",
               cursor: showEndSession ? "default" : "pointer",
               padding: "4px 12px",
