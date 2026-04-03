@@ -50,14 +50,12 @@ const handleScan = async () => {
       body: JSON.stringify({ message, receivedMessage, receiverPattern, senderPattern }),
     });
     const data = await response.json();
-    if (data.result) {
-      setResult(data.result);
-      setTimeout(() => {
-        const scrollArea = document.querySelector(".scroll-area");
-        if (scrollArea) {
-          scrollArea.scrollTop = scrollArea.scrollHeight;
-        }
-      }, 300);
+if (data.result) {
+  setResult(data.result);
+  setTimeout(() => {
+    const scrollArea = document.querySelector(".scroll-area");
+    if (scrollArea) scrollArea.scrollTop = scrollArea.scrollHeight;
+  }, 300);
       // Track rewrite usage
       if (userId) {
         const { data: userData } = await supabase
@@ -400,11 +398,6 @@ const handleScan = async () => {
           font-style: italic;
         }
 
-{result && !loading && (
-  <div style={{color: "white", fontSize: "12px", padding: "10px", whiteSpace: "pre-wrap"}}>
-    {result}
-  </div>
-)}
         .result-card {
           background: var(--surface);
           border: 1px solid var(--border);
