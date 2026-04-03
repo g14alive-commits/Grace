@@ -65,6 +65,7 @@ export default function Rewrite() {
       const data = await response.json();
       if (data.result) {
         setResult(data.result);
+        console.log("RAW:", data.result);
       }
       if (userId) {
         const { data: userData } = await supabase
@@ -91,27 +92,29 @@ export default function Rewrite() {
   };
 
   const extractSuggestions = (text: string) => {
-    const suggestions: { label: string; content: string }[] = [];
-    const lines = text.split("\n");
-    let current: { label: string; content: string } | null = null;
-    for (let i = 0; i < lines.length; i++) {
-      const line = lines[i];
-      const isOption = line.match(/^Option\s+\d+\s*[—–-]\s*(\w+)/i);
-      if (isOption) {
-        if (current) suggestions.push(current);
-        current = { label: line.trim(), content: "" };
-      } else if (current) {
-        if (line.match(/^\*\*Advice/)) {
-          suggestions.push(current);
-          current = null;
-          break;
-        }
-        current.content += (current.content ? " " : "") + line.trim();
+  const suggestions: { label: string; content: string }[] = [];
+  const lines = text.split("\n");
+  let current: { label: string; content: string } | null = null;
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    const isOption = line.match(/^\*\*Option\s+\d+\s*[—–-]\s*(\w+)\*\*/i);
+    if (isOption) {
+      if (current) suggestions.push(current);
+      const cleanLabel = line.replace(/\*\*/g, "").trim();
+      current = { label: cleanLabel, content: "" };
+    } else if (current) {
+      if (line.match(/^\*\*Advice/)) {
+        suggestions.push(current);
+        current = null;
+        break;
       }
+      current.content += (current.content ? " " : "") + line.trim();
     }
-    if (current) suggestions.push(current);
-    return suggestions.filter(s => s.content.length > 0);
-  };
+  }
+  if (current) suggestions.push(current);
+  return suggestions.filter(s => s.content.length > 0);
+};
 
   const suggestions = result ? extractSuggestions(result) : [];
   const isReplyMode = receivedMessage.trim().length > 0;
