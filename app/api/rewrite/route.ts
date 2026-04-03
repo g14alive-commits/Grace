@@ -56,6 +56,7 @@ Gentle, open, no ask required. The receiver should feel safe reading it — not 
 - To someone who pulls away: soft, unpressured , door open. "Miss you. Whenever you're ready, I'm here."
 - To someone who reaches hard: warm but also clear — give them reassurance, not ambiguity. "I'm not going anywhere. Just needed some space to think. Talk soon."
 - Middle ground: caring without requiring anything back. "Thinking of you today. Hope you're okay."
+Bad warm example - "Miss you. No pressure — just checking in. Hope you're doing alright." - don't use "no pressure", "no rush"
 
 HONEST:
 The real feeling said quietly. Not an ultimatum. Not a complaint. Not a demand. Calm when read — no knot in the stomach. Short, max 2 sentences. Sounds like someone who knows what they feel and says it without needing the other person to fix it immediately. Calibrated to receiver so the same honest thing lands differently.

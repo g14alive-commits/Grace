@@ -751,19 +751,22 @@ export default function Rewrite() {
           <div className="message-box received">
             <div className="box-label">Message you received (optional)</div>
             <textarea
-              value={receivedMessage}
-              onChange={(e) => {
-                setReceivedMessage(e.target.value);
-                e.target.style.height = "24px";
-                e.target.style.height = Math.min(e.target.scrollHeight, 120) + "px";
-              }}
-              onBlur={(e) => {
-                if (!receivedMessage) e.target.style.height = "24px";
-              }}
-              placeholder="Paste what they sent you..."
-              rows={1}
-              style={{ height: receivedMessage ? "auto" : "24px", minHeight: "24px", maxHeight: "120px" }}
-            />
+  value={receivedMessage}
+  onChange={(e) => {
+    setReceivedMessage(e.target.value);
+    e.target.style.height = "24px";
+    e.target.style.height = Math.min(e.target.scrollHeight, 120) + "px";
+  }}
+  onFocus={(e) => {
+    if (!receivedMessage) e.target.style.height = "44px";
+  }}
+  onBlur={(e) => {
+    if (!receivedMessage) e.target.style.height = "24px";
+  }}
+  placeholder="Paste what they sent you..."
+  rows={1}
+  style={{ height: receivedMessage ? "auto" : "24px", minHeight: "24px", maxHeight: "120px" }}
+/>
           </div>
 
           <div className="connector">
