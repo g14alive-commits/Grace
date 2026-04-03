@@ -58,6 +58,8 @@ const contextBlock = [userContextBlock, sessionMemory || memoryBlock].filter(Boo
         ? response.content[0].text
         : "No response";
 
+   const sessionContext = `Session number: ${sessionNumber}. ${isNewSession ? "This is a new session." : "This is a returning user — do not introduce yourself."}`;
+
     const sessionComplete = detectSessionClose(aiText);
 
     // Extract profile updates every 4 messages
