@@ -1,6 +1,7 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { systemPrompt } from "./system-prompt";
 import { createClient } from "@supabase/supabase-js";
+import { buildSessionMemoryBlock, buildUserContextBlock, getOrCreateUser } from "../../../lib/db";
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
 
@@ -15,6 +16,7 @@ export async function POST(req: Request) {
       twoHourWarning,
       userId,
     } = await req.json();
+   const dbUser = userId ? await getOrCreateUser(userId, "") : null;
 
     // Ignore keep-alive pings silently
     const lastMessage = messages[messages.length - 1];
@@ -23,7 +25,8 @@ export async function POST(req: Request) {
     }
 
     const memoryBlock = buildMemoryBlock(userProfile, sessionNumber);
-    const contextBlock = sessionMemory || (memoryBlock ? memoryBlock : "");
+    const userContextBlock = buildUserContextBlock(dbUser);
+const contextBlock = [userContextBlock, sessionMemory || memoryBlock].filter(Boolean).join("\n\n");
 
     const twoHourBlock = twoHourWarning
       ? `\n\nSESSION TIME LIMIT: This user has been in active conversation for 2 hours. After your next response, gently close the session. Say something warm like: "We've covered a lot today. I think this is a good place to pause — take some time with what came up. I'll be here when you're ready. Want to stop here for today, or is there something else on your mind?" Then wait for their response. If they want to continue, honour that. If they say goodbye or indicate they're done, close warmly.`
