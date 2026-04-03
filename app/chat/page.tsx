@@ -583,18 +583,34 @@ export default function Chat() {
         <div className="online-dot" />
       </div>
 
-      {pastSessions.length > 0 && (
-        <div className="hamburger-bar">
-          <button
-            className="hamburger-btn"
-            onClick={() => setShowDrawer(true)}
-          >
-            <div className="hamburger-line" style={{ width: "18px" }} />
-            <div className="hamburger-line" style={{ width: "14px" }} />
-            <div className="hamburger-line" style={{ width: "18px" }} />
-          </button>
-        </div>
-      )}
+      <div className="hamburger-bar" style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+  {pastSessions.length > 0 && (
+    <button className="hamburger-btn" onClick={() => setShowDrawer(true)}>
+      <div className="hamburger-line" style={{ width: "18px" }} />
+      <div className="hamburger-line" style={{ width: "14px" }} />
+      <div className="hamburger-line" style={{ width: "18px" }} />
+    </button>
+  )}
+  {sessionEnded && (
+    <button
+      onClick={() => router.push("/chat")}
+      style={{
+        background: "none",
+        border: "1px solid rgba(160,120,240,0.25)",
+        borderRadius: "20px",
+        fontSize: "11px",
+        color: "rgba(200,180,255,0.70)",
+        cursor: "pointer",
+        padding: "4px 14px",
+        fontFamily: "DM Sans, sans-serif",
+        letterSpacing: "0.04em",
+        marginLeft: "auto",
+      }}
+    >
+      new session
+    </button>
+  )}
+</div>
 
       {showDrawer && (
         <>
