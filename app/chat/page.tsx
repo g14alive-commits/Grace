@@ -49,6 +49,7 @@ export default function Chat() {
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
   const initialized = useRef(false);
   const router = useRouter();
+  const [sessionEnded, setSessionEnded] = useState(false);
 
   useEffect(() => {
     const setHeight = () => setVh(window.innerHeight);
@@ -219,6 +220,7 @@ export default function Chat() {
           ...prev,
           `__SESSION_END__`,
           `Grace: ${data.closing_message}`,
+          setSessionEnded(true);
         ]);
       }
 
@@ -689,14 +691,14 @@ export default function Chat() {
             value={input}
             onChange={handleInput}
             onKeyDown={handleKeyDown}
-            placeholder="Share what's on your mind..."
-            disabled={loading}
+            placeholder={sessionEnded ? "Session complete" : "Share what's on your mind..."}
+            disabled={loading || sessionEnded}
             rows={1}
           />
           <button
             className="send-btn"
             onClick={sendMessage}
-            disabled={loading || !input.trim()}
+            disabled={loading || !input.trim() || sessionEnded}
           >
             <svg viewBox="0 0 24 24">
               <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
@@ -705,7 +707,7 @@ export default function Chat() {
         </div>
       </div>
 
-      {messages.length >= 5 && (
+      {messages.length >= 5 && !sessionEnded && (
         <div style={{ textAlign: "center", padding: "4px 0 2px", background: "rgba(13,14,26,0.80)" }}>
           <button
             onClick={async () => {
