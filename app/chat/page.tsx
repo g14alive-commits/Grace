@@ -504,16 +504,16 @@ export default function Chat() {
         @keyframes bounce { 0%,80%,100% { opacity: 0.4; transform: translateY(0); } 40% { opacity: 1; transform: translateY(-4px); } }
 
         .input-area {
-          flex-shrink: 0; position: relative; z-index: 2;
-          background: rgba(13,14,26,0.80); border-top: 1px solid var(--divider);
-          padding: 12px 16px; backdrop-filter: blur(20px);
-        }
+  flex-shrink: 0; position: relative; z-index: 2;
+  background: rgba(13,14,26,0.80); border-top: 1px solid var(--divider);
+  padding: 8px 12px; backdrop-filter: blur(20px);
+}
 
-        .input-row {
-          display: flex; align-items: flex-end; gap: 10px;
-          background: var(--input-bg); border: 1px solid var(--input-border);
-          border-radius: 24px; padding: 10px 10px 10px 18px; transition: border-color 0.3s;
-        }
+.input-row {
+  display: flex; align-items: flex-end; gap: 8px;
+  background: var(--input-bg); border: 1px solid var(--input-border);
+  border-radius: 20px; padding: 6px 6px 6px 14px; transition: border-color 0.3s;
+}
         .input-row:focus-within { border-color: var(--input-focus); box-shadow: 0 0 20px rgba(160,120,240,0.08); }
 
         textarea { flex: 1; border: none; outline: none; background: transparent; font-family: 'DM Sans', sans-serif; font-size: 16px; font-weight: 300; color: var(--text-primary); resize: none; height: 24px; max-height: 100px; line-height: 1.5; overflow-y: auto; }
