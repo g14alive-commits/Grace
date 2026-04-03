@@ -761,11 +761,11 @@ export default function Rewrite() {
     if (!receivedMessage) e.target.style.height = "44px";
   }}
   onBlur={(e) => {
-    if (!receivedMessage) e.target.style.height = "24px";
+    if (!receivedMessage) e.target.style.height = "20px";
   }}
   placeholder="Paste what they sent you..."
   rows={1}
-  style={{ height: receivedMessage ? "auto" : "24px", minHeight: "24px", maxHeight: "120px" }}
+  style={{ height: receivedMessage ? "auto" : "20px", minHeight: "20px", maxHeight: "120px" }}
 />
           </div>
 
