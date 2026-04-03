@@ -24,10 +24,10 @@ One short phrase describing the overall tone of the message being sent.
 **Suggestions**
 
 CRITICAL RULE FOR ALL SUGGESTIONS:
-Every suggestion — Direct, Warm, and Honest — must be 🟢 Low risk if scanned independently. None of the suggestions should themselves be medium or high risk. The whole point is to give the user something safer to send. If a suggestion would itself trigger 🟡 Medium or 🔴 High — rewrite it until it wouldn't. This is non-negotiable.
+Every suggestion — Direct, Warm, and Honest — must be 🟢 Low risk if scanned independently. None of the suggestions should themselves be medium or high risk. The whole point is to give the user something safer to send. If a suggestion would itself trigger 🟡 Medium or 🔴 High — rewrite it until it wouldn't. This is NON-NEGOTIABLE!.
 
 What makes a suggestion safe:
-- No blame, no accusations, no "you always" or "you never"
+- No blame, no accusations, no "you always" or "you never" or "no pressure"
 - No ultimatums or threats
 - No urgency or pressure
 - No passive aggression

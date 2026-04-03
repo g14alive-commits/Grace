@@ -39,42 +39,43 @@ useEffect(() => {
   });
 }, []);
 
-  const handleScan = async () => {
-    if (!message.trim() || loading) return;
-    setLoading(true);
-    setResult("");
-    try {
-      const response = await fetch("/api/rewrite", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message, receivedMessage, receiverPattern, senderPattern }),
-      });
-      const data = await response.json();
-if (data.result) {
-  setResult(data.result);
-  setTimeout(() => {
-    resultRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-  }, 100);
-  // Track rewrite usage
-  if (userId) {
-    const { data: userData } = await supabase
-      .from("users")
-      .select("rewrite_count")
-      .eq("id", userId)
-      .single();
-    await supabase
-      .from("users")
-      .update({ rewrite_count: (userData?.rewrite_count || 0) + 1 })
-      .eq("id", userId);
-  }
-}
-
-
-    } catch (e) {
-      console.error(e);
+const handleScan = async () => {
+  if (!message.trim() || loading) return;
+  setLoading(true);
+  setResult("");
+  try {
+    const response = await fetch("/api/rewrite", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message, receivedMessage, receiverPattern, senderPattern }),
+    });
+    const data = await response.json();
+    if (data.result) {
+      setResult(data.result);
+      setTimeout(() => {
+        const scrollArea = document.querySelector(".scroll-area");
+        if (scrollArea) {
+          scrollArea.scrollTop = scrollArea.scrollHeight;
+        }
+      }, 300);
+      // Track rewrite usage
+      if (userId) {
+        const { data: userData } = await supabase
+          .from("users")
+          .select("rewrite_count")
+          .eq("id", userId)
+          .single();
+        await supabase
+          .from("users")
+          .update({ rewrite_count: (userData?.rewrite_count || 0) + 1 })
+          .eq("id", userId);
+      }
     }
-    setLoading(false);
-  };
+  } catch (e) {
+    console.error(e);
+  }
+  setLoading(false);
+};
 
   const handleCopy = (text: string, id: string) => {
     navigator.clipboard.writeText(text).then(() => {

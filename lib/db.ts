@@ -130,7 +130,8 @@ export async function closeSession(
   keyWords: string[],
   actionTaken: string,
   growthSignals: string[],
-  headline: string
+  headline: string,
+  keyExcerpts: any[]
 )
 {
   // Update session record
