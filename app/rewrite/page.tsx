@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "../../lib/supabase";
-import { getOrCreateUser, profileFromDb } from "../../lib/db";
+import { getOrCreateUser } from "../../lib/db";
 import ReactMarkdown from "react-markdown";
 
 export default function Rewrite() {
@@ -27,36 +27,45 @@ export default function Rewrite() {
     return () => window.removeEventListener("resize", setHeight);
   }, []);
 
-useEffect(() => {
-  supabase.auth.getSession().then(async ({ data }) => {
-    if (!data.session) return;
-    const user = data.session.user;
-    setUserId(user.id);
-    const dbUser = await getOrCreateUser(user.id, user.email || "");
-    if (dbUser?.user_pattern) {
-      setSenderPattern(dbUser.user_pattern);
-    }
-  });
-}, []);
-
-const handleScan = async () => {
-  if (!message.trim() || loading) return;
-  setLoading(true);
-  setResult("");
-  try {
-    const response = await fetch("/api/rewrite", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message, receivedMessage, receiverPattern, senderPattern }),
+  useEffect(() => {
+    supabase.auth.getSession().then(async ({ data }) => {
+      if (!data.session) return;
+      const user = data.session.user;
+      setUserId(user.id);
+      const dbUser = await getOrCreateUser(user.id, user.email || "");
+      if (dbUser?.user_pattern) {
+        setSenderPattern(dbUser.user_pattern);
+      }
     });
-    const data = await response.json();
-if (data.result) {
-  setResult(data.result);
-setTimeout(() => {
-  const el = document.querySelector(".scroll-area");
-  if (el) el.scrollTop = el.scrollHeight;
-}, 400);
-      // Track rewrite usage
+  }, []);
+
+  // Scroll to result after it renders and loading is done
+  useEffect(() => {
+    if (!result || loading) return;
+    const timer = setTimeout(() => {
+      const el = document.querySelector(".scroll-area") as HTMLElement;
+      const card = resultRef.current;
+      if (el && card) {
+      el.scrollTop = card.offsetTop - 20;
+    }
+    }, 100);
+    return () => clearTimeout(timer);
+  }, [result, loading]);
+
+  const handleScan = async () => {
+    if (!message.trim() || loading) return;
+    setLoading(true);
+    setResult("");
+    try {
+      const response = await fetch("/api/rewrite", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message, receivedMessage, receiverPattern, senderPattern }),
+      });
+      const data = await response.json();
+      if (data.result) {
+        setResult(data.result);
+      }
       if (userId) {
         const { data: userData } = await supabase
           .from("users")
@@ -68,12 +77,11 @@ setTimeout(() => {
           .update({ rewrite_count: (userData?.rewrite_count || 0) + 1 })
           .eq("id", userId);
       }
+    } catch (e) {
+      console.error(e);
     }
-  } catch (e) {
-    console.error(e);
-  }
-  setLoading(false);
-};
+    setLoading(false);
+  };
 
   const handleCopy = (text: string, id: string) => {
     navigator.clipboard.writeText(text).then(() => {
@@ -83,28 +91,28 @@ setTimeout(() => {
   };
 
   const extractSuggestions = (text: string) => {
-  const suggestions: { label: string; content: string }[] = [];
-  const lines = text.split("\n");
-  let current: { label: string; content: string } | null = null;
-
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
-    const isOption = line.match(/^Option\s+\d+\s*[—–-]\s*(\w+)/i);
-    if (isOption) {
-      if (current) suggestions.push(current);
-      current = { label: line.trim(), content: "" };
-    } else if (current) {
-      if (line.match(/^\*\*Advice/)) {
-        suggestions.push(current);
-        current = null;
-        break;
+    const suggestions: { label: string; content: string }[] = [];
+    const lines = text.split("\n");
+    let current: { label: string; content: string } | null = null;
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      const isOption = line.match(/^Option\s+\d+\s*[—–-]\s*(\w+)/i);
+      if (isOption) {
+        if (current) suggestions.push(current);
+        current = { label: line.trim(), content: "" };
+      } else if (current) {
+        if (line.match(/^\*\*Advice/)) {
+          suggestions.push(current);
+          current = null;
+          break;
+        }
+        current.content += (current.content ? " " : "") + line.trim();
       }
-      current.content += (current.content ? " " : "") + line.trim();
     }
-  }
-  if (current) suggestions.push(current);
-  return suggestions.filter(s => s.content.length > 0);
-};
+    if (current) suggestions.push(current);
+    return suggestions.filter(s => s.content.length > 0);
+  };
+
   const suggestions = result ? extractSuggestions(result) : [];
   const isReplyMode = receivedMessage.trim().length > 0;
   const appHeight = vh > 0 ? `${vh}px` : "100vh";
@@ -245,9 +253,7 @@ setTimeout(() => {
           line-height: 1;
         }
 
-        .info-btn:active {
-          background: rgba(255,255,255,0.14);
-        }
+        .info-btn:active { background: rgba(255,255,255,0.14); }
 
         .header-sub {
           font-size: 12px;
@@ -330,15 +336,12 @@ setTimeout(() => {
           transition: border-color 0.2s, box-shadow 0.2s;
         }
 
-        .message-box:focus-within { border-color: var(--border); }
-
         .message-box.send:focus-within {
           border-color: rgba(80,200,120,0.45);
           box-shadow: 0 0 12px rgba(80,200,120,0.06);
         }
 
         .box-label { color: var(--text-muted); }
-
         .box-label.send { color: rgba(80,200,120,0.65); }
 
         textarea {
@@ -597,9 +600,7 @@ setTimeout(() => {
           margin-bottom: 20px;
         }
 
-        .overlay-section {
-          margin-bottom: 22px;
-        }
+        .overlay-section { margin-bottom: 22px; }
 
         .overlay-section-title {
           font-size: 10px;
@@ -690,14 +691,12 @@ setTimeout(() => {
             <div className="overlay-sheet" onClick={(e) => e.stopPropagation()}>
               <div className="overlay-handle" />
               <div className="overlay-title">How Rewrite works</div>
-
               <div className="overlay-section">
                 <div className="overlay-section-title">What it does</div>
                 <div className="overlay-text">
                   Paste what you're about to send. Rewrite reads the tone, tells you the risk level, and gives you cleaner versions that say the same thing without the damage.
                 </div>
               </div>
-
               <div className="overlay-section">
                 <div className="overlay-section-title">Who are you sending to?</div>
                 <div className="overlay-item">
@@ -713,14 +712,12 @@ setTimeout(() => {
                   <span className="overlay-item-text">Not sure — Rewrite gives you a middle-ground version.</span>
                 </div>
               </div>
-
               <div className="overlay-section">
                 <div className="overlay-section-title">The received message box</div>
                 <div className="overlay-text">
                   Optional. Paste what they sent you and Rewrite switches to reply mode — it reads what they actually said and helps you reply to their actual need.
                 </div>
               </div>
-
               <button className="overlay-close" onClick={() => setShowInfo(false)}>
                 Got it
               </button>
@@ -755,10 +752,17 @@ setTimeout(() => {
             <div className="box-label">Message you received (optional)</div>
             <textarea
               value={receivedMessage}
-              onChange={(e) => setReceivedMessage(e.target.value)}
+              onChange={(e) => {
+                setReceivedMessage(e.target.value);
+                e.target.style.height = "24px";
+                e.target.style.height = Math.min(e.target.scrollHeight, 120) + "px";
+              }}
+              onBlur={(e) => {
+                if (!receivedMessage) e.target.style.height = "24px";
+              }}
               placeholder="Paste what they sent you..."
-              rows={3}
-              style={{ minHeight: "60px", maxHeight: "120px" }}
+              rows={1}
+              style={{ height: receivedMessage ? "auto" : "24px", minHeight: "24px", maxHeight: "120px" }}
             />
           </div>
 
