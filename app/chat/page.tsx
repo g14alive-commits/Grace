@@ -516,11 +516,11 @@ export default function Chat() {
 }
         .input-row:focus-within { border-color: var(--input-focus); box-shadow: 0 0 20px rgba(160,120,240,0.08); }
 
-        textarea { flex: 1; border: none; outline: none; background: transparent; font-family: 'DM Sans', sans-serif; font-size: 16px; font-weight: 300; color: var(--text-primary); resize: none; height: 24px; max-height: 100px; line-height: 1.5; overflow-y: auto; }
+        textarea { flex: 1; border: none; outline: none; background: transparent; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 300; color: var(--text-primary); resize: none; height: 22px; max-height: 100px; line-height: 1.5; overflow-y: auto; }
         textarea::placeholder { color: var(--text-muted); }
         textarea::-webkit-scrollbar { display: none; }
 
-        .send-btn { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(145deg, #c090ff 0%, #8060d0 50%, #5040b0 100%); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: transform 0.15s, opacity 0.15s; box-shadow: 0 0 16px rgba(160,120,240,0.25); }
+        .send-btn { width: 34px; height: 34px; border-radius: 50%; background: linear-gradient(145deg, #c090ff 0%, #8060d0 50%, #5040b0 100%); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: transform 0.15s, opacity 0.15s; box-shadow: 0 0 16px rgba(160,120,240,0.25); } 
         .send-btn:disabled { opacity: 0.25; cursor: default; box-shadow: none; }
         .send-btn:not(:disabled):active { transform: scale(0.9); }
         .send-btn svg { width: 17px; height: 17px; fill: white; margin-left: 2px; }

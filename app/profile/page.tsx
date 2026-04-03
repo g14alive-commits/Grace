@@ -169,7 +169,7 @@ export default function Profile() {
           flex-shrink: 0; position: relative; z-index: 2;
           background: var(--header-bg);
           border-bottom: 1px solid var(--divider);
-          padding: 16px 20px;
+          padding: 8px 16px;
           display: flex; align-items: center; justify-content: space-between;
           backdrop-filter: blur(20px);
         }
@@ -436,7 +436,7 @@ export default function Profile() {
           background: rgba(13,14,26,0.92);
           border-top: 1px solid rgba(255,255,255,0.07);
           backdrop-filter: blur(20px);
-          display: flex; padding: 4px 0 6px;
+          display: flex; padding: 2px 0 4px;
         }
 
         .tab {

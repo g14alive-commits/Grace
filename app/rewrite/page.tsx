@@ -213,7 +213,7 @@ export default function Rewrite() {
           z-index: 2;
           background: var(--header-bg);
           border-bottom: 1px solid var(--divider);
-          padding: 16px 20px;
+          padding: 8px 16px;
           backdrop-filter: blur(20px);
           -webkit-backdrop-filter: blur(20px);
           display: flex;
@@ -225,7 +225,7 @@ export default function Rewrite() {
 
         .header-name {
           font-family: 'Cormorant Garamond', serif;
-          font-size: 21px;
+          font-size: 18px;
           font-weight: 500;
           color: var(--text-primary);
           line-height: 1.2;
@@ -259,7 +259,7 @@ export default function Rewrite() {
         .info-btn:active { background: rgba(255,255,255,0.14); }
 
         .header-sub {
-          font-size: 12px;
+          font-size: 11px;
           color: var(--text-muted);
           font-weight: 300;
           margin-top: 2px;
@@ -285,7 +285,7 @@ export default function Rewrite() {
           overflow-x: hidden;
           position: relative;
           z-index: 1;
-          padding: 20px 16px 16px;
+          padding: 12px 16px 12px;
           -webkit-overflow-scrolling: touch;
         }
 
@@ -387,7 +387,7 @@ export default function Rewrite() {
 
         .scan-btn {
           width: 100%;
-          padding: 16px;
+          padding: 12px;
           border-radius: 14px;
           background: linear-gradient(135deg, rgba(160,120,240,0.25) 0%, rgba(120,80,200,0.20) 100%);
           border: 1px solid rgba(160,120,240,0.30);
@@ -522,7 +522,7 @@ export default function Rewrite() {
           backdrop-filter: blur(20px);
           -webkit-backdrop-filter: blur(20px);
           display: flex;
-          padding: 4px 0 6px;
+          padding: 2px 0 4px;
         }
 
         .tab {
