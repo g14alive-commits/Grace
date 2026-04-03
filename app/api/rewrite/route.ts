@@ -51,8 +51,9 @@ The shortest true version. One or two sentences. States the feeling and the ask 
 - Middle ground: simple and clean. "I miss you. Can we talk today?"
 
 WARM:
-Gentle, open, no ask required. The receiver should feel safe reading it — not guilty, not cornered, not pressured. No score-keeping. No "I've been patient". No "I know you're busy but".
-- To someone who pulls away: soft, no pressure, door open. "Miss you. Whenever you're ready, I'm here."
+Do not send - "No pressure"
+Gentle, open, no ask required. The receiver should feel safe reading it — not guilty, not cornered, not pressured. No score-keeping. No "I've been patient". No "I know you're busy but". No "No pressure". 
+- To someone who pulls away: soft, unpressured , door open. "Miss you. Whenever you're ready, I'm here."
 - To someone who reaches hard: warm but also clear — give them reassurance, not ambiguity. "I'm not going anywhere. Just needed some space to think. Talk soon."
 - Middle ground: caring without requiring anything back. "Thinking of you today. Hope you're okay."
 

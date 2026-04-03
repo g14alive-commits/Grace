@@ -52,10 +52,10 @@ const handleScan = async () => {
     const data = await response.json();
 if (data.result) {
   setResult(data.result);
-  setTimeout(() => {
-    const scrollArea = document.querySelector(".scroll-area");
-    if (scrollArea) scrollArea.scrollTop = scrollArea.scrollHeight;
-  }, 300);
+setTimeout(() => {
+  const el = document.querySelector(".scroll-area");
+  if (el) el.scrollTop = el.scrollHeight;
+}, 400);
       // Track rewrite usage
       if (userId) {
         const { data: userData } = await supabase
@@ -83,18 +83,28 @@ if (data.result) {
   };
 
   const extractSuggestions = (text: string) => {
-    const suggestions: { label: string; content: string }[] = [];
-    const optionRegex = /Option (\d+) — (\w+)\n([\s\S]*?)(?=Option \d+|\*\*Advice|$)/g;
-    let match;
-    while ((match = optionRegex.exec(text)) !== null) {
-      suggestions.push({
-        label: `Option ${match[1]} — ${match[2]}`,
-        content: match[3].trim().replace(/^["'"']|["'"']$/g, "").trim(),
-      });
-    }
-    return suggestions;
-  };
+  const suggestions: { label: string; content: string }[] = [];
+  const lines = text.split("\n");
+  let current: { label: string; content: string } | null = null;
 
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    const isOption = line.match(/^Option\s+\d+\s*[—–-]\s*(\w+)/i);
+    if (isOption) {
+      if (current) suggestions.push(current);
+      current = { label: line.trim(), content: "" };
+    } else if (current) {
+      if (line.match(/^\*\*Advice/)) {
+        suggestions.push(current);
+        current = null;
+        break;
+      }
+      current.content += (current.content ? " " : "") + line.trim();
+    }
+  }
+  if (current) suggestions.push(current);
+  return suggestions.filter(s => s.content.length > 0);
+};
   const suggestions = result ? extractSuggestions(result) : [];
   const isReplyMode = receivedMessage.trim().length > 0;
   const appHeight = vh > 0 ? `${vh}px` : "100vh";
