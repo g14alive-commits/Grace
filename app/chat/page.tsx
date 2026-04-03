@@ -541,12 +541,12 @@ export default function Chat() {
         .drawer-close { background: none; border: none; color: rgba(160,140,220,0.55); font-size: 20px; cursor: pointer; padding: 4px; }
         .drawer-list-full { flex: 1; overflow-y: auto; }
         .drawer-list-full::-webkit-scrollbar { width: 0; }
-        .session-item { padding: 16px 20px; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer; transition: background 0.2s; }
+        .session-item { padding: 10px 16px; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer; transition: background 0.2s; }
         .session-item:active { background: rgba(255,255,255,0.03); }
         .session-item-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px; }
         .session-number { font-size: 10px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(160,140,220,0.45); }
         .session-date { font-size: 11px; font-weight: 300; color: rgba(140,130,180,0.45); }
-        .session-headline { font-family: 'Cormorant Garamond', serif; font-size: 17px; font-weight: 400; font-style: italic; color: rgba(220,210,255,0.85); line-height: 1.35; }
+        .session-headline { font-family: 'Cormorant Garamond', serif; font-size: 15px; font-weight: 400; font-style: italic; color: rgba(220,210,255,0.85); line-height: 1.3; }
         .drawer-detail-full { flex: 1; overflow-y: auto; padding: 52px 20px 24px; }
         .drawer-detail-full::-webkit-scrollbar { width: 0; }
         .session-item.selected { background: rgba(160,120,240,0.10); border-left: 2px solid rgba(160,120,240,0.40); }
@@ -622,7 +622,22 @@ export default function Chat() {
       <button className="drawer-close" onClick={() => { setShowDrawer(false); setExpandedSession(null); }}>×</button>
     </div>
     <div className="drawer-list-full">
-      {pastSessions.map((s) => {
+  <div
+    className="session-item"
+    onClick={() => {
+      setShowDrawer(false);
+      window.location.reload();
+    }}
+    style={{ borderBottom: "1px solid rgba(160,120,240,0.15)" }}
+  >
+    <div className="session-item-header">
+      <span className="session-number" style={{ color: "rgba(160,120,240,0.70)" }}>+ New Session</span>
+    </div>
+    <div className="session-headline" style={{ fontSize: "14px", color: "rgba(160,120,240,0.60)" }}>
+      Start a fresh conversation
+    </div>
+  </div>
+  {pastSessions.map((s) => {
         const date = new Date(s.started_at).toLocaleDateString("en-GB", { day: "numeric", month: "short" });
         return (
           <div key={s.id} className={`session-item${expandedSession === s.id ? " selected" : ""}`} onClick={() => setExpandedSession(s.id)}>

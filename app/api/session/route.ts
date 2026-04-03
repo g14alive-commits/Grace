@@ -30,7 +30,7 @@ Return this exact JSON:
   "key_words": ["significant phrase the user said"],
   "action_taken": "the one action or insight Grace anchored at the close",
   "growth_signals": ["any positive shifts detected"],
-  "headline": "A 4-6 word session title written like a chapter heading — self-focused, action-oriented, never mentioning the partner by name. Examples: 'Understanding why I go quiet', 'The fear underneath the anger', 'First time I didn't run', 'Staying in the conversation'. Write in this style only."
+  "headline": "3-4 words maximum. A chapter-heading style title, self-focused. Examples: 'Why I go quiet', 'Underneath the anger', 'Choosing to stay', 'First time I didn't run'. Never more than 4 words. Never mention the partner by name."
   "closing_message": "A warm closing message from Grace. Follow this structure exactly — no more: (1) One plain sentence on why they came today. (2) One key insight from the session — only include if there was a genuinely meaningful one, skip it entirely if not. (3) The one action or decision they made. End with one warm human line. Address them by name if provided: ${userName || ""}. No clinical language. No lists. No bullet points. Under 80 words total. Should feel like a real person closing a real conversation."
 }`,
         },
