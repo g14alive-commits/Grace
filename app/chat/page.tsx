@@ -277,13 +277,14 @@ export default function Chat() {
       const data = await response.json();
 
       if (data.result) {
-        const newMessages = [...updatedMessages, "Grace: " + data.result];
-        setMessages(newMessages);
+  const newMessages = [...updatedMessages, "Grace: " + data.result];
+  setMessages(newMessages);
 
-        if (data.sessionComplete && sessionId && userId) {
-          await handleSessionClose(newMessages, userId, sessionId);
-        }
-      }
+  if (twoHourReached && sessionId && userId) {
+    await handleSessionClose(newMessages, userId, sessionId);
+    setSessionEnded(true);
+  }
+}
 
       if (data.profileUpdates) {
         setUserProfile((prev) => ({ ...prev, ...data.profileUpdates }));
@@ -710,12 +711,13 @@ export default function Chat() {
       {messages.length >= 5 && !sessionEnded && (
         <div style={{ textAlign: "center", padding: "4px 0 2px", background: "rgba(13,14,26,0.80)" }}>
           <button
-            onClick={async () => {
-              setShowEndSession(true);
-              if (sessionId && userId) {
+             onClick={async () => {
+                setShowEndSession(true);
+                if (sessionId && userId) {
                 await handleSessionClose(messages, userId, sessionId);
-              }
-              setShowEndSession(false);
+                setSessionEnded(true);
+                }
+             setShowEndSession(false);
             }}
             style={{
               background: "none", border: "none",
