@@ -220,8 +220,8 @@ export default function Chat() {
           ...prev,
           `__SESSION_END__`,
           `Grace: ${data.closing_message}`,
-          setSessionEnded(true);
         ]);
+       setSessionEnded(true);
       }
 
       await closeSession(
@@ -712,13 +712,13 @@ export default function Chat() {
         <div style={{ textAlign: "center", padding: "4px 0 2px", background: "rgba(13,14,26,0.80)" }}>
           <button
              onClick={async () => {
-                setShowEndSession(true);
-                if (sessionId && userId) {
-                await handleSessionClose(messages, userId, sessionId);
-                setSessionEnded(true);
-                }
-             setShowEndSession(false);
-            }}
+  setShowEndSession(true);
+  if (sessionId && userId) {
+    await handleSessionClose(messages, userId, sessionId);
+  }
+  setSessionEnded(true);
+  setShowEndSession(false);
+}}
             style={{
               background: "none", border: "none",
               fontSize: "11px",
