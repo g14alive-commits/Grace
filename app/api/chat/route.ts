@@ -26,9 +26,8 @@ export async function POST(req: Request) {
 
     const memoryBlock = buildMemoryBlock(userProfile, sessionNumber);
     const userContextBlock = buildUserContextBlock(dbUser);
-const contextBlock = [userContextBlock, sessionMemory || memoryBlock].filter(Boolean).join("\n\n");
-
-    const twoHourBlock = twoHourWarning
+    const contextBlock = [userContextBlock, sessionContext, sessionMemory || memoryBlock].filter(Boolean).join("\n\n");
+    const twoHourBlock = twoHourWarning;
       ? `\n\nSESSION TIME LIMIT: This user has been in active conversation for 2 hours. After your next response, gently close the session. Say something warm like: "We've covered a lot today. I think this is a good place to pause — take some time with what came up. I'll be here when you're ready. Want to stop here for today, or is there something else on your mind?" Then wait for their response. If they want to continue, honour that. If they say goodbye or indicate they're done, close warmly.`
       : "";
 
@@ -93,22 +92,14 @@ const contextBlock = [userContextBlock, sessionMemory || memoryBlock].filter(Boo
 
 function detectSessionClose(text: string): boolean {
   const closeSignals = [
-    "take some time with what came up",
-    "i'll be here when you're ready",
-    "that's enough for today",
-    "good place to pause",
-    "pick this up next time",
-    "take care of yourself",
-    "well done today",
-    "you've done real work today",
-    "sit with that",
-    "that's the work",
-    "come back when",
     "see you next time",
     "until next time",
-    "rest now",
-    "that's all for today",
-    "you've done enough today",
+    "take care, ",
+    "goodbye",
+    "good bye",
+    "i'll be here when you're ready to come back",
+    "come back when you're ready",
+    "pick this up next time",
   ];
   const lower = text.toLowerCase();
   return closeSignals.some((signal) => lower.includes(signal));
