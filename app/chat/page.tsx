@@ -90,25 +90,18 @@ export default function Chat() {
         if (saved) {
           setMessages(JSON.parse(saved));
         } else {
-          startConversation(profile, dbUserData, activeSession.session_number, false);
-        }
-      } else {
-        // Count existing sessions to get correct session number
-        const { count: sessionCount } = await supabase
-          .from("sessions")
-          .select("*", { count: "exact", head: true })
-          .eq("user_id", user.id)
-          .eq("is_complete", true);
-  
-        const newSessionNumber = (sessionCount || 0) + 1;
-        setSessionNumber(newSessionNumber);
-        const newSession = await createSession(user.id, newSessionNumber);
-        if (newSession) {
-          setSessionId(newSession.id);
-          setSessionStartTime(Date.now());
-        }
-        startConversation(profile, dbUserData, newSessionNumber, true);
-      }
+  const { count: sessionCount } = await supabase
+    .from("sessions")
+    .select("*", { count: "exact", head: true })
+    .eq("user_id", user.id)
+    .eq("is_complete", true);
+
+  const newSessionNumber = (sessionCount || 0) + 1;
+  setSessionNumber(newSessionNumber);
+  // Don't create session in DB yet — create on first message
+  setSessionStartTime(Date.now());
+  startConversation(profile, dbUserData, newSessionNumber, true);
+}
       setAuthLoading(false);
     });
   }, []);
@@ -256,9 +249,15 @@ export default function Chat() {
     const newCount = activeMessageCount + 1;
     setActiveMessageCount(newCount);
 
-    if (sessionId) {
-      await updateSessionMessages(sessionId, newCount, updatedMessages.length);
-    }
+    if (!sessionId && userId) {
+  const newSession = await createSession(userId, sessionNumber);
+  if (newSession) {
+    setSessionId(newSession.id);
+  }
+}
+if (sessionId) {
+  await updateSessionMessages(sessionId, newCount, updatedMessages.length);
+}
 
     const twoHourReached = checkSessionTime(newCount);
 
