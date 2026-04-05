@@ -24,12 +24,13 @@ export async function POST(req: Request) {
       return Response.json({ result: null });
     }
 
-    const memoryBlock = buildMemoryBlock(userProfile, sessionNumber);
-    const userContextBlock = buildUserContextBlock(dbUser);
-    const contextBlock = [userContextBlock, sessionContext, sessionMemory || memoryBlock].filter(Boolean).join("\n\n");
-    const twoHourBlock = twoHourWarning;
-      ? `\n\nSESSION TIME LIMIT: This user has been in active conversation for 2 hours. After your next response, gently close the session. Say something warm like: "We've covered a lot today. I think this is a good place to pause — take some time with what came up. I'll be here when you're ready. Want to stop here for today, or is there something else on your mind?" Then wait for their response. If they want to continue, honour that. If they say goodbye or indicate they're done, close warmly.`
-      : "";
+    const sessionContext = `Session number: ${sessionNumber}. ${isNewSession ? "This is a new session." : "This is a returning user — do not introduce yourself."}`;
+const memoryBlock = buildMemoryBlock(userProfile, sessionNumber);
+const userContextBlock = buildUserContextBlock(dbUser);
+const contextBlock = [userContextBlock, sessionContext, sessionMemory || memoryBlock].filter(Boolean).join("\n\n");
+const twoHourBlock = twoHourWarning
+  ? "\n\nSESSION TIME LIMIT: This user has been in active conversation for 2 hours. After your next response, gently close the session. Say something warm and human. Then wait for their response. If they want to continue, honour that. If they say goodbye or indicate they're done, close warmly."
+  : "";
 
     const fullPrompt =
       systemPrompt +
@@ -57,9 +58,7 @@ export async function POST(req: Request) {
         ? response.content[0].text
         : "No response";
 
-   const sessionContext = `Session number: ${sessionNumber}. ${isNewSession ? "This is a new session." : "This is a returning user — do not introduce yourself."}`;
-
-    const sessionComplete = detectSessionClose(aiText);
+       const sessionComplete = detectSessionClose(aiText);
 
     // Extract profile updates every 4 messages
     let profileUpdates = null;

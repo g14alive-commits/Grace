@@ -45,9 +45,9 @@ Return this exact JSON:
   "key_words": ["significant phrase the user said"],
   "action_taken": "action or insight Grace anchored at the close",
   "growth_signals": ["any positive shifts detected"],
-  "headline": "3-4 words maximum. A chapter-heading style title, self-focused. Examples: 'Why I go quiet', 'Underneath the anger', 'Choosing to stay', 'First time I didn't run'. Never more than 4 words. Never mention the partner by name.",
+  "headline": "2-3 words maximum. A chapter-heading style title, self-focused. Examples: 'Why I go quiet', 'Underneath the anger', 'Choosing to stay', 'First time I didn't run'. Never more than 4 words. Never mention the partner by name.",
   
-"closing_message": "A warm closing message from Grace. Follow this structure exactly — no more: (1) One plain sentence on why they came today. (2)key insight from the session — only include if there was a genuinely meaningful one, skip it entirely if not. (3) The action or decision they made. End with one warm human line. Address them by name if provided: ${userName || ""}. No clinical language. No lists. No bullet points. Under 80 words total. Should feel like a real person closing a real conversation."
+"closing_message": "A warm closing message from Grace. Follow this structure exactly — no more: (1) One plain sentence on why they came today.\n (2)key insight from the session — only include if there was a genuinely meaningful one, skip it entirely if not.\n (3) The action or decision they made. End with one warm human line. Address them by name if provided: ${userName || ""}. No clinical language. No lists. No bullet points. Under 80 words total. Should feel like a real person closing a real conversation."
 }`,
         },
       ],
@@ -60,7 +60,8 @@ Return this exact JSON:
     const parsed = JSON.parse(raw.replace(/```json|```/g, "").trim());
 
     const lastTen = messages.slice(-10);
-return Response.json({ ...parsed, last_ten_messages: lastTen });
+const { pattern, ...publicData } = parsed;
+// pattern saved separately, never exposed to frontendreturn Response.json({ ...publicData, last_ten_messages: lastTen });
   } catch (error) {
     console.error(error);
     return Response.json({ error: "Failed to generate summary" }, { status: 500 });
