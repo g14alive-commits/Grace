@@ -8,14 +8,15 @@ const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
 export async function POST(req: Request) {
   try {
     const {
-      messages,
-      userProfile,
-      sessionNumber,
-      sessionMemory,
-      isNewSession,
-      twoHourWarning,
-      userId,
-    } = await req.json();
+  messages,
+  userProfile,
+  sessionNumber,
+  sessionMemory,
+  isNewSession,
+  twoHourWarning,
+  userId,
+  lastSessionDate,
+} = await req.json();
    const dbUser = userId ? await getOrCreateUser(userId, "") : null;
 
     // Ignore keep-alive pings silently
@@ -24,8 +25,19 @@ export async function POST(req: Request) {
       return Response.json({ result: null });
     }
 
-    const sessionContext = `Session number: ${sessionNumber}. ${isNewSession ? "This is a new session." : "This is a returning user — do not introduce yourself."}`;
-const memoryBlock = buildMemoryBlock(userProfile, sessionNumber);
+    const now = new Date();
+const timeStr = now.toLocaleString("en-GB", { weekday: "long", hour: "2-digit", minute: "2-digit", hour12: true });
+const timeSinceLastSession = lastSessionDate
+  ? (() => {
+      const diff = Date.now() - new Date(lastSessionDate).getTime();
+      const hours = Math.floor(diff / (1000 * 60 * 60));
+      const days = Math.floor(hours / 24);
+      if (days > 0) return `${days} day${days > 1 ? "s" : ""} ago`;
+      if (hours > 0) return `${hours} hour${hours > 1 ? "s" : ""} ago`;
+      return "less than an hour ago";
+    })()
+  : null;
+const sessionContext = `Session number: ${sessionNumber}. Current time: ${timeStr}.${timeSinceLastSession ? ` Last session was ${timeSinceLastSession}.` : ""} ${isNewSession ? "This is a new session." : "This is a returning user — do not introduce yourself."}`;const memoryBlock = buildMemoryBlock(userProfile, sessionNumber);
 const userContextBlock = buildUserContextBlock(dbUser);
 const contextBlock = [userContextBlock, sessionContext, sessionMemory || memoryBlock].filter(Boolean).join("\n\n");
 const twoHourBlock = twoHourWarning

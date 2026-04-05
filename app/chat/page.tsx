@@ -181,12 +181,13 @@ export default function Chat() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          messages: [{ role: "user", content: "begin" }],
-          userProfile: profile,
-          sessionNumber: sessNum,
-          sessionMemory,
-          isNewSession,
-        }),
+  messages: [{ role: "user", content: "begin" }],
+  userProfile: profile,
+  sessionNumber: sessNum,
+  sessionMemory,
+  isNewSession,
+  lastSessionDate: dbUserData?.updated_at || null,
+}),
       });
       const data = await response.json();
       if (data.result) setMessages(["Grace: " + data.result]);
