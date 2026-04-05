@@ -85,23 +85,23 @@ export default function Chat() {
         setSessionNumber(activeSession.session_number);
         setSessionStartTime(new Date(activeSession.started_at).getTime());
         setActiveMessageCount(activeSession.user_message_count || 0);
-
         const saved = localStorage.getItem(`grace-session-${activeSession.id}`);
         if (saved) {
           setMessages(JSON.parse(saved));
         } else {
-  const { count: sessionCount } = await supabase
-    .from("sessions")
-    .select("*", { count: "exact", head: true })
-    .eq("user_id", user.id)
-    .eq("is_complete", true);
-
-  const newSessionNumber = (sessionCount || 0) + 1;
-  setSessionNumber(newSessionNumber);
-  // Don't create session in DB yet — create on first message
-  setSessionStartTime(Date.now());
-  startConversation(profile, dbUserData, newSessionNumber, true);
-}
+          startConversation(profile, dbUserData, activeSession.session_number, false);
+        }
+      } else {
+        const { count: sessionCount } = await supabase
+          .from("sessions")
+          .select("*", { count: "exact", head: true })
+          .eq("user_id", user.id)
+          .eq("is_complete", true);
+        const newSessionNumber = (sessionCount || 0) + 1;
+        setSessionNumber(newSessionNumber);
+        setSessionStartTime(Date.now());
+        startConversation(profile, dbUserData, newSessionNumber, true);
+      }
       setAuthLoading(false);
     });
   }, []);
