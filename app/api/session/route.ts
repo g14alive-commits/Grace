@@ -4,7 +4,7 @@ const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
 
 export async function POST(req: Request) {
   try {
-    const { messages, userName } = await req.json();
+    const { messages, userName, isAbrupt } = await req.json();
 
     const allMessages = messages
       .map((m: string) => {
@@ -19,19 +19,35 @@ export async function POST(req: Request) {
       messages: [
         {
           role: "user",
-          content: `Read this therapy session and extract key information. Return ONLY valid JSON, no markdown. Never use clinical words like "nervous system", "dysregulated", "attachment", "anxious", "avoidant". Use plain human language.
+          content: isAbrupt ? 
+`This session ended mid-conversation — the user ran out of time. Return ONLY valid JSON, no markdown.
 
 ${allMessages}
 
 Return this exact JSON:
 {
-  "summary": "2-3 sentence summary of what was covered and where the person landed",
+  "summary": "2-3 sentences only. What they came with and what was unresolved or resolved.",
+  "themes": ["theme1"],
+  "key_words": ["significant phrase the user said"],
+  "action_taken": "",
+  "growth_signals": [],
+  "headline": "3-4 words max, self-focused",
+  "closing_message": "One warm sentence acknowledging what issue they came up with, what went through the session and inviting them to pick it up next time. Under 50 words."
+}`
+:
+`Read this therapy session and extract key information. Return ONLY valid JSON, no markdown. Never use clinical words like "nervous system", "dysregulated", "attachment", "anxious", "avoidant". Use plain human language.
+${allMessages}
+Return this exact JSON:
+{
+  "summary": "Use this exact format:\nIssue: [one-two line on what they came with]\nGrowth signals: [any positive shifts detected, or 'none']\nAction agreed: [the one thing they committed to, or 'none']\nTone shift: [yes / partial / no]\nRelationship facts added: [any new facts about their relationship extracted, or 'none']",
+"pattern": "reaches harder / steps back / balanced — detect from conversation. This is for internal DB only, never display to user.",
   "themes": ["theme1", "theme2"],
   "key_words": ["significant phrase the user said"],
-  "action_taken": "the one action or insight Grace anchored at the close",
+  "action_taken": "action or insight Grace anchored at the close",
   "growth_signals": ["any positive shifts detected"],
-  "headline": "3-4 words maximum. A chapter-heading style title, self-focused. Examples: 'Why I go quiet', 'Underneath the anger', 'Choosing to stay', 'First time I didn't run'. Never more than 4 words. Never mention the partner by name."
-  "closing_message": "A warm closing message from Grace. Follow this structure exactly — no more: (1) One plain sentence on why they came today. (2) One key insight from the session — only include if there was a genuinely meaningful one, skip it entirely if not. (3) The one action or decision they made. End with one warm human line. Address them by name if provided: ${userName || ""}. No clinical language. No lists. No bullet points. Under 80 words total. Should feel like a real person closing a real conversation."
+  "headline": "3-4 words maximum. A chapter-heading style title, self-focused. Examples: 'Why I go quiet', 'Underneath the anger', 'Choosing to stay', 'First time I didn't run'. Never more than 4 words. Never mention the partner by name.",
+  
+"closing_message": "A warm closing message from Grace. Follow this structure exactly — no more: (1) One plain sentence on why they came today. (2)key insight from the session — only include if there was a genuinely meaningful one, skip it entirely if not. (3) The action or decision they made. End with one warm human line. Address them by name if provided: ${userName || ""}. No clinical language. No lists. No bullet points. Under 80 words total. Should feel like a real person closing a real conversation."
 }`,
         },
       ],

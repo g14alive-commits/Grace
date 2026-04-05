@@ -196,14 +196,15 @@ export default function Chat() {
     setLoading(false);
   };
 
-  const handleSessionClose = async (msgs: string[], uId: string, sId: string) => {
+  const handleSessionClose = async (msgs: string[], uId: string, sId: string, isAbrupt = false) => {
     try {
       const response = await fetch("/api/session", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          messages: msgs,
-          userName: dbUser?.name || "",
+        messages: msgs,
+        userName: dbUser?.name || "",
+        isAbrupt,
         }),
       });
       const data = await response.json();
@@ -279,12 +280,11 @@ if (sessionId) {
   const newMessages = [...updatedMessages, "Grace: " + data.result];
   setMessages(newMessages);
 
-  if (twoHourReached && sessionId && userId) {
-    await handleSessionClose(newMessages, userId, sessionId);
-    setSessionEnded(true);
-  }
+     if (twoHourReached && sessionId && userId) {
+  await handleSessionClose(newMessages, userId, sessionId, true);
+  setSessionEnded(true);
+ }
 }
-
       if (data.profileUpdates) {
         setUserProfile((prev) => ({ ...prev, ...data.profileUpdates }));
       }
