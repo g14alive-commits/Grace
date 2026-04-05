@@ -592,8 +592,8 @@ if (sessionId) {
     </button>
   )}
   {sessionEnded && (
-    <button
-      onClick={() => router.push("/chat")}
+  <button
+    onClick={() => { window.location.href = "/chat"; }}
       style={{
         background: "none",
         border: "1px solid rgba(160,120,240,0.25)",
