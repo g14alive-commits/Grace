@@ -15,7 +15,8 @@ export default function Profile() {
   const [showChangeEmail, setShowChangeEmail] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showRemoveConfirm, setShowRemoveConfirm] = useState(false);
-  const [showAbout, setShowAbout] = useState(false);
+  const [actions, setActions] = useState<any[]>([]);
+  const [completed, setCompleted] = useState<string[]>([]);
   const [vh, setVh] = useState(0);
   const router = useRouter();
 
@@ -39,6 +40,20 @@ export default function Profile() {
         setDbUser(user);
         setName(user.name || "");
       }
+  
+      const { data: sessions } = await supabase
+  .from("sessions")
+  .select("id, session_number, action_taken, started_at")
+  .eq("user_id", data.session.user.id)
+  .not("action_taken", "is", null)
+  .neq("action_taken", "")
+  .order("started_at", { ascending: false });
+if (sessions) {
+  setActions(sessions.filter(s => s.action_taken?.trim()));
+}
+if (user?.completed_actions) {
+  setCompleted(user.completed_actions);
+}
       setLoading(false);
     });
   }, []);
@@ -101,6 +116,16 @@ export default function Profile() {
     await supabase.auth.signOut();
     router.replace("/login");
   };
+
+  const toggleAction = async (id: string) => {
+  const { data } = await supabase.auth.getSession();
+  if (!data.session) return;
+  const newCompleted = completed.includes(id)
+    ? completed.filter(c => c !== id)
+    : [...completed, id];
+  setCompleted(newCompleted);
+  await supabase.from("users").update({ completed_actions: newCompleted }).eq("id", data.session.user.id);
+};
 
   const appHeight = vh > 0 ? `${vh}px` : "100vh";
 
@@ -505,6 +530,61 @@ export default function Profile() {
           </div>
 
           {/* Sessions */}
+          {/* Actions */}
+{actions.length > 0 && (
+  <div style={{ marginBottom: "28px" }}>
+    <div className="field-label" style={{ marginBottom: "12px" }}>
+      Actions — {completed.length}/{actions.length} done
+    </div>
+    <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+      {actions.map(action => {
+        const isDone = completed.includes(action.id);
+        return (
+          <div
+            key={action.id}
+            onClick={() => toggleAction(action.id)}
+            style={{
+              display: "flex", alignItems: "flex-start", gap: "14px",
+              padding: "14px 16px",
+              background: isDone ? "rgba(160,120,240,0.06)" : "rgba(255,255,255,0.04)",
+              border: `1px solid ${isDone ? "rgba(160,120,240,0.20)" : "rgba(255,255,255,0.08)"}`,
+              borderRadius: "14px", cursor: "pointer", transition: "all 0.2s",
+            }}
+          >
+            <div style={{
+              width: "20px", height: "20px", borderRadius: "50%", flexShrink: 0, marginTop: "1px",
+              border: `1.5px solid ${isDone ? "rgba(160,120,240,0.60)" : "rgba(160,120,240,0.35)"}`,
+              background: isDone ? "rgba(160,120,240,0.30)" : "transparent",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              transition: "all 0.2s",
+            }}>
+              {isDone && (
+                <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                  <path d="M1.5 5l2.5 2.5 4.5-4.5" stroke="rgba(200,180,255,0.90)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              )}
+            </div>
+            <div style={{ flex: 1 }}>
+              <div style={{
+                fontSize: "14px", fontWeight: 300, lineHeight: 1.55,
+                color: isDone ? "rgba(160,140,220,0.50)" : "rgba(220,210,255,0.85)",
+                textDecoration: isDone ? "line-through" : "none",
+                textDecorationColor: "rgba(160,120,240,0.30)",
+                transition: "all 0.2s",
+              }}>{action.action_taken}</div>
+              <div style={{
+                fontSize: "10px", fontWeight: 400, letterSpacing: "0.06em",
+                textTransform: "uppercase", color: "rgba(140,130,180,0.35)", marginTop: "5px",
+              }}>
+                Session {action.session_number} · {new Date(action.started_at).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}
+              </div>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  </div>
+)}
           <div className="stat-card">
             <div className="stat-label-text">Sessions with Grace</div>
             <div className="stat-value">{dbUser?.session_count || 0}</div>
