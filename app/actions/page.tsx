@@ -188,12 +188,16 @@ export default function Commitments() {
         </div>
 
         <div className="header">
-          <button className="back-btn" onClick={() => router.push("/profile")}>← Back</button>
-          <div>
-            <div className="header-name">Commitments</div>
-            <div className="header-sub">what you said you'd do</div>
-          </div>
-        </div>
+  <button className="back-btn" onClick={() => router.push("/profile")}>← Back</button>
+  <div>
+    <div className="header-name">Commitments</div>
+    {actions.length > 0 && (
+      <div className="header-sub">
+        {completed.length} of {actions.length} done
+      </div>
+    )}
+  </div>
+</div>
 
         <div className="scroll-area">
           {loading ? null : actions.length === 0 ? (
@@ -202,8 +206,17 @@ export default function Commitments() {
               <div>When Grace and you agree on something,<br />it'll show up here.</div>
             </div>
           ) : (
-            actions.map(action => {
-              const isDone = completed.includes(action.id);
+            <>
+              <div style={{
+                fontSize: "12px", fontWeight: 300,
+                color: "rgba(140,130,180,0.40)",
+                marginBottom: "20px",
+                letterSpacing: "0.02em",
+              }}>
+                {completed.length} of {actions.length} commitments done
+              </div>
+              {actions.map(action => {
+                const isDone = completed.includes(action.id);
               return (
                 <div
                   key={action.id}
@@ -223,7 +236,8 @@ export default function Commitments() {
                   </div>
                 </div>
               );
-            })
+            })}
+            </>
           )}
         </div>
       </div>
