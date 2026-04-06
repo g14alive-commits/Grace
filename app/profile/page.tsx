@@ -529,10 +529,8 @@ if (user?.completed_actions) {
               <div className="action-empty">Complete a session with Grace and she'll leave you with something to work on.</div>
             )}
           </div>
-
-          {/* Sessions */}
           
-{/* Actions */}
+{/* Commitments */}
 <div className="about-card" style={{ marginBottom: "16px" }}>
   <div className="about-row" onClick={() => router.push("/actions")}>
     <div>
@@ -544,11 +542,6 @@ if (user?.completed_actions) {
     <span className="about-row-arrow">›</span>
   </div>
 </div>
-
-          <div className="stat-card">
-            <div className="stat-label-text">Sessions with Grace</div>
-            <div className="stat-value">{dbUser?.session_count || 0}</div>
-          </div>
 
           <div className="divider" />
 
