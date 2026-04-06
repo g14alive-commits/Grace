@@ -211,7 +211,7 @@ if (user?.completed_actions) {
         }
 
         .scroll {
-          flex: 1; overflow-y: auto; padding: 32px 24px 24px;
+          flex: 1; overflow-y: auto; padding: 20px 20px 24px;
           position: relative; z-index: 1;
         }
 
@@ -219,13 +219,13 @@ if (user?.completed_actions) {
 
         .greeting {
           font-family: 'Cormorant Garamond', serif;
-          font-size: 32px; font-weight: 300;
-          color: var(--text-primary); margin-bottom: 6px; line-height: 1.2;
+          font-size: 26px; font-weight: 300;
+          color: var(--text-primary); margin-bottom: 4px; line-height: 1.2;
         }
 
         .greeting-sub {
           font-size: 14px; font-weight: 300;
-          color: var(--text-muted); margin-bottom: 32px;
+          color: var(--text-muted); margin-bottom: 20px;
         }
 
         .field-label {
@@ -234,7 +234,7 @@ if (user?.completed_actions) {
         }
 
         .name-row {
-          display: flex; gap: 10px; align-items: center; margin-bottom: 28px;
+          display: flex; gap: 10px; align-items: center; margin-bottom: 16px;
         }
 
         .name-input {
@@ -264,7 +264,7 @@ if (user?.completed_actions) {
 
         .action-card {
           background: var(--surface); border: 1px solid var(--border);
-          border-radius: 18px; padding: 18px 20px; margin-bottom: 16px;
+          border-radius: 18px; padding: 12px 16px; margin-bottom: 16px;
         }
 
         .action-label {
@@ -315,7 +315,7 @@ if (user?.completed_actions) {
         }
 
         .about-row {
-          padding: 16px 20px;
+          padding: 12px 16px;
           display: flex; align-items: center; justify-content: space-between;
           cursor: pointer; transition: background 0.2s;
           border-bottom: 1px solid var(--divider);
@@ -344,7 +344,7 @@ if (user?.completed_actions) {
         }
 
         .account-row {
-          padding: 16px 20px;
+          padding: 12px 16px;
           border-bottom: 1px solid var(--divider);
         }
 
@@ -394,7 +394,7 @@ if (user?.completed_actions) {
         }
 
         .danger-row {
-          padding: 16px 20px;
+          padding: 12px 16px;
           border-bottom: 1px solid var(--divider);
           cursor: pointer; transition: background 0.2s;
         }
