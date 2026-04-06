@@ -188,14 +188,10 @@ export default function Commitments() {
         </div>
 
         <div className="header">
-  <button className="back-btn" onClick={() => router.push("/profile")}>← Back</button>
+  <button className="back-btn" onClick={() => router.push("/profile")}>← </button>
   <div>
     <div className="header-name">Commitments</div>
-    {actions.length > 0 && (
-      <div className="header-sub">
-        {completed.length} of {actions.length} done
-      </div>
-    )}
+<div className="header-sub">Feelings follow actions. Keep going.</div>
   </div>
 </div>
 
