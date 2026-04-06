@@ -536,7 +536,7 @@ if (user?.completed_actions) {
     <div>
       <span className="about-row-label">Commitments</span>
       <div style={{ fontSize: "12px", color: "rgba(140,130,180,0.45)", fontWeight: 300, marginTop: "2px" }}>
-        What you said you'd do
+        Things you're moving toward
       </div>
     </div>
     <span className="about-row-arrow">›</span>
