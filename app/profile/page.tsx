@@ -522,7 +522,7 @@ if (user?.completed_actions) {
 
           {/* Last action */}
           <div className="action-card">
-            <div className="action-label">Last action from Grace</div>
+            <div className="action-label">Your next step</div>
             {dbUser?.last_session_action ? (
               <div className="action-text">"{dbUser.last_session_action}"</div>
             ) : (
