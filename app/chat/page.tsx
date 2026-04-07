@@ -189,7 +189,9 @@ export default function Chat() {
   lastSessionDate: dbUserData?.updated_at || null,
         }),
       });
-      const data = await response.json();
+      const text = await response.text();
+if (!text) throw new Error("Empty response from session API");
+const data = JSON.parse(text);
       if (data.result) setMessages(["Grace: " + data.result]);
     } catch (e) {
       console.error(e);

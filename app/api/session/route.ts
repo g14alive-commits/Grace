@@ -29,8 +29,6 @@ Return this exact JSON:
   "summary": "2-3 sentences only. What they came with and what was unresolved or resolved.",
   "themes": ["theme1"],
   "key_words": ["significant phrase the user said"],
-  "action_taken": "",
-  "growth_signals": [],
   "headline": "3-4 words max, self-focused",
   "closing_message": "One warm sentence acknowledging what issue they came up with, what went through the session and inviting them to pick it up next time. Under 50 words."
 }`
@@ -53,11 +51,29 @@ Return this exact JSON:
       ],
     });
 
-    const raw =
-      response.content[0].type === "text"
-        ? response.content[0].text.trim()
-        : "{}";
-    const parsed = JSON.parse(raw.replace(/```json|```/g, "").trim());
+  const raw =
+  response.content[0].type === "text"
+    ? response.content[0].text.trim()
+    : "{}";
+
+try {
+  const parsed = JSON.parse(raw.replace(/```json|```/g, "").trim());
+  const lastTen = messages.slice(-10);
+  const { pattern, ...publicData } = parsed;
+  return Response.json({ ...publicData, last_ten_messages: lastTen });
+} catch (e) {
+  console.error("Failed to parse session JSON:", raw);
+  return Response.json({
+    summary: "",
+    themes: [],
+    key_words: [],
+    action_taken: "",
+    growth_signals: [],
+    headline: "",
+    closing_message: "Something went wrong closing this session. Your conversation is saved.",
+    last_ten_messages: messages.slice(-10),
+  });
+}
 
     const lastTen = messages.slice(-10);
 const { pattern, ...publicData } = parsed;
