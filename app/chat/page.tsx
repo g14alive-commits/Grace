@@ -187,7 +187,7 @@ export default function Chat() {
   sessionMemory,
   isNewSession,
   lastSessionDate: dbUserData?.updated_at || null,
-}),
+        }),
       });
       const data = await response.json();
       if (data.result) setMessages(["Grace: " + data.result]);
@@ -198,17 +198,19 @@ export default function Chat() {
   };
 
   const handleSessionClose = async (msgs: string[], uId: string, sId: string, isAbrupt = false) => {
+    console.log("handleSessionClose called with sId:", sId, "uId:", uId, "isAbrupt:", isAbrupt);
     try {
       const response = await fetch("/api/session", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-        messages: msgs,
-        userName: dbUser?.name || "",
-        isAbrupt,
+          messages: msgs,
+          userName: dbUser?.name || "",
+          isAbrupt,
         }),
       });
       const data = await response.json();
+      console.log("Session close response:", data);
 
       if (data.closing_message) {
         setMessages((prev) => [
@@ -216,27 +218,27 @@ export default function Chat() {
           `__SESSION_END__`,
           `Grace: ${data.closing_message}`,
         ]);
-       setSessionEnded(true);
+        setSessionEnded(true);
       }
 
       await closeSession(
-  sId, uId,
-  data.summary || "",
-  data.themes || [],
-  data.key_words || [],
-  data.action_taken || "",
-  data.growth_signals || [],
-  data.headline || "",
-  data.last_ten_messages || []
-);
+        sId, uId,
+        data.summary || "",
+        data.themes || [],
+        data.key_words || [],
+        data.action_taken || "",
+        data.growth_signals || [],
+        data.headline || "",
+        data.last_ten_messages || []
+      );
 
       localStorage.removeItem(`grace-session-${sId}`);
       setSessionId(null);
       setActiveMessageCount(0);
       if (uId) loadPastSessions(uId);
-   const data = await response.json();
-console.log("Session close response:", data);
-console.log("Saving to session ID:", sId);
+    } catch (e) {
+      console.error("Session close failed:", e);
+    }
   };
 
   const sendMessage = async () => {
@@ -263,10 +265,6 @@ if (!sessionId && userId) {
 if (currentSessionId) {
   await updateSessionMessages(currentSessionId, newCount, updatedMessages.length);
 }
-if (sessionId) {
-  await updateSessionMessages(sessionId, newCount, updatedMessages.length);
-}
-
     const twoHourReached = checkSessionTime(newCount);
 
     try {
