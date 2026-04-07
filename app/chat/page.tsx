@@ -26,7 +26,7 @@ interface UserProfile {
   sessionCount?: number;
 }
 
-const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
+const TWO_HOURS_MS = 2 * 60 * 1000;
 
 export default function Chat() {
   const [messages, setMessages] = useState<string[]>([]);
@@ -155,7 +155,7 @@ export default function Chat() {
   const checkSessionTime = (msgCount: number) => {
     if (!sessionStartTime) return false;
     const elapsed = Date.now() - sessionStartTime;
-    return elapsed >= TWO_HOURS_MS && msgCount > 10;
+    return elapsed >= TWO_HOURS_MS && msgCount > 2;
   };
 
   const toApiMessages = (msgs: string[]) => {
@@ -234,9 +234,9 @@ export default function Chat() {
       setSessionId(null);
       setActiveMessageCount(0);
       if (uId) loadPastSessions(uId);
-    } catch (e) {
-      console.error("Session close failed:", e);
-    }
+   const data = await response.json();
+console.log("Session close response:", data);
+console.log("Saving to session ID:", sId);
   };
 
   const sendMessage = async () => {
