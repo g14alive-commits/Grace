@@ -26,7 +26,7 @@ const slides = [
   {
     id: 4,
     headline: "Start with Grace.",
-    body: "Your AI relationship companion.\n\nShe'll help you understand your patterns, see your relationship more clearly, and find one small thing to do differently.",
+    body: "Your AI relationship companion.\n\nGrace will help you understand your patterns, see your relationship more clearly, and find one small thing to do differently.",
     cta: true,
     ripple: true,
   },
