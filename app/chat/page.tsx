@@ -251,11 +251,17 @@ export default function Chat() {
     const newCount = activeMessageCount + 1;
     setActiveMessageCount(newCount);
 
-    if (!sessionId && userId) {
+    let currentSessionId = sessionId;
+
+if (!sessionId && userId) {
   const newSession = await createSession(userId, sessionNumber);
   if (newSession) {
     setSessionId(newSession.id);
+    currentSessionId = newSession.id;
   }
+}
+if (currentSessionId) {
+  await updateSessionMessages(currentSessionId, newCount, updatedMessages.length);
 }
 if (sessionId) {
   await updateSessionMessages(sessionId, newCount, updatedMessages.length);
@@ -281,10 +287,10 @@ if (sessionId) {
   const newMessages = [...updatedMessages, "Grace: " + data.result];
   setMessages(newMessages);
 
-     if (twoHourReached && sessionId && userId) {
-  await handleSessionClose(newMessages, userId, sessionId, true);
+     if (twoHourReached && currentSessionId && userId) {
+  await handleSessionClose(newMessages, userId, currentSessionId, true);
   setSessionEnded(true);
- }
+}
 }
       if (data.profileUpdates) {
         setUserProfile((prev) => ({ ...prev, ...data.profileUpdates }));
