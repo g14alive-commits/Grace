@@ -70,7 +70,7 @@ try {
     action_taken: "",
     growth_signals: [],
     headline: "",
-    closing_message: "Something went wrong closing this session. Your conversation is saved.",
+    closing_message: "Something went wrong closing this session. Come back in a short while. Take care.",
     last_ten_messages: messages.slice(-10),
   });
 }
