@@ -57,7 +57,10 @@ Return this exact JSON:
     : "{}";
 
 try {
-  const parsed = JSON.parse(raw.replace(/```json|```/g, "").trim());
+    const cleaned = raw.replace(/```json|```/g, "").trim();
+    const jsonMatch = cleaned.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) throw new Error("No JSON found");
+    const parsed = JSON.parse(jsonMatch[0]);
   const lastTen = messages.slice(-10);
   const { pattern, ...publicData } = parsed;
   return Response.json({ ...publicData, last_ten_messages: lastTen });

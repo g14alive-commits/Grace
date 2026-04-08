@@ -169,7 +169,9 @@ Return ONLY valid JSON. No explanation. No markdown backticks.`,
         : "{}";
 
     const cleaned = raw.replace(/```json|```/g, "").trim();
-    const parsed = JSON.parse(cleaned);
+    const jsonMatch = cleaned.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) return null;
+    const parsed = JSON.parse(jsonMatch[0]);
 
     const filtered: any = {};
     Object.entries(parsed).forEach(([key, value]) => {
