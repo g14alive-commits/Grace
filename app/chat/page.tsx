@@ -26,7 +26,7 @@ interface UserProfile {
   sessionCount?: number;
 }
 
-const TWO_HOURS_MS = 2 * 60 * 1000;
+const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
 
 export default function Chat() {
   const [messages, setMessages] = useState<string[]>([]);
@@ -155,7 +155,7 @@ export default function Chat() {
   const checkSessionTime = (msgCount: number) => {
     if (!sessionStartTime) return false;
     const elapsed = Date.now() - sessionStartTime;
-    return elapsed >= TWO_HOURS_MS && msgCount > 2;
+    return elapsed >= TWO_HOURS_MS && msgCount > 10;
   };
 
   const toApiMessages = (msgs: string[]) => {
