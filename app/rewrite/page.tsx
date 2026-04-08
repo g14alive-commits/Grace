@@ -98,21 +98,22 @@ export default function Rewrite() {
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
-    const isOption = line.match(/^\*\*Option\s+\d+\s*[—–-]\s*(\w+)\*\*/i);
+    const isOption = line.match(/\*{0,2}Option\s+\d+\s*[—–\-]\s*(\w+)\*{0,2}/i);
     if (isOption) {
       if (current) suggestions.push(current);
       const cleanLabel = line.replace(/\*\*/g, "").trim();
       current = { label: cleanLabel, content: "" };
     } else if (current) {
-      if (line.match(/^\*\*Advice/)) {
+      if (line.match(/\*{0,2}Advice/i)) {
         suggestions.push(current);
         current = null;
         break;
       }
-      current.content += (current.content ? " " : "") + line.trim();
+      const cleaned = line.replace(/\*\*/g, "").trim();
+      if (cleaned) current.content += (current.content ? " " : "") + cleaned;
     }
   }
-  if (current) suggestions.push(current);
+  if (current && current.content) suggestions.push(current);
   return suggestions.filter(s => s.content.length > 0);
 };
 
