@@ -75,10 +75,7 @@ try {
   });
 }
 
-    const lastTen = messages.slice(-10);
-const { pattern, ...publicData } = parsed;
-// pattern saved separately, never exposed to frontendreturn Response.json({ ...publicData, last_ten_messages: lastTen });
-  } catch (error) {
+} catch (error) {
     console.error(error);
     return Response.json({ error: "Failed to generate summary" }, { status: 500 });
   }
