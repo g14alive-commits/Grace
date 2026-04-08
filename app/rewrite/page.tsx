@@ -85,7 +85,7 @@ export default function Rewrite() {
   };
 
   const handleCopy = (text: string, id: string) => {
-    navigator.clipboard.writeText(text).then(() => {
+    navigator.clipboard.writeText(text.replace(/^[""]|[""]$/g, "").trim()).then(() => {
       setCopied(id);
       setTimeout(() => setCopied(null), 2000);
     });
