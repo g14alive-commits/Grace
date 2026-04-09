@@ -37,11 +37,11 @@ Return this exact JSON:
 ${allMessages}
 Return this exact JSON:
 {
-  "summary": "Use this exact format:\nIssue: [one-two line on what they came with]\nGrowth signals: [any positive shifts detected, or 'none']\nAction agreed: [the one thing they committed to, or 'none']\nTone shift: [yes / partial / no]\nRelationship facts added: [any new facts about their relationship extracted, or 'none']",
+  "summary": "Use this exact format:\nIssue: [one-two line on what they came with]\nGrowth signals: [any positive shifts detected, or 'none']\nAction agreed: [the thing they committed to, or 'none']\nTone shift: [yes / partial / no]\nRelationship facts added: [any new facts about their relationship extracted, or 'none']",
 "pattern": "reaches harder / steps back / balanced — detect from conversation. This is for internal DB only, never display to user.",
   "themes": ["theme1", "theme2"],
   "key_words": ["significant phrase the user said"],
-  "action_taken": "action or insight Grace anchored at the close",
+  "action_taken": "The action or insight from this session, written directly to the user in second person. Use 'you' not 'he/she/they'. Never write in third person.",
   "growth_signals": ["any positive shifts detected"],
   "headline": "2-3 words maximum. A chapter-heading style title, self-focused. Examples: 'Why I go quiet', 'Underneath the anger', 'Choosing to stay', 'First time I didn't run'. Never more than 4 words. Never mention the partner by name.",
   

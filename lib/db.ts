@@ -237,5 +237,5 @@ export function buildUserContextBlock(dbUser: any): string {
 
   if (lines.length === 0) return "";
 
-  return "USER CONTEXT:\n" + lines.join("\n") + "\n\nUse this context naturally. Address them by name occasionally — not every message, just when it feels warm and human.";
+  return "USER CONTEXT:\n" + lines.join("\n") + "\n\nIMPORTANT: The user's name is provided above. Use it. Address them by name at least once early in the conversation and occasionally after that — when it feels warm and natural. Never go a whole session without using their name at least once.";
 }
