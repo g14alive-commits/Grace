@@ -117,9 +117,19 @@ export async function updateSessionMessages(
   totalMessages: number
 ) {
   await supabase
-    .from("sessions")
-    .update({ user_message_count: userMessageCount, total_messages: totalMessages })
-    .eq("id", sessionId);
+  .from("sessions")
+  .update({ 
+    is_complete: true,
+    summary,
+    themes,
+    key_words: keyWords,
+    action_taken: actionTaken,
+    growth_signals: growthSignals,
+    headline,
+    key_excerpts: keyExcerpts,
+    completed_at: new Date().toISOString(),
+  })
+  .eq("id", sessionId);
 }
 
 export async function closeSession(
@@ -223,6 +233,7 @@ export function buildUserContextBlock(dbUser: any): string {
   if (dbUser.gender) lines.push(`- Gender: ${dbUser.gender}`);
   if (dbUser.relationship_status) lines.push(`- Relationship status: ${dbUser.relationship_status}`);
   if (dbUser.relationship_duration) lines.push(`- Relationship duration: ${dbUser.relationship_duration}`);
+  if (dbUser.age_range) lines.push(`- Age range: ${dbUser.age_range}`);
 
   if (lines.length === 0) return "";
 
