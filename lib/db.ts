@@ -156,26 +156,6 @@ export async function closeSession(
       completed_at: new Date().toISOString(),
     })
     .eq("id", sessionId);
-
-  const { data: currentUser } = await supabase
-    .from("users")
-    .select("session_count")
-    .eq("id", userId)
-    .single();
-
-  await supabase
-    .from("users")
-    .update({
-      last_session_summary: summary,
-      last_session_themes: themes,
-      last_session_action: actionTaken,
-      last_session_key_words: keyWords,
-      session_count: (currentUser?.session_count || 0) + 1,
-      updated_at: new Date().toISOString(),
-    })
-    .eq("id", userId);
-}  
-
 // Update user's quick access fields and increment session count
   const { data: currentUser } = await supabase
     .from("users")
@@ -194,7 +174,7 @@ export async function closeSession(
       updated_at: new Date().toISOString(),
     })
     .eq("id", userId);
-}
+}  
 
 export function buildSessionMemoryBlock(dbUser: any): string {
   if (!dbUser?.last_session_summary) return "";
