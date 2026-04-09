@@ -478,10 +478,10 @@ if (currentSessionId) {
         :root {
           --bg-deep: #0d0e1a;
           --grace-bubble: rgba(255,255,255,0.06);
-          --grace-border: rgba(255,255,255,0.12);
+          --grace-border: rgba(255,255,255,0.20);
           --grace-text: rgba(240,235,255,0.95);
           --user-bubble: rgba(100,120,220,0.18);
-          --user-border: rgba(120,140,240,0.25);
+          --user-border: rgba(120,140,255,0.40);
           --user-text: rgba(220,230,255,0.90);
           --text-primary: rgba(240,235,255,0.95);
           --text-muted: rgba(140,130,180,0.60);
@@ -490,7 +490,7 @@ if (currentSessionId) {
           --divider: rgba(255,255,255,0.07);
           --input-bg: rgba(255,255,255,0.05);
           --input-border: rgba(255,255,255,0.10);
-          --input-focus: rgba(160,120,240,0.40);
+          --input-focus: rgba(150,100,255,0.65);
           --dot: rgba(200,160,255,0.80);
         }
 
@@ -601,7 +601,7 @@ if (currentSessionId) {
         textarea::placeholder { color: var(--text-muted); }
         textarea::-webkit-scrollbar { display: none; }
 
-        .send-btn { width: 34px; height: 34px; border-radius: 50%; background: linear-gradient(145deg, #c090ff 0%, #8060d0 50%, #5040b0 100%); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: transform 0.15s, opacity 0.15s; box-shadow: 0 0 16px rgba(160,120,240,0.25); } 
+        .send-btn { width: 34px; height: 34px; border-radius: 50%; background: linear-gradient(145deg, #b070ff 0%, #7040e0 50%, #4020c0 100%); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: transform 0.15s, opacity 0.15s; box-shadow: 0 0 16px rgba(160,120,240,0.25); } 
         .send-btn:disabled { opacity: 0.25; cursor: default; box-shadow: none; }
         .send-btn:not(:disabled):active { transform: scale(0.9); }
         .send-btn svg { width: 17px; height: 17px; fill: white; margin-left: 2px; }
