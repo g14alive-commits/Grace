@@ -83,14 +83,14 @@ export function profileFromDb(dbUser: any) {
 }
 
 export async function getActiveSession(userId: string) {
-  const threeHoursAgo = new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString();
+  const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
 
   const { data } = await supabase
     .from("sessions")
     .select("*")
     .eq("user_id", userId)
     .eq("is_complete", false)
-    .gte("started_at", threeHoursAgo)
+    .gte("started_at", oneDayAgo)
     .order("started_at", { ascending: false })
     .limit(1)
     .single();
