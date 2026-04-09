@@ -59,7 +59,7 @@ const twoHourBlock = twoHourWarning
         {
           type: "text",
           text: fullPrompt,
-          cache_control: { type: "ephemeral" },
+          cache_control: { type: "ephemeral", ttl: "1h" },
         },
       ] as any,
       messages: trimmedMessages,
