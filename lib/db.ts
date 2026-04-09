@@ -20,20 +20,26 @@ export async function getOrCreateUser(userId: string, email: string) {
 }
 
 export async function updateUserProfile(userId: string, profile: any) {
-  await supabase
-    .from("users")
-    .update({
-      user_pattern: profile.userPattern,
-      partner_pattern: profile.partnerPattern,
-      relationship_facts: profile.relationshipFacts || [],
-      recurring_themes: profile.recurringThemes || [],
-      growth_signals: profile.growthSignals || [],
-      last_session_summary: profile.lastSessionSummary,
-      assessment_complete: profile.assessmentComplete,
-      session_count: profile.sessionCount || 0,
-      updated_at: new Date().toISOString(),
-    })
-    .eq("id", userId);
+  const { data: existing } = await supabase
+  .from("users")
+  .select("relationship_facts, recurring_themes, growth_signals")
+  .eq("id", userId)
+  .single();
+
+await supabase
+  .from("users")
+  .update({
+    relationship_facts: [...new Set([...(existing?.relationship_facts || []), ...(profile.relationshipFacts || [])])],
+    recurring_themes: [...new Set([...(existing?.recurring_themes || []), ...(profile.recurringThemes || [])])],
+    growth_signals: [...new Set([...(existing?.growth_signals || []), ...(profile.growthSignals || [])])],
+    user_pattern: profile.userPattern,
+    partner_pattern: profile.partnerPattern,
+    last_session_summary: profile.lastSessionSummary,
+    assessment_complete: profile.assessmentComplete,
+    session_count: profile.sessionCount || 0,
+    updated_at: new Date().toISOString(),
+  })
+  .eq("id", userId);
 }
 
 export async function getConversation(userId: string) {
@@ -117,21 +123,14 @@ export async function updateSessionMessages(
   totalMessages: number
 ) {
   await supabase
-  .from("sessions")
-  .update({ 
-    is_complete: true,
-    summary,
-    themes,
-    key_words: keyWords,
-    action_taken: actionTaken,
-    growth_signals: growthSignals,
-    headline,
-    key_excerpts: keyExcerpts,
-    completed_at: new Date().toISOString(),
-  })
-  .eq("id", sessionId);
+    .from("sessions")
+    .update({ 
+      user_message_count: userMessageCount, 
+      total_messages: totalMessages,
+      last_message_at: new Date().toISOString()
+    })
+    .eq("id", sessionId);
 }
-
 export async function closeSession(
   sessionId: string,
   userId: string,
@@ -142,18 +141,42 @@ export async function closeSession(
   growthSignals: string[],
   headline: string,
   keyExcerpts: any[]
-)
-{
-  // Update session record
+) {
   await supabase
-  .from("sessions")
-  .update({ 
-    user_message_count: userMessageCount, 
-    total_messages: totalMessages,
-    last_message_at: new Date().toISOString()
-  })
-  .eq("id", sessionId);
-  // Update user's quick access fields and increment session count
+    .from("sessions")
+    .update({ 
+      is_complete: true,
+      summary,
+      themes,
+      key_words: keyWords,
+      action_taken: actionTaken,
+      growth_signals: growthSignals,
+      headline,
+      key_excerpts: keyExcerpts,
+      completed_at: new Date().toISOString(),
+    })
+    .eq("id", sessionId);
+
+  const { data: currentUser } = await supabase
+    .from("users")
+    .select("session_count")
+    .eq("id", userId)
+    .single();
+
+  await supabase
+    .from("users")
+    .update({
+      last_session_summary: summary,
+      last_session_themes: themes,
+      last_session_action: actionTaken,
+      last_session_key_words: keyWords,
+      session_count: (currentUser?.session_count || 0) + 1,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", userId);
+}  
+
+// Update user's quick access fields and increment session count
   const { data: currentUser } = await supabase
     .from("users")
     .select("session_count")
