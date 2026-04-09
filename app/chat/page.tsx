@@ -81,17 +81,65 @@ export default function Chat() {
       const activeSession = await getActiveSession(user.id);
 
       if (activeSession) {
-        setSessionId(activeSession.id);
-        setSessionNumber(activeSession.session_number);
-        setSessionStartTime(new Date(activeSession.started_at).getTime());
-        setActiveMessageCount(activeSession.user_message_count || 0);
-        const saved = localStorage.getItem(`grace-session-${activeSession.id}`);
-        if (saved) {
-          setMessages(JSON.parse(saved));
-        } else {
-          startConversation(profile, dbUserData, activeSession.session_number, false);
-        }
-      } else {
+  const lastMsgTime = activeSession.last_message_at
+    ? new Date(activeSession.last_message_at).getTime()
+    : new Date(activeSession.started_at).getTime();
+  const hourSinceLastMessage = Date.now() - lastMsgTime > 60 * 60 * 1000;
+
+  if (hourSinceLastMessage && (activeSession.user_message_count || 0) > 3) {
+    // Silent close — save and start fresh
+    const saved = localStorage.getItem(`grace-session-${activeSession.id}`);
+    const msgs = saved ? JSON.parse(saved) : [];
+    if (msgs.length > 0) {
+      await fetch("/api/session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          messages: msgs,
+          userName: dbUserData?.name || "",
+          isAbrupt: true,
+          closingOverride: "Session ended after an hour of quiet.",
+        }),
+      }).then(async (res) => {
+        const data = await res.json();
+        await closeSession(
+          activeSession.id, user.id,
+          data.summary || "",
+          data.themes || [],
+          data.key_words || [],
+          data.action_taken || "",
+          data.growth_signals || [],
+          data.headline || "",
+          []
+        );
+      }).catch(e => console.error("Silent close failed:", e));
+    }
+    localStorage.removeItem(`grace-session-${activeSession.id}`);
+
+    // Start fresh session
+    const { count: sessionCount } = await supabase
+      .from("sessions")
+      .select("*", { count: "exact", head: true })
+      .eq("user_id", user.id)
+      .eq("is_complete", true);
+    const newSessionNumber = (sessionCount || 0) + 1;
+    setSessionNumber(newSessionNumber);
+    setSessionStartTime(Date.now());
+    startConversation(profile, dbUserData, newSessionNumber, true);
+  } else {
+    setSessionId(activeSession.id);
+    setSessionNumber(activeSession.session_number);
+    setSessionStartTime(new Date(activeSession.started_at).getTime());
+    setActiveMessageCount(activeSession.user_message_count || 0);
+    const saved = localStorage.getItem(`grace-session-${activeSession.id}`);
+    if (saved) {
+      setMessages(JSON.parse(saved));
+    } else {
+      startConversation(profile, dbUserData, activeSession.session_number, false);
+    }
+  }
+}
+       else {
         const { count: sessionCount } = await supabase
           .from("sessions")
           .select("*", { count: "exact", head: true })
@@ -233,6 +281,12 @@ const data = JSON.parse(text);
         data.headline || "",
         data.last_ten_messages || []
       );
+     if (data.action_taken && uId) {
+    await supabase
+    .from("users")
+    .update({ last_session_action: data.action_taken })
+    .eq("id", uId);
+    }
 
       localStorage.removeItem(`grace-session-${sId}`);
       setSessionId(null);
