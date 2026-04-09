@@ -136,20 +136,13 @@ export async function closeSession(
 {
   // Update session record
   await supabase
-    .from("sessions")
-    .update({
-      headline,
-      summary,
-      themes,
-      key_excerpts: keyExcerpts,
-      key_words: keyWords,
-      action_taken: actionTaken,
-      growth_signals: growthSignals,
-      ended_at: new Date().toISOString(),
-      is_complete: true,
-    })
-    .eq("id", sessionId);
-
+  .from("sessions")
+  .update({ 
+    user_message_count: userMessageCount, 
+    total_messages: totalMessages,
+    last_message_at: new Date().toISOString()
+  })
+  .eq("id", sessionId);
   // Update user's quick access fields and increment session count
   const { data: currentUser } = await supabase
     .from("users")

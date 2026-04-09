@@ -4,7 +4,7 @@ const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
 
 export async function POST(req: Request) {
   try {
-    const { messages, userName, isAbrupt } = await req.json();
+    const { messages, userName, isAbrupt, closingOverride } = await req.json();
 
     const allMessages = messages
       .map((m: string) => {
@@ -63,7 +63,11 @@ try {
     const parsed = JSON.parse(jsonMatch[0]);
   const lastTen = messages.slice(-10);
   const { pattern, ...publicData } = parsed;
-  return Response.json({ ...publicData, last_ten_messages: lastTen });
+  return Response.json({ 
+       ...publicData, 
+       closing_message: closingOverride || parsed.closing_message,
+       last_ten_messages: lastTen 
+});
 } catch (e) {
   console.error("Failed to parse session JSON:", raw);
   return Response.json({
