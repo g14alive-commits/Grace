@@ -347,8 +347,29 @@ if (currentSessionId) {
 }
 }
       if (data.profileUpdates) {
-        setUserProfile((prev) => ({ ...prev, ...data.profileUpdates }));
-      }
+  setUserProfile((prev) => ({
+    ...prev,
+    ...data.profileUpdates,
+    relationshipFacts: [
+      ...new Set([
+        ...(prev.relationshipFacts || []),
+        ...(data.profileUpdates.relationshipFacts || []),
+      ])
+    ],
+    recurringThemes: [
+      ...new Set([
+        ...(prev.recurringThemes || []),
+        ...(data.profileUpdates.recurringThemes || []),
+      ])
+    ],
+    growthSignals: [
+      ...new Set([
+        ...(prev.growthSignals || []),
+        ...(data.profileUpdates.growthSignals || []),
+      ])
+    ],
+  }));
+}
     } catch (e) {
       console.error(e);
     }
