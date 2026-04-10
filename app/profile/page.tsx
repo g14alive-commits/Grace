@@ -42,7 +42,7 @@ const { count: actualSessionCount } = await supabase
   .from("sessions")
   .select("*", { count: "exact", head: true })
   .eq("user_id", data.session.user.id)
-  .eq("is_complete", true);
+  .gte("user_message_count", 3);
 
 if (user) {
   setDbUser({ ...user, session_count: actualSessionCount || 0 });
