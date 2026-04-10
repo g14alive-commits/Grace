@@ -480,7 +480,7 @@ if (currentSessionId) {
           --grace-bubble: rgba(255,255,255,0.06);
           --grace-border: rgba(255,255,255,0.20);
           --grace-text: rgba(240,235,255,0.95);
-          --user-bubble: rgba(100,120,220,0.18);
+          --user-bubble: rgba(100,120,255,0.24);
           --user-border: rgba(120,140,255,0.40);
           --user-text: rgba(220,230,255,0.90);
           --text-primary: rgba(240,235,255,0.95);
@@ -491,7 +491,7 @@ if (currentSessionId) {
           --input-bg: rgba(255,255,255,0.05);
           --input-border: rgba(255,255,255,0.10);
           --input-focus: rgba(150,100,255,0.65);
-          --dot: rgba(200,160,255,0.80);
+          --dot: rgba(180,130,255,1.0);
         }
 
         .app {
@@ -504,9 +504,9 @@ if (currentSessionId) {
 
         .bg-orbs { position: fixed; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none; z-index: 0; overflow: hidden; }
         .orb { position: absolute; border-radius: 50%; filter: blur(60px); }
-        .orb1 { width: 340px; height: 340px; top: -80px; right: -60px; background: radial-gradient(circle, rgba(120,80,200,0.22) 0%, transparent 70%); animation: drift1 18s ease-in-out infinite; }
-        .orb2 { width: 280px; height: 280px; bottom: 20%; left: -80px; background: radial-gradient(circle, rgba(60,120,220,0.18) 0%, transparent 70%); animation: drift2 22s ease-in-out infinite; }
-        .orb3 { width: 200px; height: 200px; bottom: 10%; right: 10%; background: radial-gradient(circle, rgba(200,100,150,0.14) 0%, transparent 70%); animation: drift3 16s ease-in-out infinite; }
+        .orb1 { width: 340px; height: 340px; top: -80px; right: -60px; background: radial-gradient(circle, rgba(120,80,200,0.30) 0%, transparent 70%); animation: drift1 18s ease-in-out infinite; }
+        .orb2 { width: 280px; height: 280px; bottom: 20%; left: -80px; background: radial-gradient(circle, rgba(60,120,220,0.24) 0%, transparent 70%); animation: drift2 22s ease-in-out infinite; }
+        .orb3 { width: 200px; height: 200px; bottom: 10%; right: 10%; background: radial-gradient(circle, rgba(200,100,150,0.20) 0%, transparent 70%); animation: drift3 16s ease-in-out infinite; }
 
         @keyframes drift1 { 0%,100% { transform: translate(0,0) scale(1); } 33% { transform: translate(-20px,30px) scale(1.05); } 66% { transform: translate(15px,-20px) scale(0.97); } }
         @keyframes drift2 { 0%,100% { transform: translate(0,0) scale(1); } 40% { transform: translate(30px,-25px) scale(1.08); } 70% { transform: translate(-10px,20px) scale(0.95); } }
@@ -521,7 +521,7 @@ if (currentSessionId) {
 
 .avatar {
   width: 32px; height: 32px; border-radius: 50%;
-  background: rgba(160,120,240,0.15); border: 1px solid rgba(160,120,240,0.35);
+  background: rgba(150,100,255,0.25); border: 1px solid rgba(150,100,255,0.60);
   display: flex; align-items: center; justify-content: center;
   font-family: 'Cormorant Garamond', serif; font-size: 16px; font-weight: 600;
   color: rgba(200,180,255,0.90); flex-shrink: 0;
@@ -540,7 +540,7 @@ if (currentSessionId) {
         .download-btn:disabled { opacity: 0.25; cursor: default; }
         .download-btn:not(:disabled):active { transform: scale(0.9); }
 
-        .online-dot { width: 7px; height: 7px; border-radius: 50%; background: rgba(100,220,150,0.90); box-shadow: 0 0 8px rgba(100,220,150,0.50); flex-shrink: 0; }
+        .online-dot { width: 7px; height: 7px; border-radius: 50%; background: rgba(80,220,140,1.0); box-shadow: 0 0 12px rgba(80,220,140,0.70); flex-shrink: 0; }
 
         .hamburger-bar {
   flex-shrink: 0; position: relative; z-index: 2;

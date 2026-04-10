@@ -144,7 +144,7 @@ export default function Rewrite() {
           --bg: #0d0e1a;
           --surface: rgba(255,255,255,0.05);
           --border: rgba(255,255,255,0.10);
-          --border-focus: rgba(160,120,240,0.45);
+          --border-focus: rgba(150,100,255,0.65);
           --border-received: rgba(80,200,180,0.30);
           --border-send: rgba(80,200,120,0.40);
           --text-primary: rgba(240,235,255,0.95);
@@ -238,17 +238,18 @@ export default function Rewrite() {
         .info-btn {
           width: 12px; height: 12px;
           border-radius: 50%;
-          background: rgba(255,255,255,0.08);
-          border: 1px solid rgba(255,255,255,0.15);
+          background: rgba(80,200,140,0.12);
+          border: 1px solid rgba(80,200,140,0.35);
           cursor: pointer;
           display: inline-flex;
           align-items: center;
           justify-content: center;
           flex-shrink: 0;
-          color: rgba(200,180,255,0.50);
-          font-family: 'DM Sans', sans-serif;
-          font-size: 7px;
-          font-weight: 600;
+          color: rgba(80,220,150,0.90);
+          font-family: 'Georgia', serif;
+          font-size: 8px;
+          font-weight: 400;
+          font-style: italic;
           vertical-align: super;
           margin-left: 3px;
           position: relative;
@@ -324,10 +325,10 @@ export default function Rewrite() {
         }
 
         .receiver-btn.active {
-          background: var(--accent-soft);
-          border-color: rgba(160,120,240,0.35);
-          color: rgba(200,180,255,0.95);
-        }
+  background: rgba(150,100,255,0.20);
+  border-color: rgba(150,100,255,0.55);
+  color: rgba(220,200,255,1.0);
+}
 
         .receiver-btn:active { transform: scale(0.97); }
 
@@ -390,8 +391,8 @@ export default function Rewrite() {
           width: 100%;
           padding: 12px;
           border-radius: 14px;
-          background: linear-gradient(135deg, rgba(160,120,240,0.25) 0%, rgba(120,80,200,0.20) 100%);
-          border: 1px solid rgba(160,120,240,0.30);
+          background: linear-gradient(135deg, rgba(150,100,255,0.35) 0%, rgba(110,60,220,0.28) 100%);
+          border: 1px solid rgba(150,100,255,0.45);
           color: rgba(210,190,255,0.95);
           font-family: 'DM Sans', sans-serif;
           font-size: 15px;

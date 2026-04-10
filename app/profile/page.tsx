@@ -33,29 +33,22 @@ export default function Profile() {
       if (!data.session) { router.replace("/login"); return; }
       setEmail(data.session.user.email || "");
       const { data: user } = await supabase
-        .from("users")
-        .select("*")
-        .eq("id", data.session.user.id)
-        .single();
-      if (user) {
-        setDbUser(user);
-        setName(user.name || "");
-      }
-  
-      const { data: sessions } = await supabase
+  .from("users")
+  .select("*")
+  .eq("id", data.session.user.id)
+  .single();
+
+const { count: actualSessionCount } = await supabase
   .from("sessions")
-  .select("id, session_number, action_taken, started_at")
+  .select("*", { count: "exact", head: true })
   .eq("user_id", data.session.user.id)
-  .not("action_taken", "is", null)
-  .neq("action_taken", "")
-  .order("started_at", { ascending: false });
-if (sessions) {
-  setActions(sessions.filter(s => s.action_taken?.trim()));
+  .eq("is_complete", true);
+
+if (user) {
+  setDbUser({ ...user, session_count: actualSessionCount || 0 });
+  setName(user.name || "");
 }
-if (user?.completed_actions) {
-  setCompleted(user.completed_actions);
-}
-      setLoading(false);
+setLoading(false);
     });
   }, []);
 
@@ -251,9 +244,9 @@ if (user?.completed_actions) {
 
         .save-btn {
           padding: 13px 20px; border-radius: 14px;
-          background: rgba(160,120,240,0.12);
-          border: 1px solid rgba(160,120,240,0.25);
-          color: rgba(200,180,255,0.90);
+          background: rgba(150,100,255,0.20);
+          border: 1px solid rgba(150,100,255,0.45);
+          color: rgba(220,200,255,1.0);
           font-family: 'DM Sans', sans-serif;
           font-size: 13px; font-weight: 400;
           cursor: pointer; transition: all 0.2s; white-space: nowrap;
@@ -322,7 +315,7 @@ if (user?.completed_actions) {
         }
 
         .about-row:last-child { border-bottom: none; }
-        .about-row:active { background: rgba(255,255,255,0.03); }
+        .about-row:active { background: rgba(150,100,255,0.08); }
 
         .about-row-label {
           font-size: 15px; font-weight: 300; color: var(--text-primary);
