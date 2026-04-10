@@ -130,17 +130,17 @@ const { count: sessionCount } = await supabase
     startConversation(profile, dbUserData, newSessionNumber, true);
   } else {
     setSessionId(activeSession.id);
-    setSessionNumber(activeSession.session_number);
-    setSessionStartTime(new Date(activeSession.started_at).getTime());
-    setActiveMessageCount(activeSession.user_message_count || 0);
-    const saved = localStorage.getItem(`grace-session-${activeSession.id}`);
+setSessionNumber(activeSession.session_number);
+setSessionStartTime(new Date(activeSession.started_at).getTime());
+setActiveMessageCount(activeSession.user_message_count || 0);
+setLastMessageTime(
+  activeSession.last_message_at
+    ? new Date(activeSession.last_message_at).getTime()
+    : Date.now()
+);
+const saved = localStorage.getItem(`grace-session-${activeSession.id}`);
 if (saved) {
   setMessages(JSON.parse(saved));
-  setLastMessageTime(
-    activeSession.last_message_at
-      ? new Date(activeSession.last_message_at).getTime()
-      : Date.now()
-  );
     } else {
       startConversation(profile, dbUserData, activeSession.session_number, false);
     }
