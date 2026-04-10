@@ -117,11 +117,12 @@ export default function Chat() {
     localStorage.removeItem(`grace-session-${activeSession.id}`);
 
     // Start fresh session
-    const { count: sessionCount } = await supabase
-      .from("sessions")
-      .select("*", { count: "exact", head: true })
-      .eq("user_id", user.id)
-      .eq("is_complete", true);
+const { count: sessionCount } = await supabase
+  .from("sessions")
+  .select("*", { count: "exact", head: true })
+  .eq("user_id", user.id)
+  .gte("user_message_count", 3);
+
     const newSessionNumber = (sessionCount || 0) + 1;
     setSessionNumber(newSessionNumber);
     setSessionStartTime(Date.now());
