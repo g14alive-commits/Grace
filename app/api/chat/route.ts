@@ -8,16 +8,17 @@ const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
 export async function POST(req: Request) {
   try {
     const {
-  messages,
-  userProfile,
-  sessionNumber,
-  sessionMemory,
-  isNewSession,
-  twoHourWarning,
-  userId,
-  lastSessionDate,
-} = await req.json();
-   const dbUser = userId ? await getOrCreateUser(userId, "") : null;
+      messages,
+      userProfile,
+      sessionNumber,
+      sessionMemory,
+      isNewSession,
+      twoHourWarning,
+      userId,
+      lastSessionDate,
+    } = await req.json();
+
+    const dbUser = userId ? await getOrCreateUser(userId, "") : null;
 
     // Ignore keep-alive pings silently
     const lastMessage = messages[messages.length - 1];
@@ -26,28 +27,28 @@ export async function POST(req: Request) {
     }
 
     const now = new Date();
-const timeStr = now.toLocaleString("en-GB", { weekday: "long", hour: "2-digit", minute: "2-digit", hour12: true });
-const timeSinceLastSession = lastSessionDate
-  ? (() => {
-      const diff = Date.now() - new Date(lastSessionDate).getTime();
-      const hours = Math.floor(diff / (1000 * 60 * 60));
-      const days = Math.floor(hours / 24);
-      if (days > 0) return `${days} day${days > 1 ? "s" : ""} ago`;
-      if (hours > 0) return `${hours} hour${hours > 1 ? "s" : ""} ago`;
-      return "less than an hour ago";
-    })()
-  : null;
-const sessionContext = `Session number: ${sessionNumber}. Current time: ${timeStr}.${timeSinceLastSession ? ` Last session was ${timeSinceLastSession}.` : ""} ${isNewSession ? "This is a new session." : "This is a returning user — do not introduce yourself."}`;const memoryBlock = buildMemoryBlock(userProfile, sessionNumber);
-const userContextBlock = buildUserContextBlock(dbUser);
-const contextBlock = [userContextBlock, sessionContext, sessionMemory || memoryBlock].filter(Boolean).join("\n\n");
-const twoHourBlock = twoHourWarning
-  ? "\n\nSESSION TIME LIMIT: This user has been in active conversation for 2 hours. After your next response, gently close the session. Say something warm and human. Then wait for their response. If they want to continue, honour that. If they say goodbye or indicate they're done, close warmly."
-  : "";
+    const timeStr = now.toLocaleString("en-GB", { weekday: "long", hour: "2-digit", minute: "2-digit", hour12: true });
+    const timeSinceLastSession = lastSessionDate
+      ? (() => {
+          const diff = Date.now() - new Date(lastSessionDate).getTime();
+          const hours = Math.floor(diff / (1000 * 60 * 60));
+          const days = Math.floor(hours / 24);
+          if (days > 0) return `${days} day${days > 1 ? "s" : ""} ago`;
+          if (hours > 0) return `${hours} hour${hours > 1 ? "s" : ""} ago`;
+          return "less than an hour ago";
+        })()
+      : null;
 
-    const fullPrompt =
-      systemPrompt +
-      (contextBlock ? "\n\n" + contextBlock : "") +
-      twoHourBlock;
+    const sessionContext = `Session number: ${sessionNumber}. Current time: ${timeStr}.${timeSinceLastSession ? ` Last session was ${timeSinceLastSession}.` : ""} ${isNewSession ? "This is a new session." : "This is a returning user — do not introduce yourself."}`;
+    const memoryBlock = buildMemoryBlock(userProfile, sessionNumber);
+    const userContextBlock = buildUserContextBlock(dbUser);
+    const contextBlock = [userContextBlock, sessionContext, sessionMemory || memoryBlock].filter(Boolean).join("\n\n");
+
+    const twoHourBlock = twoHourWarning
+      ? "\n\nSESSION TIME LIMIT: This user has been in active conversation for 2 hours. After your next response, gently close the session. Say something warm and human. Then wait for their response. If they want to continue, honour that. If they say goodbye or indicate they're done, close warmly."
+      : "";
+
+    const dynamicBlock = [contextBlock, twoHourBlock].filter(Boolean).join("\n\n");
 
     const MAX_MESSAGES = 20;
     const trimmedMessages = messages.slice(-MAX_MESSAGES);
@@ -58,19 +59,25 @@ const twoHourBlock = twoHourWarning
       system: [
         {
           type: "text",
-          text: fullPrompt,
+          text: systemPrompt,
           cache_control: { type: "ephemeral", ttl: "1h" },
+        },
+        {
+          type: "text",
+          text: dynamicBlock,
         },
       ] as any,
       messages: trimmedMessages,
     });
+
+    console.log("Token usage:", JSON.stringify(response.usage, null, 2));
 
     const aiText =
       response.content[0].type === "text"
         ? response.content[0].text
         : "No response";
 
-       const sessionComplete = detectSessionClose(aiText);
+    const sessionComplete = detectSessionClose(aiText);
 
     // Extract profile updates every 4 messages
     let profileUpdates = null;

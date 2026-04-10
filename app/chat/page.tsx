@@ -207,19 +207,37 @@ if (saved) {
     return () => clearInterval(keepAlive);
   }, [messages.length, loading, userProfile, sessionNumber]);
 
+const sessionStateRef = useRef<any>({});
+
+// Keep ref in sync — add this useEffect
+useEffect(() => {
+  sessionStateRef.current = {
+    lastMessageTime,
+    sessionId,
+    userId,
+    sessionEnded,
+    activeMessageCount,
+    messages,
+  };
+}, [lastMessageTime, sessionId, userId, sessionEnded, activeMessageCount, messages]);
+
+// Interval — no dependencies, never recreated, always reads fresh values via ref
 useEffect(() => {
   const interval = setInterval(() => {
+    const { lastMessageTime, sessionId, userId, sessionEnded, activeMessageCount, messages } = sessionStateRef.current;
     console.log("interval check", { lastMessageTime, sessionId, userId, sessionEnded, activeMessageCount });
     if (!lastMessageTime || !sessionId || !userId || sessionEnded) return;
     const elapsed = Date.now() - lastMessageTime;
     console.log("elapsed minutes:", Math.floor(elapsed / 60000));
-    if (elapsed >= 2 * 60 * 1000 && activeMessageCount > 3) {
-      handleSessionClose(messages, userId, sessionId, true);
-      setSessionEnded(true);
+    if (elapsed >= 60 * 60 * 1000 && activeMessageCount > 3) {
+      (async () => {
+        await handleSessionClose(messages, userId, sessionId, true);
+      })();
     }
-  }, 5 * 60 * 1000);
+  }, 5 * 60 * 1000); // check every 5 minutes
   return () => clearInterval(interval);
-}, [lastMessageTime, sessionId, userId, messages, sessionEnded, activeMessageCount]);
+}, []); // ← empty deps, interval never resets
+
   const checkSessionTime = (msgCount: number) => {
     if (!sessionStartTime) return false;
     const elapsed = Date.now() - sessionStartTime;
@@ -312,6 +330,29 @@ const data = JSON.parse(text);
       setSessionId(null);
       setActiveMessageCount(0);
       if (uId) loadPastSessions(uId);
+      
+     // Only auto-start if abrupt (inactivity close)
+if (isAbrupt && uId) {
+  const { count: sessionCount } = await supabase
+    .from("sessions")
+    .select("*", { count: "exact", head: true })
+    .eq("user_id", uId)
+    .gte("user_message_count", 3);
+
+  const newSessionNumber = (sessionCount || 0) + 1;
+  const newSession = await createSession(uId, newSessionNumber);
+  if (newSession) {
+    setSessionId(newSession.id);
+    setSessionNumber(newSessionNumber);
+    setSessionStartTime(Date.now());
+    setLastMessageTime(null);
+    setActiveMessageCount(0);
+    setSessionEnded(false);
+    setMessages([]);
+    startConversation(userProfile, dbUser, newSessionNumber, true);
+  }
+} 
+
     } catch (e) {
       console.error("Session close failed:", e);
     }
