@@ -38,6 +38,7 @@ export default function Chat() {
   const [userId, setUserId] = useState<string | null>(null);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [sessionStartTime, setSessionStartTime] = useState<number | null>(null);
+  const [lastMessageTime, setLastMessageTime] = useState<number | null>(null);
   const [activeMessageCount, setActiveMessageCount] = useState(0);
   const [authLoading, setAuthLoading] = useState(true);
   const [dbUser, setDbUser] = useState<any>(null);
@@ -321,6 +322,7 @@ const data = JSON.parse(text);
 
     const newCount = activeMessageCount + 1;
     setActiveMessageCount(newCount);
+    setLastMessageTime(Date.now());
 
     let currentSessionId = sessionId;
 
