@@ -134,8 +134,13 @@ const { count: sessionCount } = await supabase
     setSessionStartTime(new Date(activeSession.started_at).getTime());
     setActiveMessageCount(activeSession.user_message_count || 0);
     const saved = localStorage.getItem(`grace-session-${activeSession.id}`);
-    if (saved) {
-      setMessages(JSON.parse(saved));
+if (saved) {
+  setMessages(JSON.parse(saved));
+  setLastMessageTime(
+    activeSession.last_message_at
+      ? new Date(activeSession.last_message_at).getTime()
+      : Date.now()
+  );
     } else {
       startConversation(profile, dbUserData, activeSession.session_number, false);
     }
@@ -204,16 +209,17 @@ const { count: sessionCount } = await supabase
 
 useEffect(() => {
   const interval = setInterval(() => {
+    console.log("interval check", { lastMessageTime, sessionId, userId, sessionEnded, activeMessageCount });
     if (!lastMessageTime || !sessionId || !userId || sessionEnded) return;
     const elapsed = Date.now() - lastMessageTime;
-    if (elapsed >= 60 * 60 * 1000 && activeMessageCount > 3) {
+    console.log("elapsed minutes:", Math.floor(elapsed / 60000));
+    if (elapsed >= 2 * 60 * 1000 && activeMessageCount > 3) {
       handleSessionClose(messages, userId, sessionId, true);
       setSessionEnded(true);
     }
   }, 5 * 60 * 1000);
   return () => clearInterval(interval);
 }, [lastMessageTime, sessionId, userId, messages, sessionEnded, activeMessageCount]);
-
   const checkSessionTime = (msgCount: number) => {
     if (!sessionStartTime) return false;
     const elapsed = Date.now() - sessionStartTime;
