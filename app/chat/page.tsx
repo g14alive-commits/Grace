@@ -201,6 +201,18 @@ const { count: sessionCount } = await supabase
     return () => clearInterval(keepAlive);
   }, [messages.length, loading, userProfile, sessionNumber]);
 
+useEffect(() => {
+  const interval = setInterval(() => {
+    if (!lastMessageTime || !sessionId || !userId || sessionEnded) return;
+    const elapsed = Date.now() - lastMessageTime;
+    if (elapsed >= 60 * 60 * 1000 && activeMessageCount > 3) {
+      handleSessionClose(messages, userId, sessionId, true);
+      setSessionEnded(true);
+    }
+  }, 5 * 60 * 1000);
+  return () => clearInterval(interval);
+}, [lastMessageTime, sessionId, userId, messages, sessionEnded, activeMessageCount]);
+
   const checkSessionTime = (msgCount: number) => {
     if (!sessionStartTime) return false;
     const elapsed = Date.now() - sessionStartTime;
