@@ -680,10 +680,10 @@ export default function Rewrite() {
 
         <div className="header">
           <div className="header-left">
-            <div className="header-name">
-              Rewrite
-              <button className="info-btn" onClick={() => setShowInfo(true)}>i</button>
-            </div>
+<div className="header-name">
+  <span style={{ color: "rgba(150,100,255,1.0)" }}>Fix</span> the <span style={{ color: "rgba(150,100,255,1.0)" }}>MESS</span>age!
+  <button className="info-btn" onClick={() => setShowInfo(true)}>i</button>
+</div>
             <div className="header-sub">scan your message before you send it</div>
           </div>
           <div className={`reply-badge${isReplyMode ? "" : " hidden"}`}>
@@ -868,7 +868,7 @@ export default function Rewrite() {
             <svg className="tab-icon" viewBox="0 0 24 24" fill="none" stroke="rgba(200,180,255,0.90)" strokeWidth="1.5">
               <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
             </svg>
-            <span className="tab-label">Rewrite</span>
+            <span className="tab-label">Fix it</span>
           </div>
           <div className="tab" onClick={() => router.push("/profile")}>
             <svg className="tab-icon" viewBox="0 0 24 24" fill="none" stroke="rgba(200,180,255,0.90)" strokeWidth="1.5">
