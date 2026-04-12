@@ -47,6 +47,7 @@ const { count: actualSessionCount } = await supabase
 if (user) {
   setDbUser({ ...user, session_count: actualSessionCount || 0 });
   setName(user.name || "");
+  console.log("dbUser:", user);
 }
 setLoading(false);
     });
@@ -516,11 +517,25 @@ setLoading(false);
           {/* Last action */}
           <div className="action-card">
             <div className="action-label">Your next step</div>
-            {dbUser?.last_session_action ? (
-              <div className="action-text">"{dbUser.last_session_action}"</div>
-            ) : (
-              <div className="action-empty">Complete a session with Grace and she'll leave you with something to work on.</div>
-            )}
+            {(() => {
+  const action = dbUser?.last_session_action;
+  const lastSeen = dbUser?.last_seen_at;
+  const daysSince = lastSeen
+    ? Math.floor((Date.now() - new Date(lastSeen).getTime()) / (1000 * 60 * 60 * 24))
+    : null;
+  const expired = daysSince !== null && daysSince > 14;
+
+  if (action && !expired) {
+    return <div className="action-text">"{action}"</div>;
+  }
+  return (
+    <div className="action-empty">
+      {expired
+        ? "It's been a while. Come back to Grace when you're ready."
+        : "Complete a session with Grace and she'll leave you with something to work on."}
+    </div>
+  );
+})()}
           </div>
           
 {/* Commitments */}
