@@ -272,7 +272,7 @@ useEffect(() => {
   sessionNumber: sessNum,
   sessionMemory,
   isNewSession,
-  lastSessionDate: dbUserData?.updated_at || null,
+  lastSessionDate: dbUserData?.last_seen_at || null,
         }),
       });
       const text = await response.text();

@@ -172,6 +172,7 @@ export async function closeSession(
       last_session_key_words: keyWords,
       session_count: (currentUser?.session_count || 0) + 1,
       updated_at: new Date().toISOString(),
+      last_seen_at: new Date().toISOString(),
     })
     .eq("id", userId);
 }  

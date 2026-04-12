@@ -684,7 +684,7 @@ export default function Rewrite() {
   <span style={{ color: "rgba(150,100,255,1.0)" }}>Fix</span> the <span style={{ color: "rgba(150,100,255,1.0)" }}>MESS</span>age!
   <button className="info-btn" onClick={() => setShowInfo(true)}>i</button>
 </div>
-            <div className="header-sub">scan your message before you send it</div>
+            <div className="header-sub">Fix your message before you send it</div>
           </div>
           <div className={`reply-badge${isReplyMode ? "" : " hidden"}`}>
             reply mode
