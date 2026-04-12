@@ -333,13 +333,13 @@ export default function Rewrite() {
         .receiver-btn:active { transform: scale(0.97); }
 
         .message-box {
-          background: var(--surface);
-          border: 1px solid var(--border);
-          border-radius: 16px;
-          padding: 14px 16px;
-          margin-bottom: 10px;
-          transition: border-color 0.2s, box-shadow 0.2s;
-        }
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.14);
+  border-radius: 16px;
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
 
         .message-box.send:focus-within {
           border-color: rgba(80,200,120,0.45);
@@ -375,10 +375,10 @@ export default function Rewrite() {
         }
 
         .connector-line {
-          flex: 1;
-          height: 1px;
-          background: var(--divider);
-        }
+  flex: 1;
+  height: 1px;
+  background: rgba(150,100,255,0.30);
+}
 
         .connector-label {
           font-size: 10px;
@@ -417,12 +417,12 @@ export default function Rewrite() {
         }
 
         .result-card {
-          background: var(--surface);
-          border: 1px solid var(--border);
-          border-radius: 18px;
-          padding: 20px;
-          margin-bottom: 20px;
-        }
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.16);
+  border-radius: 18px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
 
         .result-card .prose {
           font-size: 15px;
@@ -454,11 +454,11 @@ export default function Rewrite() {
         }
 
         .suggestion-card {
-          background: rgba(255,255,255,0.04);
-          border: 1px solid var(--border);
-          border-radius: 14px;
-          padding: 14px 16px;
-        }
+  background: rgba(150,100,255,0.08);
+  border: 1px solid rgba(150,100,255,0.25);
+  border-radius: 14px;
+  padding: 14px 16px;
+}
 
         .suggestion-label {
           font-size: 10px;
@@ -478,14 +478,14 @@ export default function Rewrite() {
         }
 
         .copy-btn {
-          display: inline-flex;
-          align-items: center;
-          gap: 6px;
-          padding: 6px 14px;
-          border-radius: 20px;
-          background: var(--teal-soft);
-          border: 1px solid rgba(80,200,180,0.20);
-          color: var(--teal);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  background: rgba(80,200,180,0.15);
+  border: 1px solid rgba(80,200,180,0.40);
+  color: rgba(80,220,180,0.95);
           font-family: 'DM Sans', sans-serif;
           font-size: 12px;
           font-weight: 400;
@@ -508,12 +508,12 @@ export default function Rewrite() {
         }
 
         .advice-text {
-          font-size: 15px;
-          font-weight: 300;
-          line-height: 1.65;
-          color: rgba(180,170,220,0.75);
-          font-style: italic;
-        }
+  font-size: 15px;
+  font-weight: 300;
+  line-height: 1.65;
+  color: rgba(200,185,255,0.90);
+  font-style: italic;
+}
 
         .tab-bar {
           flex-shrink: 0;

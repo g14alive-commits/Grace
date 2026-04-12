@@ -199,9 +199,9 @@ setLoading(false);
         }
 
         .signout-btn {
-          font-size: 13px; font-weight: 300; color: var(--text-muted);
-          background: none; border: none; cursor: pointer; padding: 6px 0;
-        }
+  font-size: 13px; font-weight: 400; color: rgba(150,100,255,0.70);
+  background: none; border: none; cursor: pointer; padding: 6px 0;
+}
 
         .scroll {
           flex: 1; overflow-y: auto; padding: 20px 20px 24px;
@@ -211,10 +211,10 @@ setLoading(false);
         .scroll::-webkit-scrollbar { width: 0; }
 
         .greeting {
-          font-family: 'Cormorant Garamond', serif;
-          font-size: 26px; font-weight: 300;
-          color: var(--text-primary); margin-bottom: 4px; line-height: 1.2;
-        }
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 26px; font-weight: 400;
+  color: rgba(240,230,255,1.0); margin-bottom: 4px; line-height: 1.2;
+}
 
         .greeting-sub {
           font-size: 14px; font-weight: 300;
@@ -256,7 +256,7 @@ setLoading(false);
         .save-btn:not(:disabled):active { transform: scale(0.97); }
 
         .action-card {
-          background: var(--surface); border: 1px solid var(--border);
+          background: rgba(150,100,255,0.08); border: 1px solid rgba(150,100,255,0.25);
           border-radius: 18px; padding: 12px 16px; margin-bottom: 16px;
         }
 
@@ -267,10 +267,10 @@ setLoading(false);
         }
 
         .action-text {
-          font-family: 'Cormorant Garamond', serif;
-          font-size: 19px; font-weight: 300; font-style: italic;
-          line-height: 1.55; color: rgba(220,210,255,0.85);
-        }
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 19px; font-weight: 400; font-style: italic;
+  line-height: 1.55; color: rgba(230,220,255,0.95);
+}
 
         .action-empty {
           font-size: 14px; font-weight: 300;
@@ -303,9 +303,9 @@ setLoading(false);
         }
 
         .about-card {
-          background: var(--surface); border: 1px solid var(--border);
-          border-radius: 18px; overflow: hidden; margin-bottom: 28px;
-        }
+  background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.14);
+  border-radius: 18px; overflow: hidden; margin-bottom: 28px;
+}
 
         .about-row {
           padding: 12px 16px;
@@ -322,8 +322,8 @@ setLoading(false);
         }
 
         .about-row-arrow {
-          font-size: 12px; color: var(--text-muted);
-        }
+  font-size: 12px; color: rgba(150,100,255,0.70);
+}
 
         .about-content {
           padding: 0 20px 20px;
@@ -332,9 +332,9 @@ setLoading(false);
         }
 
         .account-card {
-          background: var(--surface); border: 1px solid var(--border);
-          border-radius: 18px; overflow: hidden; margin-bottom: 12px;
-        }
+  background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.14);
+  border-radius: 18px; overflow: hidden; margin-bottom: 12px;
+}
 
         .account-row {
           padding: 12px 16px;
@@ -396,7 +396,7 @@ setLoading(false);
         .danger-row:active { background: rgba(240,80,80,0.05); }
 
         .danger-label {
-         font-size: 15px; font-weight: 300; color: rgba(180,170,220,0.55);
+         font-size: 15px; font-weight: 400; color: rgba(200,185,240,0.75);
         }
 
         .danger-sub {

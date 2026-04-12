@@ -5,28 +5,28 @@ import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 const slides = [
-  {
-    id: 1,
-    headline: "Relational hurt heals through relationship.",
-    body: "Healing takes time. But friction reduces, joy finds its way back in, and showing up better — even a little — changes everything.",
-    ripple: true,
-  },
+{
+  id: 1,
+  headline: "You keep replaying the same fight.\n\nYou know what you should do.\nYou can't make yourself do it.",
+  body: "Different day, same spiral. \nThat gap between knowing and doing — that's where relationships break.\nAnd it's also where they can be rebuilt.",
+  ripple: true,
+},
   {
     id: 2,
-    headline: "Understand yourself better.\nNavigate your relationship with clarity.\nRespond from a steadier place.",
-    body: "When you understand your own patterns and needs, you show up differently for the people you love.",
+    headline: "One of you is always too much.\nOne of you is never enough.",
+    body: "Both of you are exhausted. Both are trying to feel safe.\nNeither is working.",
     ripple: false,
   },
   {
     id: 3,
-    headline: "Attune is for people who want to strengthen what they have.",
-    body: "Not for managing crisis or abuse. If you're in an unsafe situation, please reach out to a professional.\n\nIf something between you and your partner isn't working — you're in the right place.",
+    headline: "Attune is for people in real relationships\ndoing hard work.",
+    body: "Not for people in crisis or abuse. If you're in an unsafe situation, please reach out to a professional.\n\nIf something between you and your partner isn't working — you're in the right place.",
     ripple: false,
   },
   {
     id: 4,
-    headline: "Start with Grace.",
-    body: "Your AI relationship companion.\n\nGrace will help you understand your patterns, see your relationship more clearly, and find one small thing to do differently.",
+    headline: "Respond, don't react.",
+    body: "Figure out what's actually going on.\nWhy it keeps happening.\nWhat to do next time.",
     cta: true,
     ripple: true,
   },

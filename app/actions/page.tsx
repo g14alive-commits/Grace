@@ -104,22 +104,22 @@ export default function Commitments() {
         }
 
         .back-btn {
-          background: none; border: none; cursor: pointer;
-          color: rgba(160,140,220,0.70); font-size: 14px;
-          font-family: 'DM Sans', sans-serif; font-weight: 300;
-          padding: 4px 0; display: flex; align-items: center; gap: 4px;
-        }
+  background: none; border: none; cursor: pointer;
+  color: rgba(150,100,255,0.85); font-size: 14px;
+  font-family: 'DM Sans', sans-serif; font-weight: 400;
+  padding: 4px 0; display: flex; align-items: center; gap: 4px;
+}
 
         .header-name {
-          font-family: 'Cormorant Garamond', serif;
-          font-size: 18px; font-weight: 600;
-          color: rgba(240,235,255,0.95);
-        }
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 18px; font-weight: 600;
+  color: rgba(230,215,255,1.0);
+}
 
         .header-sub {
-          font-size: 11px; color: rgba(140,130,180,0.60);
-          font-weight: 300; margin-top: 1px;
-        }
+  font-size: 11px; color: rgba(170,150,220,0.80);
+  font-weight: 300; margin-top: 1px;
+}
 
         .scroll-area {
           flex: 1; overflow-y: auto; overflow-x: hidden;
@@ -148,9 +148,9 @@ export default function Commitments() {
         }
 
         .action-item.done {
-          background: rgba(160,120,240,0.06);
-          border-color: rgba(160,120,240,0.18);
-        }
+  background: rgba(150,100,255,0.10);
+  border-color: rgba(150,100,255,0.30);
+}
 
         .action-item:active { transform: scale(0.99); }
 
@@ -163,9 +163,9 @@ export default function Commitments() {
         }
 
         .action-item.done .checkbox {
-          background: rgba(160,120,240,0.25);
-          border-color: rgba(160,120,240,0.55);
-        }
+  background: rgba(150,100,255,0.35);
+  border-color: rgba(150,100,255,0.75);
+}
 
         .action-content { flex: 1; }
 
@@ -175,10 +175,10 @@ export default function Commitments() {
         }
 
         .action-meta {
-          font-size: 10px; font-weight: 400;
-          letter-spacing: 0.06em; text-transform: uppercase;
-          color: rgba(140,130,180,0.35); margin-top: 5px;
-        }
+  font-size: 10px; font-weight: 400;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  color: rgba(160,140,210,0.60); margin-top: 5px;
+}
       `}</style>
 
       <div className="page" style={{ height: appHeight }}>
@@ -204,11 +204,11 @@ export default function Commitments() {
           ) : (
             <>
               <div style={{
-                fontSize: "12px", fontWeight: 300,
-                color: "rgba(140,130,180,0.40)",
-                marginBottom: "20px",
-                letterSpacing: "0.02em",
-              }}>
+  fontSize: "12px", fontWeight: 400,
+  color: "rgba(170,150,220,0.65)",
+  marginBottom: "20px",
+  letterSpacing: "0.02em",
+}}>
                 {completed.length} of {actions.length} commitments done
               </div>
               {actions.map(action => {
