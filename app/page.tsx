@@ -89,10 +89,8 @@ function RippleCanvas() {
 }
 
 const CARDS = [
-  "You keep replaying the same fight.\nDifferent day, same spiral.",
-  "You know what you should do.\nYou can't make yourself do it.",
+  "You keep replaying the same fight.\nDifferent day, same spiral.\n\nYou know what you should do.\nYou can't make yourself do it.",
 ];
-
 export default function Home() {
   const [cardIndex, setCardIndex] = useState(0);
   const [flipping, setFlipping] = useState(false);
@@ -103,23 +101,7 @@ export default function Home() {
   const [vh, setVh] = useState(0);
   const router = useRouter();
 
-  useEffect(() => {
-    const setHeight = () => setVh(window.innerHeight);
-    setHeight();
-    window.addEventListener("resize", setHeight);
-    return () => window.removeEventListener("resize", setHeight);
-  }, []);
-
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      if (data.session) {
-        setShowFinal(true);
-        setTimeout(() => setBodyVisible(true), 200);
-        setTimeout(() => setTaglineVisible(true), 500);
-        setTimeout(() => setBtnVisible(true), 800);
-      }
-    });
-  }, []);
+  
 
   const handleNext = () => {
     if (flipping) return;
@@ -230,12 +212,13 @@ export default function Home() {
         }
 
         .centre {
-          position: relative; z-index: 2;
-          width: 100%; max-width: 480px;
-          padding: 0 36px;
-          display: flex; flex-direction: column;
-          align-items: flex-start;
-        }
+  position: relative; z-index: 2;
+  width: 100%; max-width: 480px;
+  padding: 0 36px;
+  display: flex; flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
 
         .card-scene {
           width: 100%;
@@ -268,6 +251,7 @@ export default function Home() {
           letter-spacing: -0.01em;
           white-space: pre-line;
           margin-bottom: 24px;
+          text-align: center;
         }
 
         .tap-hint {
@@ -277,6 +261,7 @@ export default function Home() {
           letter-spacing: 0.08em;
           color: rgba(160,140,220,0.40);
           margin-top: 8px;
+          text-align: center;
         }
 
         .final-wrap {
@@ -384,7 +369,7 @@ export default function Home() {
 
         <div className="centre">
           {!showFinal ? (
-            <div className="card-scene" onClick={handleNext}>
+            <div className="card-scene" onClick={handleNext} style={{ cursor: "default" }}>
               <div className={`card-inner${flipping ? " flipping" : ""}`}>
                 <div className="card-face">
                   <div className="card-text">{CARDS[cardIndex]}</div>
@@ -395,7 +380,7 @@ export default function Home() {
           ) : (
             <div className="final-wrap">
               <div className={`final-body${bodyVisible ? " visible" : ""}`}>
-                {"That gap between knowing and doing —\nthat's where relationships break.\nAnd where they can be rebuilt."}
+                {"The gap between knowing and doing —\nthat's where relationships break.\nAnd where they can be rebuilt."}
               </div>
               <div className={`final-tagline${taglineVisible ? " visible" : ""}`}>
                 {"Don't react.\nGet it right."}
@@ -411,6 +396,26 @@ export default function Home() {
                   }
                 }}
               >
+
+<div
+  onClick={() => {
+    setShowFinal(false);
+    setBodyVisible(false);
+    setTaglineVisible(false);
+    setBtnVisible(false);
+    setCardIndex(0);
+  }}
+  style={{
+    marginTop: "20px",
+    fontSize: "11px",
+    fontFamily: "DM Sans, sans-serif",
+    color: "rgba(160,140,220,0.35)",
+    cursor: "pointer",
+    letterSpacing: "0.06em",
+  }}
+>
+  ← back
+</div>
                 Talk to Grace
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                   <path d="M5 12h14M12 5l7 7-7 7"/>
