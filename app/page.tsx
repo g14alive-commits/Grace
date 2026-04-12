@@ -241,9 +241,9 @@ const onMouseUp = (e: React.MouseEvent) => {
         }
 
 .brand {
-  position: absolute; top: 32px; 
-  left: 50%; transform: translateX(-50%);
-  white-space: nowrap;
+  position: absolute; top: 32px; left: 0; right: 0;
+  text-align: center;
+  width: 100%;
   font-family: 'Cormorant Garamond', serif;
   font-size: 20px; font-weight: 400; letter-spacing: 0.12em;
   color: rgba(150,100,255,0.80);
