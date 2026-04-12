@@ -101,7 +101,48 @@ export default function Home() {
   const [vh, setVh] = useState(0);
   const router = useRouter();
 
-  
+  const touchStartX = useRef<number | null>(null);
+const mouseStartX = useRef<number | null>(null);
+
+const handleTouchStart = (e: React.TouchEvent) => {
+  touchStartX.current = e.touches[0].clientX;
+};
+
+const handleTouchEnd = (e: React.TouchEvent) => {
+  if (touchStartX.current === null) return;
+  const diff = touchStartX.current - e.changedTouches[0].clientX;
+  if (Math.abs(diff) > 50) {
+    if (diff > 0) handleNext();
+    else if (showFinal) {
+      setShowFinal(false);
+      setBodyVisible(false);
+      setTaglineVisible(false);
+      setBtnVisible(false);
+      setCardIndex(0);
+    }
+  }
+  touchStartX.current = null;
+};
+
+const onMouseDown = (e: React.MouseEvent) => {
+  mouseStartX.current = e.clientX;
+};
+
+const onMouseUp = (e: React.MouseEvent) => {
+  if (mouseStartX.current === null) return;
+  const diff = mouseStartX.current - e.clientX;
+  if (Math.abs(diff) > 50) {
+    if (diff > 0) handleNext();
+    else if (showFinal) {
+      setShowFinal(false);
+      setBodyVisible(false);
+      setTaglineVisible(false);
+      setBtnVisible(false);
+      setCardIndex(0);
+    }
+  }
+  mouseStartX.current = null;
+};
 
   const handleNext = () => {
     if (flipping) return;
@@ -354,7 +395,14 @@ export default function Home() {
         }
       `}</style>
 
-      <div className="home" style={{ height: appHeight }}>
+      <div
+  className="home"
+  style={{ height: appHeight }}
+  onTouchStart={handleTouchStart}
+  onTouchEnd={handleTouchEnd}
+  onMouseDown={onMouseDown}
+  onMouseUp={onMouseUp}
+>
         <div className="bg-orbs">
           <div className="orb orb1" />
           <div className="orb orb2" />
