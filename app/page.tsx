@@ -445,25 +445,6 @@ const onMouseUp = (e: React.MouseEvent) => {
                 }}
               >
 
-<div
-  onClick={() => {
-    setShowFinal(false);
-    setBodyVisible(false);
-    setTaglineVisible(false);
-    setBtnVisible(false);
-    setCardIndex(0);
-  }}
-  style={{
-    marginTop: "20px",
-    fontSize: "11px",
-    fontFamily: "DM Sans, sans-serif",
-    color: "rgba(160,140,220,0.35)",
-    cursor: "pointer",
-    letterSpacing: "0.06em",
-  }}
->
-  ← back
-</div>
                 Talk to Grace
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                   <path d="M5 12h14M12 5l7 7-7 7"/>
