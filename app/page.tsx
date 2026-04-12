@@ -387,8 +387,7 @@ const onMouseUp = (e: React.MouseEvent) => {
           .card-text { font-size: 26px; }
           .final-body { font-size: 17px; }
           .final-tagline { font-size: 26px; }
-          .centre { padding: 0 28px; }
-          .brand { left: 28px; }
+          .centre { padding: 0 28px;
         }
       `}</style>
 
