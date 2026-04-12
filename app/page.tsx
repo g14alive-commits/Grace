@@ -204,22 +204,19 @@ const onMouseUp = (e: React.MouseEvent) => {
         }
 
         .orb1 {
-          width: 420px; height: 420px; top: -120px; left: -60px;
-          background: radial-gradient(circle, rgba(150,80,200,0.22) 0%, transparent 70%);
-          animation: drift1 22s ease-in-out infinite;
-        }
+  width: 500px; height: 500px; top: -140px; left: -80px;
+  background: radial-gradient(circle, rgba(150,80,220,0.45) 0%, transparent 70%);
+}
 
-        .orb2 {
-          width: 320px; height: 320px; bottom: 10%; right: -80px;
-          background: radial-gradient(circle, rgba(80,100,220,0.18) 0%, transparent 70%);
-          animation: drift2 28s ease-in-out infinite;
-        }
+.orb2 {
+  width: 400px; height: 400px; bottom: 5%; right: -100px;
+  background: radial-gradient(circle, rgba(80,100,240,0.38) 0%, transparent 70%);
+}
 
-        .orb3 {
-          width: 240px; height: 240px; top: 40%; left: 20%;
-          background: radial-gradient(circle, rgba(180,80,150,0.14) 0%, transparent 70%);
-          animation: drift3 20s ease-in-out infinite;
-        }
+.orb3 {
+  width: 300px; height: 300px; top: 35%; left: 10%;
+  background: radial-gradient(circle, rgba(200,80,160,0.30) 0%, transparent 70%);
+}
 
         @keyframes drift1 {
           0%,100% { transform: translate(0,0) scale(1); }
