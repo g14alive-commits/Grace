@@ -244,13 +244,13 @@ const onMouseUp = (e: React.MouseEvent) => {
         }
 
         .brand {
-          position: absolute; top: 32px; left: 36px;
-          font-family: 'Cormorant Garamond', serif;
-          font-size: 15px; font-weight: 400; letter-spacing: 0.12em;
-          text-transform: uppercase;
-          color: rgba(200,180,255,0.40);
-          z-index: 2;
-        }
+  position: absolute; top: 32px; left: 0; right: 0;
+  text-align: center;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 20px; font-weight: 400; letter-spacing: 0.12em;
+  color: rgba(150,100,255,0.80);
+  z-index: 2;
+}
 
         .centre {
   position: relative; z-index: 2;
@@ -413,7 +413,7 @@ const onMouseUp = (e: React.MouseEvent) => {
           <RippleCanvas />
         </div>
 
-        <div className="brand">Attune</div>
+        <div className="brand">attune</div>
 
         <div className="centre">
           {!showFinal ? (
