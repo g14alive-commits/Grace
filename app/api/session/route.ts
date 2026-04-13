@@ -19,18 +19,20 @@ export async function POST(req: Request) {
       messages: [
         {
           role: "user",
-          content: isAbrupt ? 
-`This session ended mid-conversation — the user ran out of time. Return ONLY valid JSON, no markdown.
+content: isAbrupt ? 
+`This session ended mid-conversation. Return ONLY valid JSON, no markdown.
 
 ${allMessages}
 
 Return this exact JSON:
 {
-  "summary": "2-3 sentences only. What they came with and what was unresolved or resolved.",
+  "summary": "2-3 sentences. What they came with and what was unresolved.",
   "themes": ["theme1"],
   "key_words": ["significant phrase the user said"],
+  "action_taken": "The last thing Grace suggested, written to the user in second person. If nothing was agreed, write 'none'.",
+  "growth_signals": ["any positive shifts detected, or none"],
   "headline": "3-4 words max, self-focused",
-  "closing_message": "One warm sentence acknowledging what issue they came up with, what went through the session and inviting them to pick it up next time. Under 50 words."
+  "closing_message": "One warm sentence acknowledging what they worked on and inviting them to pick it up next time. Under 30 words."
 }`
 :
 `Read this therapy session and extract key information. Return ONLY valid JSON, no markdown. Never use clinical words like "nervous system", "dysregulated", "attachment", "anxious", "avoidant". Use plain human language.

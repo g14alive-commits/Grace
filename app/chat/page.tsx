@@ -151,7 +151,7 @@ if (saved) {
           .from("sessions")
           .select("*", { count: "exact", head: true })
           .eq("user_id", user.id)
-          .eq("is_complete", true);
+          .gte("user_message_count", 3);
         const newSessionNumber = (sessionCount || 0) + 1;
         setSessionNumber(newSessionNumber);
         setSessionStartTime(Date.now());
@@ -329,30 +329,7 @@ const data = JSON.parse(text);
       localStorage.removeItem(`grace-session-${sId}`);
       setSessionId(null);
       setActiveMessageCount(0);
-      if (uId) loadPastSessions(uId);
-      
-     // Only auto-start if abrupt (inactivity close)
-if (isAbrupt && uId) {
-  const { count: sessionCount } = await supabase
-    .from("sessions")
-    .select("*", { count: "exact", head: true })
-    .eq("user_id", uId)
-    .gte("user_message_count", 3);
-
-  const newSessionNumber = (sessionCount || 0) + 1;
-  const newSession = await createSession(uId, newSessionNumber);
-  if (newSession) {
-    setSessionId(newSession.id);
-    setSessionNumber(newSessionNumber);
-    setSessionStartTime(Date.now());
-    setLastMessageTime(null);
-    setActiveMessageCount(0);
-    setSessionEnded(false);
-    setMessages([]);
-    startConversation(userProfile, dbUser, newSessionNumber, true);
-  }
-} 
-
+      if (uId) loadPastSessions(uId); 
     } catch (e) {
       console.error("Session close failed:", e);
     }
