@@ -26,8 +26,6 @@ interface UserProfile {
   sessionCount?: number;
 }
 
-const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
-
 export default function Chat() {
   const [messages, setMessages] = useState<string[]>([]);
   const [input, setInput] = useState("");
@@ -46,11 +44,11 @@ export default function Chat() {
   const [pastSessions, setPastSessions] = useState<any[]>([]);
   const [expandedSession, setExpandedSession] = useState<string | null>(null);
   const [showEndSession, setShowEndSession] = useState(false);
+  const [sessionEnded, setSessionEnded] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
   const initialized = useRef(false);
   const router = useRouter();
-  const [sessionEnded, setSessionEnded] = useState(false);
 
   useEffect(() => {
     const setHeight = () => setVh(window.innerHeight);
@@ -82,84 +80,89 @@ export default function Chat() {
       const activeSession = await getActiveSession(user.id);
 
       if (activeSession) {
-  const lastMsgTime = activeSession.last_message_at
-    ? new Date(activeSession.last_message_at).getTime()
-    : new Date(activeSession.started_at).getTime();
-  const hourSinceLastMessage = Date.now() - lastMsgTime > 60 * 60 * 1000;
+        const lastMsgTime = activeSession.last_message_at
+          ? new Date(activeSession.last_message_at).getTime()
+          : new Date(activeSession.started_at).getTime();
+        const hourSinceLastMessage = Date.now() - lastMsgTime > 60 * 60 * 1000;
 
-  if (hourSinceLastMessage && (activeSession.user_message_count || 0) > 3) {
-    // Silent close — save and start fresh
-    const saved = localStorage.getItem(`grace-session-${activeSession.id}`);
-    const msgs = saved ? JSON.parse(saved) : [];
-    if (msgs.length > 0) {
-      await fetch("/api/session", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          messages: msgs,
-          userName: dbUserData?.name || "",
-          isAbrupt: true,
-          closingOverride: "Session ended after an hour of quiet.",
-        }),
-      }).then(async (res) => {
-        const data = await res.json();
-        await closeSession(
-          activeSession.id, user.id,
-          data.summary || "",
-          data.themes || [],
-          data.key_words || [],
-          data.action_taken || "",
-          data.growth_signals || [],
-          data.headline || "",
-          []
-        );
-      }).catch(e => console.error("Silent close failed:", e));
-    }
-    localStorage.removeItem(`grace-session-${activeSession.id}`);
-
-    // Start fresh session
-const { count: sessionCount } = await supabase
-  .from("sessions")
-  .select("*", { count: "exact", head: true })
-  .eq("user_id", user.id)
-  .gte("user_message_count", 3);
-
-    const newSessionNumber = (sessionCount || 0) + 1;
-    setSessionNumber(newSessionNumber);
-    setSessionStartTime(Date.now());
-    startConversation(profile, dbUserData, newSessionNumber, true);
-  } else {
-    setSessionId(activeSession.id);
-setSessionNumber(activeSession.session_number);
-setSessionStartTime(new Date(activeSession.started_at).getTime());
-setActiveMessageCount(activeSession.user_message_count || 0);
-setLastMessageTime(
-  activeSession.last_message_at
-    ? new Date(activeSession.last_message_at).getTime()
-    : Date.now()
-);
-const saved = localStorage.getItem(`grace-session-${activeSession.id}`);
-if (saved) {
-  setMessages(JSON.parse(saved));
-    } else {
-      startConversation(profile, dbUserData, activeSession.session_number, false);
-    }
-  }
-}
-       else {
-        const { count: sessionCount } = await supabase
-          .from("sessions")
-          .select("*", { count: "exact", head: true })
-          .eq("user_id", user.id)
-          .gte("user_message_count", 3);
-        const newSessionNumber = (sessionCount || 0) + 1;
-        setSessionNumber(newSessionNumber);
-        setSessionStartTime(Date.now());
-        startConversation(profile, dbUserData, newSessionNumber, true);
+        if (hourSinceLastMessage && (activeSession.user_message_count || 0) > 3) {
+          // Silent close — save and start fresh
+          const saved = localStorage.getItem(`grace-session-${activeSession.id}`);
+          const msgs = saved ? JSON.parse(saved) : [];
+          if (msgs.length > 0) {
+            try {
+              const res = await fetch("/api/session", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  messages: msgs,
+                  userName: dbUserData?.name || "",
+                  isAbrupt: true,
+                  closingOverride: "Session ended after an hour of quiet.",
+                }),
+              });
+              const sessionData = await res.json();
+              await closeSession(
+                activeSession.id, user.id,
+                sessionData.summary || "",
+                sessionData.themes || [],
+                sessionData.key_words || [],
+                sessionData.action_taken || "",
+                sessionData.growth_signals || [],
+                sessionData.headline || "",
+                []
+              );
+            } catch (e) {
+              console.error("Silent close failed:", e);
+            }
+          }
+          localStorage.removeItem(`grace-session-${activeSession.id}`);
+          await startFreshSession(user.id, profile, dbUserData);
+        } else {
+          setSessionId(activeSession.id);
+          setSessionNumber(activeSession.session_number);
+          setSessionStartTime(new Date(activeSession.started_at).getTime());
+          setActiveMessageCount(activeSession.user_message_count || 0);
+          setLastMessageTime(
+            activeSession.last_message_at
+              ? new Date(activeSession.last_message_at).getTime()
+              : Date.now()
+          );
+          const saved = localStorage.getItem(`grace-session-${activeSession.id}`);
+          if (saved) {
+            setMessages(JSON.parse(saved));
+          } else {
+            startConversation(profile, dbUserData, activeSession.session_number, false);
+          }
+        }
+      } else {
+        await startFreshSession(user.id, profile, dbUserData);
       }
       setAuthLoading(false);
     });
   }, []);
+
+  const getSessionCount = async (uid: string) => {
+    const { count } = await supabase
+      .from("sessions")
+      .select("*", { count: "exact", head: true })
+      .eq("user_id", uid)
+      .gte("user_message_count", 3);
+    return count || 0;
+  };
+
+  const startFreshSession = async (uid: string, profile: UserProfile, dbUserData: any) => {
+    const count = await getSessionCount(uid);
+    const newSessionNumber = count + 1;
+    setSessionNumber(newSessionNumber);
+    setSessionStartTime(Date.now());
+    setLastMessageTime(null);
+    setActiveMessageCount(0);
+    setSessionId(null);
+    setMessages([]);
+    setSessionEnded(false);
+    startConversation(profile, dbUserData, newSessionNumber, true);
+  };
 
   const loadPastSessions = async (uId: string) => {
     const { data } = await supabase
@@ -167,7 +170,7 @@ if (saved) {
       .select("id, session_number, summary, themes, action_taken, growth_signals, key_words, headline, started_at, is_complete, user_message_count")
       .eq("user_id", uId)
       .gte("user_message_count", 3)
-      .order("started_at", { ascending: false });
+      .order("session_number", { ascending: false });
     if (data) setPastSessions(data);
   };
 
@@ -207,60 +210,48 @@ if (saved) {
     return () => clearInterval(keepAlive);
   }, [messages.length, loading, userProfile, sessionNumber]);
 
-const sessionStateRef = useRef<any>({});
+  // Keep ref in sync for interval
+  const sessionStateRef = useRef<any>({});
+  useEffect(() => {
+    sessionStateRef.current = {
+      lastMessageTime,
+      sessionId,
+      userId,
+      sessionEnded,
+      activeMessageCount,
+      messages,
+      userProfile,
+      dbUser,
+      sessionNumber,
+    };
+  }, [lastMessageTime, sessionId, userId, sessionEnded, activeMessageCount, messages, userProfile, dbUser, sessionNumber]);
 
-// Keep ref in sync — add this useEffect
-useEffect(() => {
-  sessionStateRef.current = {
-    lastMessageTime,
-    sessionId,
-    userId,
-    sessionEnded,
-    activeMessageCount,
-    messages,
-  };
-}, [lastMessageTime, sessionId, userId, sessionEnded, activeMessageCount, messages]);
-
-// Interval — no dependencies, never recreated, always reads fresh values via ref
-useEffect(() => {
-  const interval = setInterval(() => {
-    const { lastMessageTime, sessionId, userId, sessionEnded, activeMessageCount, messages } = sessionStateRef.current;
-    console.log("interval check", { lastMessageTime, sessionId, userId, sessionEnded, activeMessageCount });
-    if (!lastMessageTime || !sessionId || !userId || sessionEnded) return;
-    const elapsed = Date.now() - lastMessageTime;
-    console.log("elapsed minutes:", Math.floor(elapsed / 60000));
-if (elapsed >= 60 * 60 * 1000 && activeMessageCount > 3) {
-  (async () => {
-    await handleSessionClose(messages, userId, sessionId, true);
-    // Auto-start new session after inactivity close
-    const { count: sessionCount } = await supabase
-      .from("sessions")
-      .select("*", { count: "exact", head: true })
-      .eq("user_id", userId)
-      .gte("user_message_count", 3);
-    const newSessionNumber = (sessionCount || 0) + 1;
-    const newSession = await createSession(userId, newSessionNumber);
-    if (newSession) {
-      setSessionId(newSession.id);
-      setSessionNumber(newSessionNumber);
-      setSessionStartTime(Date.now());
-      setLastMessageTime(null);
-      setActiveMessageCount(0);
-      setSessionEnded(false);
-      setMessages([]);
-      startConversation(userProfile, dbUser, newSessionNumber, true);
-    }
-  })();
-}
-  }, 5 * 60 * 1000); // check every 5 minutes
-  return () => clearInterval(interval);
-}, []); // ← empty deps, interval never resets
-
-  const checkSessionTime = (msgCount: number) => {
-    if (!sessionStartTime) return false;
-    const elapsed = Date.now() - sessionStartTime;
-    return elapsed >= TWO_HOURS_MS && msgCount > 10;
-  };
+  // 1hr inactivity interval
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      const state = sessionStateRef.current;
+      if (!state.lastMessageTime || !state.sessionId || !state.userId || state.sessionEnded) return;
+      const elapsed = Date.now() - state.lastMessageTime;
+      if (elapsed >= 60 * 60 * 1000 && state.activeMessageCount > 3) {
+        await handleSessionClose(state.messages, state.userId, state.sessionId, true);
+        // Auto-start new session
+        const count = await getSessionCount(state.userId);
+        const newSessionNumber = count + 1;
+        const newSession = await createSession(state.userId, newSessionNumber);
+        if (newSession) {
+          setSessionId(newSession.id);
+          setSessionNumber(newSessionNumber);
+          setSessionStartTime(Date.now());
+          setLastMessageTime(null);
+          setActiveMessageCount(0);
+          setSessionEnded(false);
+          setMessages([]);
+          startConversation(state.userProfile, state.dbUser, newSessionNumber, true);
+        }
+      }
+    }, 5 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   const toApiMessages = (msgs: string[]) => {
     return msgs.map((msg) => {
@@ -285,17 +276,17 @@ if (elapsed >= 60 * 60 * 1000 && activeMessageCount > 3) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-  messages: [{ role: "user", content: "begin" }],
-  userProfile: profile,
-  sessionNumber: sessNum,
-  sessionMemory,
-  isNewSession,
-  lastSessionDate: dbUserData?.last_seen_at || null,
+          messages: [{ role: "user", content: "begin" }],
+          userProfile: profile,
+          sessionNumber: sessNum,
+          sessionMemory,
+          isNewSession,
+          lastSessionDate: dbUserData?.last_seen_at || null,
         }),
       });
       const text = await response.text();
-if (!text) throw new Error("Empty response from session API");
-const data = JSON.parse(text);
+      if (!text) throw new Error("Empty response");
+      const data = JSON.parse(text);
       if (data.result) setMessages(["Grace: " + data.result]);
     } catch (e) {
       console.error(e);
@@ -304,7 +295,6 @@ const data = JSON.parse(text);
   };
 
   const handleSessionClose = async (msgs: string[], uId: string, sId: string, isAbrupt = false) => {
-    console.log("handleSessionClose called with sId:", sId, "uId:", uId, "isAbrupt:", isAbrupt);
     try {
       const response = await fetch("/api/session", {
         method: "POST",
@@ -316,9 +306,8 @@ const data = JSON.parse(text);
         }),
       });
       const data = await response.json();
-      console.log("Session close response:", data);
 
-      if (data.closing_message) {
+      if (!isAbrupt && data.closing_message) {
         setMessages((prev) => [
           ...prev,
           `__SESSION_END__`,
@@ -337,17 +326,18 @@ const data = JSON.parse(text);
         data.headline || "",
         data.last_ten_messages || []
       );
-     if (data.action_taken && uId) {
-    await supabase
-    .from("users")
-    .update({ last_session_action: data.action_taken })
-    .eq("id", uId);
-    }
+
+      if (data.action_taken && uId) {
+        await supabase
+          .from("users")
+          .update({ last_session_action: data.action_taken })
+          .eq("id", uId);
+      }
 
       localStorage.removeItem(`grace-session-${sId}`);
       setSessionId(null);
       setActiveMessageCount(0);
-      if (uId) loadPastSessions(uId); 
+      if (uId) loadPastSessions(uId);
     } catch (e) {
       console.error("Session close failed:", e);
     }
@@ -368,17 +358,16 @@ const data = JSON.parse(text);
 
     let currentSessionId = sessionId;
 
-if (!sessionId && userId) {
-  const newSession = await createSession(userId, sessionNumber);
-  if (newSession) {
-    setSessionId(newSession.id);
-    currentSessionId = newSession.id;
-  }
-}
-if (currentSessionId) {
-  await updateSessionMessages(currentSessionId, newCount, updatedMessages.length);
-}
-    const twoHourReached = checkSessionTime(newCount);
+    if (!sessionId && userId) {
+      const newSession = await createSession(userId, sessionNumber);
+      if (newSession) {
+        setSessionId(newSession.id);
+        currentSessionId = newSession.id;
+      }
+    }
+    if (currentSessionId) {
+      await updateSessionMessages(currentSessionId, newCount, updatedMessages.length);
+    }
 
     try {
       const response = await fetch("/api/chat", {
@@ -388,45 +377,45 @@ if (currentSessionId) {
           messages: toApiMessages(updatedMessages),
           userProfile,
           sessionNumber,
-          twoHourWarning: twoHourReached,
           userId,
         }),
       });
       const data = await response.json();
 
       if (data.result) {
-  const newMessages = [...updatedMessages, "Grace: " + data.result];
-  setMessages(newMessages);
+        const newMessages = [...updatedMessages, "Grace: " + data.result];
+        setMessages(newMessages);
 
-     if (twoHourReached && currentSessionId && userId) {
-  await handleSessionClose(newMessages, userId, currentSessionId, true);
-  setSessionEnded(true);
-}
-}
+        // Natural close detection
+        if (data.sessionComplete && currentSessionId && userId) {
+          await handleSessionClose(newMessages, userId, currentSessionId, false);
+        }
+      }
+
       if (data.profileUpdates) {
-  setUserProfile((prev) => ({
-    ...prev,
-    ...data.profileUpdates,
-    relationshipFacts: [
-      ...new Set([
-        ...(prev.relationshipFacts || []),
-        ...(data.profileUpdates.relationshipFacts || []),
-      ])
-    ],
-    recurringThemes: [
-      ...new Set([
-        ...(prev.recurringThemes || []),
-        ...(data.profileUpdates.recurringThemes || []),
-      ])
-    ],
-    growthSignals: [
-      ...new Set([
-        ...(prev.growthSignals || []),
-        ...(data.profileUpdates.growthSignals || []),
-      ])
-    ],
-  }));
-}
+        setUserProfile((prev) => ({
+          ...prev,
+          ...data.profileUpdates,
+          relationshipFacts: [
+            ...new Set([
+              ...(prev.relationshipFacts || []),
+              ...(data.profileUpdates.relationshipFacts || []),
+            ])
+          ],
+          recurringThemes: [
+            ...new Set([
+              ...(prev.recurringThemes || []),
+              ...(data.profileUpdates.recurringThemes || []),
+            ])
+          ],
+          growthSignals: [
+            ...new Set([
+              ...(prev.growthSignals || []),
+              ...(data.profileUpdates.growthSignals || []),
+            ])
+          ],
+        }));
+      }
     } catch (e) {
       console.error(e);
     }
@@ -570,19 +559,19 @@ if (currentSessionId) {
         @keyframes drift3 { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(-25px,-30px) scale(1.1); } }
 
         .header {
-  flex-shrink: 0; position: relative; z-index: 2;
-  background: rgba(13,14,26,0.80); border-bottom: 1px solid var(--divider);
-  padding: 8px 16px; display: flex; align-items: center; gap: 10px;
-  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-}
+          flex-shrink: 0; position: relative; z-index: 2;
+          background: rgba(13,14,26,0.80); border-bottom: 1px solid var(--divider);
+          padding: 8px 16px; display: flex; align-items: center; gap: 10px;
+          backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+        }
 
-.avatar {
-  width: 32px; height: 32px; border-radius: 50%;
-  background: rgba(150,100,255,0.25); border: 1px solid rgba(150,100,255,0.60);
-  display: flex; align-items: center; justify-content: center;
-  font-family: 'Cormorant Garamond', serif; font-size: 16px; font-weight: 600;
-  color: rgba(200,180,255,0.90); flex-shrink: 0;
-}
+        .avatar {
+          width: 32px; height: 32px; border-radius: 50%;
+          background: rgba(150,100,255,0.25); border: 1px solid rgba(150,100,255,0.60);
+          display: flex; align-items: center; justify-content: center;
+          font-family: 'Cormorant Garamond', serif; font-size: 16px; font-weight: 600;
+          color: rgba(200,180,255,0.90); flex-shrink: 0;
+        }
 
         .header-text { flex: 1; }
         .header-name { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 600; color: var(--text-primary); line-height: 1.2; letter-spacing: 0.01em; }
@@ -600,17 +589,18 @@ if (currentSessionId) {
         .online-dot { width: 7px; height: 7px; border-radius: 50%; background: rgba(80,220,140,1.0); box-shadow: 0 0 12px rgba(80,220,140,0.70); flex-shrink: 0; }
 
         .hamburger-bar {
-  flex-shrink: 0; position: relative; z-index: 2;
-  padding: 3px 16px;
-  background: rgba(13,14,26,0.60);
-  border-bottom: 1px solid rgba(255,255,255,0.04);
-}
+          flex-shrink: 0; position: relative; z-index: 2;
+          padding: 3px 16px;
+          background: rgba(13,14,26,0.60);
+          border-bottom: 1px solid rgba(255,255,255,0.04);
+          display: flex; align-items: center; justify-content: space-between;
+        }
 
-.hamburger-btn {
-  background: none; border: none; cursor: pointer; padding: 2px;
-  display: flex; flex-direction: column; gap: 3px; opacity: 0.40;
-  transition: opacity 0.2s;
-}
+        .hamburger-btn {
+          background: none; border: none; cursor: pointer; padding: 2px;
+          display: flex; flex-direction: column; gap: 3px; opacity: 0.40;
+          transition: opacity 0.2s;
+        }
         .hamburger-btn:active { opacity: 0.70; }
         .hamburger-line { height: 1px; background: rgba(200,180,255,0.90); border-radius: 2px; }
 
@@ -642,23 +632,23 @@ if (currentSessionId) {
         @keyframes bounce { 0%,80%,100% { opacity: 0.4; transform: translateY(0); } 40% { opacity: 1; transform: translateY(-4px); } }
 
         .input-area {
-  flex-shrink: 0; position: relative; z-index: 2;
-  background: rgba(13,14,26,0.80); border-top: 1px solid var(--divider);
-  padding: 8px 12px; backdrop-filter: blur(20px);
-}
+          flex-shrink: 0; position: relative; z-index: 2;
+          background: rgba(13,14,26,0.80); border-top: 1px solid var(--divider);
+          padding: 8px 12px; backdrop-filter: blur(20px);
+        }
 
-.input-row {
-  display: flex; align-items: flex-end; gap: 8px;
-  background: var(--input-bg); border: 1px solid var(--input-border);
-  border-radius: 20px; padding: 6px 6px 6px 14px; transition: border-color 0.3s;
-}
+        .input-row {
+          display: flex; align-items: flex-end; gap: 8px;
+          background: var(--input-bg); border: 1px solid var(--input-border);
+          border-radius: 20px; padding: 6px 6px 6px 14px; transition: border-color 0.3s;
+        }
         .input-row:focus-within { border-color: var(--input-focus); box-shadow: 0 0 20px rgba(160,120,240,0.08); }
 
         textarea { flex: 1; border: none; outline: none; background: transparent; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 300; color: var(--text-primary); resize: none; height: 22px; max-height: 100px; line-height: 1.5; overflow-y: auto; }
         textarea::placeholder { color: var(--text-muted); }
         textarea::-webkit-scrollbar { display: none; }
 
-        .send-btn { width: 34px; height: 34px; border-radius: 50%; background: linear-gradient(145deg, #b070ff 0%, #7040e0 50%, #4020c0 100%); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: transform 0.15s, opacity 0.15s; box-shadow: 0 0 16px rgba(160,120,240,0.25); } 
+        .send-btn { width: 34px; height: 34px; border-radius: 50%; background: linear-gradient(145deg, #b070ff 0%, #7040e0 50%, #4020c0 100%); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: transform 0.15s, opacity 0.15s; box-shadow: 0 0 16px rgba(160,120,240,0.25); }
         .send-btn:disabled { opacity: 0.25; cursor: default; box-shadow: none; }
         .send-btn:not(:disabled):active { transform: scale(0.9); }
         .send-btn svg { width: 17px; height: 17px; fill: white; margin-left: 2px; }
@@ -675,7 +665,6 @@ if (currentSessionId) {
         .drawer-detail-panel-outer { flex: 1; background: #12112299; backdrop-filter: blur(8px); display: flex; flex-direction: column; pointer-events: all; animation: fadeIn 0.2s ease; }
         .drawer-header { padding: 52px 20px 16px; border-bottom: 1px solid rgba(255,255,255,0.07); display: flex; align-items: center; justify-content: space-between; }
         .drawer-title { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 400; color: rgba(240,235,255,0.90); }
-        .drawer-back { background: none; border: none; color: rgba(160,140,220,0.70); font-size: 14px; font-weight: 300; cursor: pointer; padding: 0; font-family: 'DM Sans', sans-serif; }
         .drawer-close { background: none; border: none; color: rgba(160,140,220,0.55); font-size: 20px; cursor: pointer; padding: 4px; }
         .drawer-list-full { flex: 1; overflow-y: auto; }
         .drawer-list-full::-webkit-scrollbar { width: 0; }
@@ -685,15 +674,13 @@ if (currentSessionId) {
         .session-number { font-size: 10px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(160,140,220,0.45); }
         .session-date { font-size: 11px; font-weight: 300; color: rgba(140,130,180,0.45); }
         .session-headline { font-family: 'Cormorant Garamond', serif; font-size: 15px; font-weight: 400; font-style: italic; color: rgba(220,210,255,0.85); line-height: 1.3; }
-        .drawer-detail-full { flex: 1; overflow-y: auto; padding: 52px 20px 24px; }
+        .drawer-detail-full { flex: 1; overflow-y: auto; padding: 24px 20px 24px; }
         .drawer-detail-full::-webkit-scrollbar { width: 0; }
         .session-item.selected { background: rgba(160,120,240,0.10); border-left: 2px solid rgba(160,120,240,0.40); }
         .detail-headline { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 400; font-style: italic; color: rgba(220,210,255,0.90); line-height: 1.3; margin-bottom: 20px; }
-       .detail-incomplete { font-size: 11px; color: rgba(160,140,220,0.35); margin-bottom: 16px; }
-       .detail-section { margin-bottom: 18px; }
-       .detail-label { font-size: 9px; font-weight: 500; letter-spacing: 0.09em; text-transform: uppercase; color: rgba(160,140,220,0.40); margin-bottom: 6px; }
-       .detail-text { font-size: 14px; font-weight: 300; line-height: 1.65; color: rgba(180,170,220,0.75); }
-       .drawer-empty { padding: 40px 20px; text-align: center; font-size: 14px; font-weight: 300; color: rgba(140,130,180,0.45); font-style: italic; line-height: 1.6; }
+        .detail-section { margin-bottom: 18px; }
+        .detail-label { font-size: 9px; font-weight: 500; letter-spacing: 0.09em; text-transform: uppercase; color: rgba(160,140,220,0.40); margin-bottom: 6px; }
+        .detail-text { font-size: 14px; font-weight: 300; line-height: 1.65; color: rgba(180,170,220,0.75); }
       `}</style>
 
       <div className="bg-orbs">
@@ -721,92 +708,97 @@ if (currentSessionId) {
         <div className="online-dot" />
       </div>
 
-      <div className="hamburger-bar" style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-  {pastSessions.length > 0 && (
-    <button className="hamburger-btn" onClick={() => setShowDrawer(true)}>
-      <div className="hamburger-line" style={{ width: "18px" }} />
-      <div className="hamburger-line" style={{ width: "14px" }} />
-      <div className="hamburger-line" style={{ width: "18px" }} />
-    </button>
-  )}
-  {sessionEnded && (
-  <button
-    onClick={() => { window.location.href = "/chat"; }}
-      style={{
-        background: "none",
-        border: "1px solid rgba(160,120,240,0.25)",
-        borderRadius: "20px",
-        fontSize: "11px",
-        color: "rgba(200,180,255,0.70)",
-        cursor: "pointer",
-        padding: "4px 14px",
-        fontFamily: "DM Sans, sans-serif",
-        letterSpacing: "0.04em",
-        marginLeft: "auto",
-      }}
-    >
-      new session
-    </button>
-  )}
-</div>
+      <div className="hamburger-bar">
+        {pastSessions.length > 0 && (
+          <button className="hamburger-btn" onClick={() => setShowDrawer(true)}>
+            <div className="hamburger-line" style={{ width: "18px" }} />
+            <div className="hamburger-line" style={{ width: "14px" }} />
+            <div className="hamburger-line" style={{ width: "18px" }} />
+          </button>
+        )}
+        {sessionEnded && (
+          <button
+            onClick={() => { window.location.href = "/chat"; }}
+            style={{
+              background: "none",
+              border: "1px solid rgba(160,120,240,0.25)",
+              borderRadius: "20px",
+              fontSize: "11px",
+              color: "rgba(200,180,255,0.70)",
+              cursor: "pointer",
+              padding: "4px 14px",
+              fontFamily: "DM Sans, sans-serif",
+              letterSpacing: "0.04em",
+              marginLeft: "auto",
+            }}
+          >
+            new session
+          </button>
+        )}
+      </div>
 
       {showDrawer && (
         <>
-          <div className="drawer-overlay" onClick={() => { setShowDrawer(false); setExpandedSession(null); }} style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(8,8,18,0.70)", zIndex: 10, backdropFilter: "blur(4px)" }} />
+          <div
+            className="drawer-overlay"
+            onClick={() => { setShowDrawer(false); setExpandedSession(null); }}
+            style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(8,8,18,0.70)", zIndex: 10, backdropFilter: "blur(4px)" }}
+          />
           <div className="drawer">
-       <div className="drawer-list-panel">
-    <div className="drawer-header">
-      <div className="drawer-title">Sessions</div>
-      <button className="drawer-close" onClick={() => { setShowDrawer(false); setExpandedSession(null); }}>×</button>
-    </div>
-    <div className="drawer-list-full">
-  <div
-    className="session-item"
-    onClick={() => {
-      setShowDrawer(false);
-      window.location.reload();
-    }}
-    style={{ borderBottom: "1px solid rgba(160,120,240,0.15)" }}
-  >
-    <div className="session-item-header">
-      <span className="session-number" style={{ color: "rgba(160,120,240,0.70)" }}>+ New Session</span>
-    </div>
-    <div className="session-headline" style={{ fontSize: "14px", color: "rgba(160,120,240,0.60)" }}>
-      Start a fresh conversation
-    </div>
-  </div>
-  {pastSessions.map((s) => {
-        const date = new Date(s.started_at).toLocaleDateString("en-GB", { day: "numeric", month: "short" });
-        return (
-          <div key={s.id} className={`session-item${expandedSession === s.id ? " selected" : ""}`} onClick={() => setExpandedSession(s.id)}>
-            <div className="session-item-header">
-              <span className="session-number">#{s.session_number}</span>
-              <span className="session-date">{date}</span>
+            <div className="drawer-list-panel">
+              <div className="drawer-header">
+                <div className="drawer-title">Sessions</div>
+                <button className="drawer-close" onClick={() => { setShowDrawer(false); setExpandedSession(null); }}>×</button>
+              </div>
+              <div className="drawer-list-full">
+                <div
+                  className="session-item"
+                  onClick={() => { setShowDrawer(false); window.location.reload(); }}
+                  style={{ borderBottom: "1px solid rgba(160,120,240,0.15)" }}
+                >
+                  <div className="session-item-header">
+                    <span className="session-number" style={{ color: "rgba(160,120,240,0.70)" }}>+ New Session</span>
+                  </div>
+                  <div className="session-headline" style={{ fontSize: "14px", color: "rgba(160,120,240,0.60)" }}>
+                    Start a fresh conversation
+                  </div>
+                </div>
+                {pastSessions.map((s) => {
+                  const date = new Date(s.started_at).toLocaleDateString("en-GB", { day: "numeric", month: "short" });
+                  return (
+                    <div
+                      key={s.id}
+                      className={`session-item${expandedSession === s.id ? " selected" : ""}`}
+                      onClick={() => setExpandedSession(s.id)}
+                    >
+                      <div className="session-item-header">
+                        <span className="session-number">#{s.session_number}</span>
+                        <span className="session-date">{date}</span>
+                      </div>
+                      <div className="session-headline">
+                        {s.headline || (s.is_complete ? "Session " + s.session_number : "Incomplete")}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
-            <div className="session-headline">
-              {s.headline || (s.is_complete ? "Session " + s.session_number : "Incomplete")}
-            </div>
-          </div>
-        );
-      })}
-    </div>
-  </div>
 
-  {expandedSession && (() => {
-    const s = pastSessions.find(x => x.id === expandedSession);
-    if (!s) return null;
-    return (
-      <div className="drawer-detail-panel-outer">
-        <div className="drawer-detail-full">
-          <div className="detail-headline">{s.headline || "Session " + s.session_number}</div>
-          {s.summary && <div className="detail-section"><div className="detail-label">What you worked through</div><div className="detail-text">{s.summary}</div></div>}
-          {s.action_taken && <div className="detail-section"><div className="detail-label">What you decided</div><div className="detail-text">{s.action_taken}</div></div>}
-          {s.growth_signals?.length > 0 && <div className="detail-section"><div className="detail-label">Growth signals</div><div className="detail-text">{s.growth_signals.join(" · ")}</div></div>}
-          {s.themes?.length > 0 && <div className="detail-section"><div className="detail-label">Themes</div><div className="detail-text">{s.themes.join(", ")}</div></div>}
-        </div>
-      </div>
-    );
-  })()}
+            {expandedSession && (() => {
+              const s = pastSessions.find(x => x.id === expandedSession);
+              if (!s) return null;
+              return (
+                <div className="drawer-detail-panel-outer">
+                  <div className="drawer-detail-full">
+                    <div className="detail-headline">{s.headline || "Session " + s.session_number}</div>
+                    {s.summary && <div className="detail-section"><div className="detail-label">What you worked through</div><div className="detail-text">{s.summary}</div></div>}
+                    {s.action_taken && <div className="detail-section"><div className="detail-label">What you decided</div><div className="detail-text">{s.action_taken}</div></div>}
+                    {s.growth_signals?.length > 0 && <div className="detail-section"><div className="detail-label">Growth signals</div><div className="detail-text">{s.growth_signals.join(" · ")}</div></div>}
+                    {s.themes?.length > 0 && <div className="detail-section"><div className="detail-label">Themes</div><div className="detail-text">{s.themes.join(", ")}</div></div>}
+                  </div>
+                </div>
+              );
+            })()}
           </div>
         </>
       )}
@@ -880,14 +872,13 @@ if (currentSessionId) {
       {messages.length >= 5 && !sessionEnded && (
         <div style={{ textAlign: "center", padding: "2px 0 1px", background: "rgba(13,14,26,0.80)" }}>
           <button
-             onClick={async () => {
-  setShowEndSession(true);
-  if (sessionId && userId) {
-    await handleSessionClose(messages, userId, sessionId);
-  }
-  setSessionEnded(true);
-  setShowEndSession(false);
-}}
+            onClick={async () => {
+              setShowEndSession(true);
+              if (sessionId && userId) {
+                await handleSessionClose(messages, userId, sessionId, false);
+              }
+              setShowEndSession(false);
+            }}
             style={{
               background: "none", border: "none",
               fontSize: "10px",
