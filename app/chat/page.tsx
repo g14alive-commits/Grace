@@ -306,6 +306,7 @@ export default function Chat() {
         }),
       });
       const data = await response.json();
+      console.log("Session close data:", JSON.stringify(data));
 
       if (!isAbrupt && data.closing_message) {
         setMessages((prev) => [
@@ -378,6 +379,7 @@ export default function Chat() {
           userProfile,
           sessionNumber,
           userId,
+          twoHourWarning: false,
         }),
       });
       const data = await response.json();
