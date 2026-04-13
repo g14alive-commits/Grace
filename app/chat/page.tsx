@@ -229,11 +229,29 @@ useEffect(() => {
     if (!lastMessageTime || !sessionId || !userId || sessionEnded) return;
     const elapsed = Date.now() - lastMessageTime;
     console.log("elapsed minutes:", Math.floor(elapsed / 60000));
-    if (elapsed >= 60 * 60 * 1000 && activeMessageCount > 3) {
-      (async () => {
-        await handleSessionClose(messages, userId, sessionId, true);
-      })();
+if (elapsed >= 60 * 60 * 1000 && activeMessageCount > 3) {
+  (async () => {
+    await handleSessionClose(messages, userId, sessionId, true);
+    // Auto-start new session after inactivity close
+    const { count: sessionCount } = await supabase
+      .from("sessions")
+      .select("*", { count: "exact", head: true })
+      .eq("user_id", userId)
+      .gte("user_message_count", 3);
+    const newSessionNumber = (sessionCount || 0) + 1;
+    const newSession = await createSession(userId, newSessionNumber);
+    if (newSession) {
+      setSessionId(newSession.id);
+      setSessionNumber(newSessionNumber);
+      setSessionStartTime(Date.now());
+      setLastMessageTime(null);
+      setActiveMessageCount(0);
+      setSessionEnded(false);
+      setMessages([]);
+      startConversation(userProfile, dbUser, newSessionNumber, true);
     }
+  })();
+}
   }, 5 * 60 * 1000); // check every 5 minutes
   return () => clearInterval(interval);
 }, []); // ← empty deps, interval never resets
