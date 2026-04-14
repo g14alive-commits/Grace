@@ -13,9 +13,9 @@ export async function POST(req: Request) {
       sessionNumber,
       sessionMemory,
       isNewSession,
-      twoHourWarning,
       userId,
       lastSessionDate,
+      clientTime,
     } = await req.json();
 
     const dbUser = userId ? await getOrCreateUser(userId, "") : null;
@@ -26,8 +26,7 @@ export async function POST(req: Request) {
       return Response.json({ result: null });
     }
 
-    const now = new Date();
-    const timeStr = now.toLocaleString("en-GB", { weekday: "long", hour: "2-digit", minute: "2-digit", hour12: true });
+    const timeStr = clientTime || new Date().toUTCString();
     const timeSinceLastSession = lastSessionDate
       ? (() => {
           const diff = Date.now() - new Date(lastSessionDate).getTime();

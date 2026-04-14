@@ -282,6 +282,7 @@ export default function Chat() {
           sessionMemory,
           isNewSession,
           lastSessionDate: dbUserData?.last_seen_at || null,
+          clientTime: new Date().toLocaleString("en-GB", { weekday: "long", hour: "2-digit", minute: "2-digit", hour12: true, timeZoneName: "short" }),
         }),
       });
       const text = await response.text();
@@ -379,7 +380,7 @@ export default function Chat() {
           userProfile,
           sessionNumber,
           userId,
-          twoHourWarning: false,
+          clientTime: new Date().toLocaleString("en-GB", { weekday: "long", hour: "2-digit", minute: "2-digit", hour12: true, timeZoneName: "short" }),
         }),
       });
       const data = await response.json();
