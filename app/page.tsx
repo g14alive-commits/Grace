@@ -89,7 +89,7 @@ function RippleCanvas() {
 }
 
 const CARDS = [
-  "You keep replaying the same fight.\nDifferent day, same spiral.\n\nYou know what you should do.\nYou can't make yourself do it.",
+  "You keep replaying the same fight.\nDifferent day, same spiral.\n\nYou know what you should do.\nYet you can't make yourself do it.",
 ];
 export default function Home() {
   const [cardIndex, setCardIndex] = useState(0);
