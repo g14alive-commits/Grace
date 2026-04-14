@@ -424,7 +424,7 @@ const onMouseUp = (e: React.MouseEvent) => {
           ) : (
             <div className="final-wrap">
               <div className={`final-body${bodyVisible ? " visible" : ""}`}>
-                {"The gap between knowing and doing —\nthat's where relationships break.\nAnd where they can be rebuilt."}
+                {"That gap between knowing and doing —\nthat's where it gets stuck.\nAnd that's exactly where it can be built stronger."}
               </div>
               <div className={`final-tagline${taglineVisible ? " visible" : ""}`}>
                 {"Don't react.\nGet it right."}
