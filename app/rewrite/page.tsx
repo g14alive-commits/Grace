@@ -695,11 +695,11 @@ export default function Rewrite() {
           <div className="overlay" onClick={() => setShowInfo(false)}>
             <div className="overlay-sheet" onClick={(e) => e.stopPropagation()}>
               <div className="overlay-handle" />
-              <div className="overlay-title">How Rewrite works</div>
+              <div className="overlay-title">How FixtheMESSage! works</div>
               <div className="overlay-section">
                 <div className="overlay-section-title">What it does</div>
                 <div className="overlay-text">
-                  Paste what you're about to send. Rewrite reads the tone, tells you the risk level, and gives you cleaner versions that say the same thing without the damage.
+                  Paste what you're about to send. FixtheMESSage! reads the tone, tells you the risk level, and gives you cleaner versions that say the same thing without the damage.
                 </div>
               </div>
               <div className="overlay-section">
@@ -714,13 +714,13 @@ export default function Rewrite() {
                 </div>
                 <div className="overlay-item">
                   <span className="overlay-item-label">🤷 not sure</span>
-                  <span className="overlay-item-text">Not sure — Rewrite gives you a middle-ground version.</span>
+                  <span className="overlay-item-text">Not sure — FixtheMESSage! gives you a middle-ground version.</span>
                 </div>
               </div>
               <div className="overlay-section">
                 <div className="overlay-section-title">The received message box</div>
                 <div className="overlay-text">
-                  Optional. Paste what they sent you and Rewrite switches to reply mode — it reads what they actually said and helps you reply to their actual need.
+                  Optional. Paste what they sent you and FixtheMESSage! switches to reply mode — it reads what they actually said and helps you reply to their actual need.
                 </div>
               </div>
               <button className="overlay-close" onClick={() => setShowInfo(false)}>
@@ -796,11 +796,11 @@ export default function Rewrite() {
             onClick={handleScan}
             disabled={loading || !message.trim()}
           >
-            {loading ? "Scanning..." : isReplyMode ? "Scan reply" : "Scan message"}
+            {loading ? "Fixing..." : isReplyMode ? "Fix reply" : "Fix it"}
           </button>
 
           {loading && (
-            <div className="loading-text">Reading your message...</div>
+            <div className="loading-text">Reading the mess...</div>
           )}
 
           {result && !loading && (
@@ -814,7 +814,7 @@ export default function Rewrite() {
               {suggestions.length > 0 && (
                 <div className="suggestions-section">
                   <div className="section-label" style={{ marginBottom: 0 }}>
-                    {isReplyMode ? "Reply suggestions" : "Suggestions"}
+                    {isReplyMode ? "Reply options" : "Better versions"}
                   </div>
                   {suggestions.map((s, i) => (
                     <div key={i} className="suggestion-card">
