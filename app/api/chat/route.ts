@@ -113,6 +113,7 @@ function detectSessionClose(text: string): boolean {
     "see you next time",
     "until next time",
     "take care, ",
+    "I'll be here when you come back.",
     "goodbye",
     "good bye",
     "bye",

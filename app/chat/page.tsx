@@ -147,7 +147,7 @@ export default function Chat() {
       .from("sessions")
       .select("*", { count: "exact", head: true })
       .eq("user_id", uid)
-      .gte("user_message_count", 3);
+      .gt("user_message_count", 0);
     return count || 0;
   };
 
