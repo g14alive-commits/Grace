@@ -43,11 +43,7 @@ export async function POST(req: Request) {
     const userContextBlock = buildUserContextBlock(dbUser);
     const contextBlock = [userContextBlock, sessionContext, sessionMemory || memoryBlock].filter(Boolean).join("\n\n");
 
-    const twoHourBlock = twoHourWarning
-      ? "\n\nSESSION TIME LIMIT: This user has been in active conversation for 2 hours. After your next response, gently close the session. Say something warm and human. Then wait for their response. If they want to continue, honour that. If they say goodbye or indicate they're done, close warmly."
-      : "";
-
-    const dynamicBlock = [contextBlock, twoHourBlock].filter(Boolean).join("\n\n");
+    const dynamicBlock = contextBlock;
 
     const MAX_MESSAGES = 20;
     const trimmedMessages = messages.slice(-MAX_MESSAGES);
