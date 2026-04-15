@@ -282,8 +282,8 @@ export default function Onboarding() {
                 autoFocus
               />
               <div className="question" style={{ fontSize: "22px", marginBottom: "16px" }}>
-                How do you identify?
-              </div>
+  How do you identify?
+             </div>
               <div className="options-grid">
                 {["Woman", "Man", "Non-binary", "Prefer not to say"].map((g) => (
                   <button
@@ -301,7 +301,7 @@ export default function Onboarding() {
           {step === 2 && (
             <>
               <div className="step-label">Your relationship</div>
-              <div className="question">Where are you right now?</div>
+              <div className="question">What's your relationship status?</div>
               <div className="options-grid">
                 {["In a relationship", "Married", "Long distance", "Separated / broken up"].map((s) => (
                   <button
