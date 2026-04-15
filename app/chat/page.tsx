@@ -285,9 +285,15 @@ export default function Chat() {
           clientTime: new Date().toLocaleString("en-GB", { weekday: "long", hour: "2-digit", minute: "2-digit", hour12: true, timeZoneName: "short" }),
         }),
       });
-      const text = await response.text();
-      if (!text) throw new Error("Empty response");
-      const data = JSON.parse(text);
+const text = await response.text();
+if (!text) throw new Error("Empty response");
+let data;
+try {
+  data = JSON.parse(text);
+} catch (e) {
+  console.error("Chat API returned non-JSON:", text.substring(0, 200));
+  throw new Error("Invalid response from chat API");
+}
       if (data.result) setMessages(["Grace: " + data.result]);
     } catch (e) {
       console.error(e);
