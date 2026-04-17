@@ -862,7 +862,7 @@ try {
             value={input}
             onChange={handleInput}
             onKeyDown={handleKeyDown}
-            placeholder={sessionEnded ? "Session complete" : "Figuring out what happened?"}
+            placeholder={sessionEnded ? "Session complete" : "Figure out what's happening "}
             disabled={loading || sessionEnded}
             rows={1}
           />
