@@ -263,44 +263,50 @@ export default function Chat() {
     });
   };
 
-  const startConversation = async (
-    profile: UserProfile,
-    dbUserData: any,
-    sessNum: number,
-    isNewSession: boolean
-  ) => {
-    setLoading(true);
-    try {
-      const sessionMemory = isNewSession ? buildSessionMemoryBlock(dbUserData) : "";
-      const response = await fetch("/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          messages: [{ role: "user", content: "begin" }],
-          userProfile: profile,
-          sessionNumber: sessNum,
-          sessionMemory,
-          isNewSession,
-          lastSessionDate: dbUserData?.last_seen_at || null,
-          clientTime: new Date().toLocaleString("en-GB", { weekday: "long", hour: "2-digit", minute: "2-digit", hour12: true, timeZoneName: "short" }),
-        }),
-      });
-const text = await response.text();
-if (!text) throw new Error("Empty response");
-let data;
-try {
-  data = JSON.parse(text);
-} catch (e) {
-  console.error("Chat API returned non-JSON:", text.substring(0, 200));
-  throw new Error("Invalid response from chat API");
-}
-      if (data.result) setMessages(["Grace: " + data.result]);
-    } catch (e) {
-      console.error(e);
-    }
-    setLoading(false);
-  };
+const startConversation = async (
+  profile: UserProfile,
+  dbUserData: any,
+  sessNum: number,
+  isNewSession: boolean
+) => {
+  // New user with no history — use static opening, no API call
+  if (isNewSession && !dbUserData?.last_session_summary) {
+    setMessages(["Grace: I'm Grace. Think of me as someone you can be honest with about what's going on between you and your partner. You can start by telling me what's going on, or if you'd like, I can ask you a few quick questions first that would help me understand how you tend to show up in relationships. Either works — what feels right?"]);
+    return;
+  }
 
+  // Returning user — needs API call to reference past session memory
+  setLoading(true);
+  try {
+    const sessionMemory = isNewSession ? buildSessionMemoryBlock(dbUserData) : "";
+    const response = await fetch("/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        messages: [{ role: "user", content: "begin" }],
+        userProfile: profile,
+        sessionNumber: sessNum,
+        sessionMemory,
+        isNewSession,
+        lastSessionDate: dbUserData?.last_seen_at || null,
+        clientTime: new Date().toLocaleString("en-GB", { weekday: "long", hour: "2-digit", minute: "2-digit", hour12: true, timeZoneName: "short" }),
+      }),
+    });
+    const text = await response.text();
+    if (!text) throw new Error("Empty response");
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch (e) {
+      console.error("Chat API returned non-JSON:", text.substring(0, 200));
+      throw new Error("Invalid response from chat API");
+    }
+    if (data.result) setMessages(["Grace: " + data.result]);
+  } catch (e) {
+    console.error(e);
+  }
+  setLoading(false);
+};
   const handleSessionClose = async (msgs: string[], uId: string, sId: string, isAbrupt = false) => {
     try {
       const response = await fetch("/api/session", {
