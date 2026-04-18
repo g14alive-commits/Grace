@@ -560,13 +560,15 @@ setLoading(false);
               <span className="about-row-label">What is Attune?</span>
               <span className="about-row-arrow">{showAbout ? "▴" : "▾"}</span>
             </div>
-            {showAbout && (
-              <div className="about-content">
-                Attune is a relationship intelligence platform built on the belief that relational hurt heals through relationship — not in isolation.<br /><br />
-                Grace is your AI relationship companion. Fix it helps you communicate better in difficult moments.<br /><br />
-                Your conversations are private. We don't share your data with anyone.
-              </div>
-            )}
+{showAbout && (
+  <div className="about-content">
+    Attune is built on a simple idea: most relationship damage doesn't come from lack of love. It comes from how we react when things get hard.<br /><br />
+    In those moments, we don't say what we mean. We defend, withdraw, over-explain, or shut down. And over time, those patterns create distance.<br /><br />
+    Attune focuses on that moment — helping you slow down before you react, and respond more clearly.<br /><br />
+    It's not about getting it right every time. Just about not repeating the same damage again.<br /><br />
+    Your conversations are private. We never share your data.
+  </div>
+)}
             <div className="about-row" onClick={() => router.push("/privacy")}>
               <span className="about-row-label">Privacy policy</span>
               <span className="about-row-arrow">›</span>
