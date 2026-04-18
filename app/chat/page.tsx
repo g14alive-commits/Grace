@@ -269,13 +269,6 @@ const startConversation = async (
   sessNum: number,
   isNewSession: boolean
 ) => {
-  // New user with no history — use static opening, no API call
-  if (isNewSession && !dbUserData?.last_session_summary) {
-    setMessages(["Grace: I'm Grace. Think of me as someone you can be honest with about what's going on between you and your partner. You can start by telling me what's going on, or if you'd like, I can ask you a few quick questions first that would help me understand how you tend to show up in relationships. Either works — what feels right?"]);
-    return;
-  }
-
-  // Returning user — needs API call to reference past session memory
   setLoading(true);
   try {
     const sessionMemory = isNewSession ? buildSessionMemoryBlock(dbUserData) : "";
