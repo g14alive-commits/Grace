@@ -562,7 +562,8 @@ setLoading(false);
             </div>
 {showAbout && (
   <div className="about-content">
-    Attune is built on a simple idea: most relationship damage doesn't come from lack of love. It comes from how we react when things get hard.<br /><br />
+    <strong>Attune is built on a simple idea:</strong><br /><br />
+    Most relationship damage doesn't come from lack of love. It comes from how we react when things get hard.<br /><br />
     In those moments, we don't say what we mean. We defend, withdraw, over-explain, or shut down. And over time, those patterns create distance.<br /><br />
     Attune focuses on that moment — helping you slow down before you react, and respond more clearly.<br /><br />
     It's not about getting it right every time. Just about not repeating the same damage again.<br /><br />
