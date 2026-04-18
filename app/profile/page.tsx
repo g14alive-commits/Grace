@@ -569,6 +569,11 @@ setLoading(false);
     It's not about getting it right every time. Just about not repeating the same damage again.<br /><br />
       </div>
 )}
+
+<div className="about-row" onClick={() => router.push("/contact")}>
+  <span className="about-row-label">Contact us</span>
+  <span className="about-row-arrow">›</span>
+</div>
             <div className="about-row" onClick={() => router.push("/privacy")}>
               <span className="about-row-label">Privacy policy</span>
               <span className="about-row-arrow">›</span>
