@@ -38,16 +38,17 @@ export default function Profile() {
   .eq("id", data.session.user.id)
   .single();
 
-const { count: actualSessionCount } = await supabase
+const { data: lastSession } = await supabase
   .from("sessions")
-  .select("*", { count: "exact", head: true })
+  .select("session_number")
   .eq("user_id", data.session.user.id)
-  .gte("user_message_count", 3);
+  .order("session_number", { ascending: false })
+  .limit(1)
+  .single();
 
 if (user) {
-  setDbUser({ ...user, session_count: actualSessionCount || 0 });
+  setDbUser({ ...user, session_count: lastSession?.session_number || 0 });
   setName(user.name || "");
-  console.log("dbUser:", user);
 }
 setLoading(false);
     });
