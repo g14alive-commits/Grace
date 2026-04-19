@@ -142,15 +142,20 @@ export default function Chat() {
     });
   }, []);
 
-  const getSessionCount = async (uid: string) => {
-    const { count } = await supabase
-      .from("sessions")
-      .select("*", { count: "exact", head: true })
-      .eq("user_id", uid)
-      .gt("user_message_count", 0);
-    return count || 0;
-  };
-
+const getSessionCount = async (uid: string, excludeSessionId?: string) => {
+  let query = supabase
+    .from("sessions")
+    .select("*", { count: "exact", head: true })
+    .eq("user_id", uid)
+    .gte("user_message_count", 3);
+  
+  if (excludeSessionId) {
+    query = query.neq("id", excludeSessionId);
+  }
+  
+  const { count } = await query;
+  return count || 0;
+};
   const startFreshSession = async (uid: string, profile: UserProfile, dbUserData: any) => {
     const count = await getSessionCount(uid);
     const newSessionNumber = count + 1;
@@ -234,8 +239,9 @@ export default function Chat() {
       const elapsed = Date.now() - state.lastMessageTime;
       if (elapsed >= 60 * 60 * 1000 && state.activeMessageCount > 3) {
         await handleSessionClose(state.messages, state.userId, state.sessionId, true);
-        // Auto-start new session
-        const count = await getSessionCount(state.userId);
+       
+ // Auto-start new session
+        const count = await getSessionCount(state.userId, state.sessionId);
         const newSessionNumber = count + 1;
         const newSession = await createSession(state.userId, newSessionNumber);
         if (newSession) {
