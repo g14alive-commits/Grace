@@ -166,8 +166,8 @@ export default function Contact() {
         </div>
 
         <div className="header">
-          <button className="back-btn" onClick={() => router.push("/profile")}>← Back</button>
-          <div className="header-name">Contact</div>
+          <button className="back-btn" onClick={() => router.push("/profile")}>← </button>
+          <div className="header-name">Contact Us</div>
         </div>
 
         <div className="scroll">

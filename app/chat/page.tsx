@@ -334,7 +334,7 @@ const startConversation = async (
         data.last_ten_messages || []
       );
 
-      if (data.action_taken && uId) {
+      if (data.action_taken && data.action_taken !== "none" && uId) {
         await supabase
           .from("users")
           .update({ last_session_action: data.action_taken })
