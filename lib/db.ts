@@ -168,7 +168,7 @@ export async function closeSession(
     .update({
       last_session_summary: summary,
       last_session_themes: themes,
-      last_session_action: actionTaken && actionTaken !== "none" ? actionTaken : undefined,
+      last_session_action: actionTaken && actionTaken !== "none" ? actionTaken : undefined,s
       last_session_key_words: keyWords,
       session_count: (currentUser?.session_count || 0) + 1,
       updated_at: new Date().toISOString(),
