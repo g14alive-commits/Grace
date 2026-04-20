@@ -157,8 +157,14 @@ const getSessionCount = async (uid: string, excludeSessionId?: string) => {
   return count || 0;
 };
   const startFreshSession = async (uid: string, profile: UserProfile, dbUserData: any) => {
-    const count = await getSessionCount(uid);
-    const newSessionNumber = count + 1;
+const { data: lastSession } = await supabase
+  .from("sessions")
+  .select("session_number")
+  .eq("user_id", uid)
+  .order("session_number", { ascending: false })
+  .limit(1)
+  .single();
+const newSessionNumber = (lastSession?.session_number || 0) + 1;
     setSessionNumber(newSessionNumber);
     setSessionStartTime(Date.now());
     setLastMessageTime(null);
@@ -241,8 +247,14 @@ const getSessionCount = async (uid: string, excludeSessionId?: string) => {
         await handleSessionClose(state.messages, state.userId, state.sessionId, true);
        
  // Auto-start new session
-        const count = await getSessionCount(state.userId, state.sessionId);
-        const newSessionNumber = count + 1;
+const { data: lastSess } = await supabase
+  .from("sessions")
+  .select("session_number")
+  .eq("user_id", state.userId)
+  .order("session_number", { ascending: false })
+  .limit(1)
+  .single();
+const newSessionNumber = (lastSess?.session_number || 0) + 1;
         const newSession = await createSession(state.userId, newSessionNumber);
         if (newSession) {
           setSessionId(newSession.id);
