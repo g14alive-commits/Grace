@@ -29,7 +29,7 @@ Return this exact JSON:
   "summary": "2-3 sentences. What they came with and what was unresolved.",
   "themes": ["theme1"],
   "key_words": ["significant phrase the user said"],
-  "action_taken": "The last thing Grace suggested, written to the user in second person. If nothing was agreed, write 'none'.",
+  "action_taken": "The last thing Grace suggested, written to the user in second person. The single most specific thing the user committed to doing. If nothing was agreed, write 'none'.",
   "growth_signals": ["any positive shifts detected, or none"],
   "headline": "3-4 words max, self-focused",
   "closing_message": "One warm sentence acknowledging what they worked on and inviting them to pick it up next time. Under 30 words."
@@ -43,7 +43,7 @@ Return this exact JSON:
   "pattern": "reaches harder / steps back / balanced — detect from conversation. This is for internal DB only, never display to user.",
   "themes": ["theme1", "theme2"],
   "key_words": ["significant phrase the user said"],
-  "action_taken": "The action or insight from this session, written directly to the user in second person. Use 'you' not 'he/she/they'. Never write in third person.",
+  "action_taken": "Max 2-3 sentences only. The single most specific thing the user committed to doing. Start with 'you' not 'he/she/they'. Example: 'You agreed to send one short message to your partner today without waiting for the perfect words.' If no clear action was agreed, write the key insight in one sentence. Never more than 30 words.",
   "growth_signals": ["any positive shifts detected"],
   "headline": "2-3 words maximum. A chapter-heading style title, self-focused. Examples: 'Why I go quiet', 'Underneath the anger', 'Choosing to stay', 'First time I didn't run'. Never more than 4 words. Never mention the partner by name.",
   "closing_message": "A warm closing message from Grace. Follow this structure exactly — no more: (1) One plain sentence on why they came today.\n (2)key insight from the session — only include if there was a genuinely meaningful one, skip it entirely if not.\n (3) The action or decision they made. End with one warm human line. Address them by name if provided: ${userName || ""}. No clinical language. No lists. No bullet points. Under 50 words total. Be concise. Should feel like a real person closing a real conversation."
