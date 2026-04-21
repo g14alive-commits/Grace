@@ -294,7 +294,17 @@ export default function Onboarding() {
                     {g}
                   </button>
                 ))}
+
               </div>
+<div style={{
+  fontSize: "11px",
+  color: "rgba(140,130,180,0.40)",
+  fontWeight: 300,
+  marginTop: "16px",
+  textAlign: "center",
+}}>
+  Attune is intended for adults 18 and over.
+</div>
             </>
           )}
 
