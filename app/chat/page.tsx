@@ -475,16 +475,6 @@ export default function Chat() {
             <button className="drawer-close" onClick={() => setShowDrawer(false)}>×</button>
           </div>
           <div className="drawer-list">
-            <div className="session-item"
-              onClick={() => { setShowDrawer(false); window.location.reload(); }}
-              style={{ borderBottom: "1px solid rgba(160,120,240,0.15)" }}>
-              <div className="session-item-header">
-                <span className="session-number" style={{ color: "rgba(160,120,240,0.70)" }}>+ New Session</span>
-              </div>
-              <div className="session-headline" style={{ fontSize: "15px", color: "rgba(160,120,240,0.60)", fontStyle: "normal" }}>
-                Start a fresh conversation
-              </div>
-            </div>
             {pastSessions.map((s) => {
               const date = new Date(s.started_at).toLocaleDateString("en-GB", { day: "numeric", month: "short" });
               return (
