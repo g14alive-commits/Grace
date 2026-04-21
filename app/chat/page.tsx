@@ -164,17 +164,6 @@ export default function Chat() {
     return () => clearTimeout(timer);
   }, [messages, loading]);
 
-  useEffect(() => {
-    if (messages.length === 0) return;
-    const keepAlive = setInterval(async () => {
-      if (document.hidden || loading) return;
-      try {
-        await fetch("/api/chat", { method: "POST", headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ messages: [{ role: "user", content: "__ping__" }], userProfile, sessionNumber }) });
-      } catch (e) {}
-    }, 4 * 60 * 1000);
-    return () => clearInterval(keepAlive);
-  }, [messages.length, loading, userProfile, sessionNumber]);
 
   const sessionStateRef = useRef<any>({});
   useEffect(() => {
