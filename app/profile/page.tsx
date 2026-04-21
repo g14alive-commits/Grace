@@ -568,9 +568,9 @@ setLoading(false);
 {showAbout && (
 <div className="about-content">
 <br /> <strong>Attune is built on a simple idea:</strong> <br />
-  Most relationship damage doesn't come from lack of love. It comes from how we react when things get hard.<br />
-  In those moments, we don't say what we mean. We defend, withdraw, over-explain, or shut down. And over time, those patterns create distance.<br />
-  Attune focuses on that moment — helping you slow down before you react, and respond more clearly.<br />
+  Most relationship damage doesn't come from lack of love. It comes from how we react when things get hard.<br /><br />
+  In those moments, we don't say what we mean. We defend, withdraw, over-explain, or shut down. And over time, those patterns create distance.<br /><br />
+  Attune focuses on that moment — helping you slow down before you react, and respond more clearly.<br /><br />
   It's not about getting it right every time. Just about not repeating the same damage again.<br /><br />
   <strong>Grace</strong> is for people who want to understand their patterns and strengthen what they have.<br /><br />
   <strong>FixtheMESSage!</strong> is for the moment before you send something — not to win, but to say what you mean without the damage.<br /><br />
