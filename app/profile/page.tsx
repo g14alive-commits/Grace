@@ -336,6 +336,11 @@ setLoading(false);
   font-weight: 500;
   color: rgba(220,205,255,0.90);
 }
+.about-content em {
+  font-style: italic;
+  color: rgba(160,140,200,0.50);
+  font-size: 13px;
+}
 
         .account-card {
   background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.14);
@@ -569,11 +574,13 @@ setLoading(false);
 <div className="about-content">
 <br /> <strong>Attune is built on a simple idea:</strong> <br />
   Most relationship damage doesn't come from lack of love. It comes from how we react when things get hard.<br />
-  In those moments, we don't say what we mean. We defend, withdraw, over-explain, or shut down. And over time, those patterns create distance.<br /><br />
-  <strong>Attune</strong> focuses on that moment — helping you slow down before you react, and respond more clearly.<br />
-  It's not about getting it right every time. Just about not repeating the same damage again.<br /><br />
-  <strong>Grace</strong> is for people who want to understand their patterns and strengthen what they have.<br /><br />
+  In those moments, we often don't say what we mean. We defend, withdraw, over-explain, or shut down. And over time, those patterns create distance and damage.<br />
+  You can't change the dynamic without understanding your part in it.<br /><br />
+  <strong>Attune</strong> focuses on that moment — helping you slow down before you react, and respond more clearly.<br /><br />
+  <strong>Grace</strong> is for people in relationship who want to understand their patterns and strengthen what they have. <br /><br />
   <strong>FixtheMESSage!</strong> is for the moment before you send something — not to win, but to say what you mean without the damage.<br /><br />
+  It's not about getting it right every time. Just about not repeating the same damage again.<br /><br />
+  <em>Attune is not a substitute for professional therapy. If you're in crisis or need clinical support, please reach out to a mental health professional.</em><br /><br />
 </div>
 )}
 
