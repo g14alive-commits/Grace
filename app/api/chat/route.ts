@@ -65,7 +65,7 @@ export async function POST(req: Request) {
       messages: trimmedMessages,
     });
 
-    console.log("Token usage:", JSON.stringify(response.usage, null, 2));
+
 
     const aiText =
       response.content[0].type === "text"

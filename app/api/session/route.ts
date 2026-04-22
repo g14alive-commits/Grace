@@ -56,7 +56,6 @@ Return this exact JSON:
       response.content[0].type === "text"
         ? response.content[0].text.trim()
         : "{}";
-    console.log("RAW SESSION RESPONSE:", raw);
 
     try {
       const cleaned = raw.replace(/```json|```/g, "").trim();

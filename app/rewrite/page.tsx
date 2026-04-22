@@ -65,7 +65,6 @@ export default function Rewrite() {
       const data = await response.json();
       if (data.result) {
         setResult(data.result);
-        console.log("RAW:", data.result);
       }
       if (userId) {
         const { data: userData } = await supabase
