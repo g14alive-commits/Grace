@@ -20,12 +20,6 @@ export async function POST(req: Request) {
 
     const dbUser = userId ? await getOrCreateUser(userId, "") : null;
 
-    // Ignore keep-alive pings silently
-    const lastMessage = messages[messages.length - 1];
-    if (lastMessage?.content === "__ping__") {
-      return Response.json({ result: null });
-    }
-
     const timeStr = clientTime || new Date().toUTCString();
     const timeSinceLastSession = lastSessionDate
       ? (() => {
