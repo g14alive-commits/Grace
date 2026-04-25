@@ -77,6 +77,7 @@ console.log('CACHE:', {
       response.content[0].type === "text"
         ? response.content[0].text
         : "No response";
+    console.log('DEBUG:', { userId, sessionNumber, hasMessages: trimmedMessages.length });
 
         if (userId) {
   const supabase = createClient(
