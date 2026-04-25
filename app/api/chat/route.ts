@@ -38,6 +38,8 @@ export async function POST(req: Request) {
     const contextBlock = [userContextBlock, sessionContext, sessionMemory || memoryBlock].filter(Boolean).join("\n\n");
 
     const dynamicBlock = contextBlock;
+    console.log('DYNAMIC BLOCK SIZE:', dynamicBlock.length, 'chars');
+    console.log('DYNAMIC BLOCK:', dynamicBlock);
 
     const MAX_MESSAGES = 12;
     const trimmedMessages = messages.slice(-MAX_MESSAGES);
@@ -75,6 +77,19 @@ console.log('CACHE:', {
       response.content[0].type === "text"
         ? response.content[0].text
         : "No response";
+
+        if (userId) {
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  );
+  await supabase.from('grace_logs').insert({
+    user_id: userId,
+    session_number: sessionNumber,
+    user_message: trimmedMessages[trimmedMessages.length - 1]?.content,
+    grace_response: aiText,
+  });
+}
 
     const sessionComplete = detectSessionClose(aiText);
     return Response.json({ result: aiText, sessionComplete });
