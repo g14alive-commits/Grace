@@ -39,17 +39,17 @@ export async function POST(req: Request) {
 
     const dynamicBlock = contextBlock;
 
-    const MAX_MESSAGES = 20;
+    const MAX_MESSAGES = 12;
     const trimmedMessages = messages.slice(-MAX_MESSAGES);
 
     const response = await client.messages.create({
       model: "claude-haiku-4-5-20251001",
-      max_tokens: 500,
+      max_tokens: 300,
       system: [
         {
           type: "text",
           text: systemPrompt,
-          cache_control: { type: "ephemeral", ttl: "1h" },
+          cache_control: { type: "ephemeral", ttl: "1h" }
         },
         {
           type: "text",
@@ -63,6 +63,13 @@ console.log('Cache stats:', JSON.stringify({
   cache_read: response.usage.cache_read_input_tokens,
   input: response.usage.input_tokens,
 }));
+
+console.log('CACHE:', {
+  write: response.usage.cache_creation_input_tokens,
+  read: response.usage.cache_read_input_tokens,
+  input: response.usage.input_tokens,
+  output: response.usage.output_tokens,
+});
 
     const aiText =
       response.content[0].type === "text"
