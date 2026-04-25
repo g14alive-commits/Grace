@@ -1,7 +1,8 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { systemPrompt } from "./system-prompt";
-import { createClient } from "@supabase/supabase-js";
+import { supabase } from "../../../lib/supabase";
 import { buildSessionMemoryBlock, buildUserContextBlock, getOrCreateUser } from "../../../lib/db";
+
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
 
@@ -81,23 +82,21 @@ const aiText =
 console.log('DEBUG:', { userId, sessionNumber, hasMessages: trimmedMessages.length });
 
 if (userId) {
-      try {
-        const supabase = createClient(
-          process.env.NEXT_PUBLIC_SUPABASE_URL!,
-          process.env.SUPABASE_SERVICE_ROLE_KEY!
-        );
-        const { error } = await supabase.from('grace_logs').insert({
-          user_id: userId,
-          session_number: sessionNumber,
-          user_message: trimmedMessages[trimmedMessages.length - 1]?.content,
-          grace_response: aiText,
-        });
-        if (error) console.error('grace_logs error:', JSON.stringify(error));
-        else console.log('grace_logs saved ok');
-      } catch (e) {
-        console.error('grace_logs exception:', e);
-      }
-    }
+  try {
+    const { error } = await supabase
+      .from('grace_logs')
+      .insert({
+        user_id: userId,
+        session_number: sessionNumber,
+        user_message: trimmedMessages[trimmedMessages.length - 1]?.content,
+        grace_response: aiText,
+      });
+    if (error) console.error('grace_logs error:', JSON.stringify(error));
+    else console.log('grace_logs saved ok');
+  } catch (e) {
+    console.error('grace_logs exception:', e);
+  }
+}
 
     const sessionComplete = detectSessionClose(aiText);
     return Response.json({ result: aiText, sessionComplete });
