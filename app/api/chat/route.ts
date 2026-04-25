@@ -73,24 +73,31 @@ console.log('CACHE:', {
   output: response.usage.output_tokens,
 });
 
-    const aiText =
-      response.content[0].type === "text"
-        ? response.content[0].text
-        : "No response";
-    console.log('DEBUG:', { userId, sessionNumber, hasMessages: trimmedMessages.length });
+const aiText =
+  response.content[0].type === "text"
+    ? response.content[0].text
+    : "No response";
 
-        if (userId) {
-  const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  );
-  await supabase.from('grace_logs').insert({
-    user_id: userId,
-    session_number: sessionNumber,
-    user_message: trimmedMessages[trimmedMessages.length - 1]?.content,
-    grace_response: aiText,
-  });
-}
+console.log('DEBUG:', { userId, sessionNumber, hasMessages: trimmedMessages.length });
+
+if (userId) {
+      try {
+        const supabase = createClient(
+          process.env.NEXT_PUBLIC_SUPABASE_URL!,
+          process.env.SUPABASE_SERVICE_ROLE_KEY!
+        );
+        const { error } = await supabase.from('grace_logs').insert({
+          user_id: userId,
+          session_number: sessionNumber,
+          user_message: trimmedMessages[trimmedMessages.length - 1]?.content,
+          grace_response: aiText,
+        });
+        if (error) console.error('grace_logs error:', JSON.stringify(error));
+        else console.log('grace_logs saved ok');
+      } catch (e) {
+        console.error('grace_logs exception:', e);
+      }
+    }
 
     const sessionComplete = detectSessionClose(aiText);
     return Response.json({ result: aiText, sessionComplete });
@@ -124,7 +131,6 @@ function buildMemoryBlock(userProfile: any, sessionNumber: number): string {
   if (userProfile.userPattern) lines.push(`- Pattern: ${userProfile.userPattern}`);
   if (userProfile.partnerPattern) lines.push(`- Partner pattern: ${userProfile.partnerPattern}`);
   
-  // Use compressed summaries if available, raw lists if not
   if (userProfile.relationship_facts_summary) {
     lines.push(`- Relationship facts: ${userProfile.relationship_facts_summary}`);
   } else if (userProfile.relationshipFacts?.length > 0) {
