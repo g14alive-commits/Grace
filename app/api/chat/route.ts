@@ -123,15 +123,26 @@ function buildMemoryBlock(userProfile: any, sessionNumber: number): string {
 
   if (userProfile.userPattern) lines.push(`- Pattern: ${userProfile.userPattern}`);
   if (userProfile.partnerPattern) lines.push(`- Partner pattern: ${userProfile.partnerPattern}`);
-  if (userProfile.relationshipFacts?.length > 0) {
-    lines.push(`- Relationship facts: ${userProfile.relationshipFacts.join(", ")}`);
+  
+  // Use compressed summaries if available, raw lists if not
+  if (userProfile.relationship_facts_summary) {
+    lines.push(`- Relationship facts: ${userProfile.relationship_facts_summary}`);
+  } else if (userProfile.relationshipFacts?.length > 0) {
+    lines.push(`- Relationship facts: ${userProfile.relationshipFacts.slice(-10).join(", ")}`);
   }
-  if (userProfile.recurringThemes?.length > 0) {
-    lines.push(`- Recurring themes: ${userProfile.recurringThemes.join(", ")}`);
+
+  if (userProfile.recurring_themes_summary) {
+    lines.push(`- Recurring themes: ${userProfile.recurring_themes_summary}`);
+  } else if (userProfile.recurringThemes?.length > 0) {
+    lines.push(`- Recurring themes: ${userProfile.recurringThemes.slice(-8).join(", ")}`);
   }
-  if (userProfile.growthSignals?.length > 0) {
-    lines.push(`- Growth signals so far: ${userProfile.growthSignals.join(", ")}`);
+
+  if (userProfile.growth_summary) {
+    lines.push(`- Growth trajectory: ${userProfile.growth_summary}`);
+  } else if (userProfile.growthSignals?.length > 0) {
+    lines.push(`- Growth signals so far: ${userProfile.growthSignals.slice(-10).join(", ")}`);
   }
+
   if (userProfile.lastSessionSummary) {
     lines.push(`- Last session: ${userProfile.lastSessionSummary}`);
   }

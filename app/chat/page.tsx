@@ -24,6 +24,9 @@ interface UserProfile {
   lastSessionSummary?: string;
   assessmentComplete?: boolean;
   sessionCount?: number;
+  relationship_facts_summary?: string;
+  recurring_themes_summary?: string;
+  growth_summary?: string;
 }
 
 export default function Chat() {
@@ -88,15 +91,19 @@ export default function Chat() {
           if (msgs.length > 0) {
             try {
               const res = await fetch("/api/session", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                  messages: msgs,
-                  userName: dbUserData?.name || "",
-                  isAbrupt: true,
-                  closingOverride: "Session ended after an hour of quiet.",
-                }),
-              });
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    messages: msgs,
+    userName: dbUserData?.name || "",
+    isAbrupt: true,
+    closingOverride: "Session ended after an hour of quiet.",
+    userId: user.id,
+    sessionNumber: activeSession.session_number,
+    userProfile: profile,
+  }),
+});
+
               const sessionData = await res.json();
               await closeSession(
                 activeSession.id, user.id,
@@ -224,7 +231,14 @@ export default function Chat() {
     try {
       const response = await fetch("/api/session", {
         method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: msgs, userName: dbUser?.name || "", isAbrupt }),
+        body: JSON.stringify({ 
+  messages: msgs, 
+  userName: dbUser?.name || "", 
+  isAbrupt,
+  userId: uId,
+  sessionNumber: sessionNumber,
+  userProfile: userProfile,
+}),
       });
       const data = await response.json();
 
@@ -283,15 +297,6 @@ export default function Chat() {
         if (data.sessionComplete && currentSessionId && userId) {
           await handleSessionClose(newMessages, userId, currentSessionId, false);
         }
-      }
-
-      if (data.profileUpdates) {
-        setUserProfile((prev) => ({
-          ...prev, ...data.profileUpdates,
-          relationshipFacts: [...new Set([...(prev.relationshipFacts || []), ...(data.profileUpdates.relationshipFacts || [])])],
-          recurringThemes: [...new Set([...(prev.recurringThemes || []), ...(data.profileUpdates.recurringThemes || [])])],
-          growthSignals: [...new Set([...(prev.growthSignals || []), ...(data.profileUpdates.growthSignals || [])])],
-        }));
       }
     } catch (e) { console.error(e); }
     setLoading(false);

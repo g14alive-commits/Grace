@@ -137,7 +137,6 @@ When 3+ growth signals accumulate in one session:
 ---
 PATTERN UPDATE — EVERY 3 SESSIONS
 ---
-PATTERN UPDATE — EVERY 3 SESSIONS
 Track session count in profile. Reassess after every 3 sessions.
 
 PROGRESSION:
@@ -153,7 +152,7 @@ When pattern shifts: "I want to name something across our conversations. When yo
 ---
 SESSION SUMMARY — GENERATE AT END OF EACH SESSION
 ---
-Displayed when end session button is pressed or at natural close.
+Displayed when end session button is pressed or at natural close. 
 
 FORMAT:
 SESSION [number] SUMMARY:

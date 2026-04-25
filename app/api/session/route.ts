@@ -1,10 +1,19 @@
 import Anthropic from "@anthropic-ai/sdk";
+import { createClient } from "@supabase/supabase-js";
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
 
 export async function POST(req: Request) {
   try {
-    const { messages, userName, isAbrupt, closingOverride } = await req.json();
+    const { 
+      messages, 
+      userName, 
+      isAbrupt, 
+      closingOverride,
+      userId,
+      sessionNumber,
+      userProfile,
+    } = await req.json();
 
     const allMessages = messages
       .map((m: string) => {
@@ -20,7 +29,9 @@ export async function POST(req: Request) {
         {
           role: "user",
           content: isAbrupt ?
-`This session ended mid-conversation. Return ONLY valid JSON, no markdown. The JSON must be complete and properly closed.
+`Be concise. Total JSON response must fit within 400 tokens. If space is tight, shorten summary and themes first, never cut closing_message or action_taken.
+
+This session ended mid-conversation. Return ONLY valid JSON, no markdown. The JSON must be complete and properly closed.
 
 ${allMessages}
 
@@ -35,7 +46,9 @@ Return this exact JSON:
   "closing_message": "One warm sentence acknowledging what they worked on and inviting them to pick it up next time. Under 30 words."
 }`
 :
-`Read this therapy session and extract key information. Return ONLY valid JSON, no markdown. The JSON must be complete and properly closed with all brackets. Never use clinical words like "nervous system", "dysregulated", "attachment", "anxious", "avoidant". Use plain human language.
+`Be concise. Total JSON response must fit within 400 tokens. If space is tight, shorten summary and themes first, never cut closing_message or action_taken.
+
+Read this therapy session and extract key information. Return ONLY valid JSON, no markdown. The JSON must be complete and properly closed with all brackets. Never use clinical words like "nervous system", "dysregulated", "attachment", "anxious", "avoidant". Use plain human language.
 ${allMessages}
 Return this exact JSON:
 {
@@ -64,11 +77,87 @@ Return this exact JSON:
       const parsed = JSON.parse(jsonMatch[0]);
       const lastTen = messages.slice(-10);
       const { pattern, ...publicData } = parsed;
+
+      // COMPRESSION — runs every 3 sessions if userProfile has large lists
+      if (
+        userId &&
+        userProfile &&
+        sessionNumber % 3 === 0
+      ) {
+        const facts = userProfile.relationshipFacts || [];
+        const themes = userProfile.recurringThemes || [];
+        const signals = userProfile.growthSignals || [];
+
+        // Only compress if lists are getting large
+        if (facts.length > 10 || themes.length > 8 || signals.length > 10) {
+          try {
+            const compression = await client.messages.create({
+              model: "claude-haiku-4-5-20251001",
+              max_tokens: 300,
+              messages: [{
+                role: "user",
+                content: `Compress these profile lists into concise summaries. Keep all meaningful patterns and facts. Remove redundancy and repetition. Max 3 sentences per section. Plain language only.
+
+RELATIONSHIP FACTS: ${facts.join(', ')}
+
+RECURRING THEMES: ${themes.join(', ')}
+
+GROWTH SIGNALS: ${signals.join(', ')}
+
+Return ONLY valid JSON:
+{
+  "relationship_facts_summary": "3 sentences max covering key facts",
+  "recurring_themes_summary": "2 sentences max covering main patterns",
+  "growth_summary": "2 sentences max covering growth trajectory"
+}`
+              }]
+            });
+
+            const compRaw = compression.content[0].type === "text" 
+              ? compression.content[0].text.trim() 
+              : null;
+
+            if (compRaw) {
+              const compCleaned = compRaw.replace(/```json|```/g, "").trim();
+              const compMatch = compCleaned.match(/\{[\s\S]*\}/);
+              if (compMatch) {
+                const compressed = JSON.parse(compMatch[0]);
+
+                // Save compressed profile back to Supabase
+                const supabase = createClient(
+                  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+                  process.env.SUPABASE_SERVICE_ROLE_KEY!
+                );
+
+                await supabase
+                  .from('users')
+                  .update({
+                    relationship_facts_summary: compressed.relationship_facts_summary,
+                    recurring_themes_summary: compressed.recurring_themes_summary,
+                    growth_summary: compressed.growth_summary,
+                    // Clear the raw lists after compression
+                    relationship_facts: [],
+                    recurring_themes: [],
+                    growth_signals: [],
+                  })
+                  .eq('id', userId);
+
+                console.log('Profile compressed at session', sessionNumber);
+              }
+            }
+          } catch (e) {
+            console.error('Compression failed silently:', e);
+            // Non-fatal — session continues normally
+          }
+        }
+      }
+
       return Response.json({
         ...publicData,
         closing_message: closingOverride || parsed.closing_message,
         last_ten_messages: lastTen,
       });
+
     } catch (e) {
       console.error("Failed to parse session JSON:", raw);
       return Response.json({
