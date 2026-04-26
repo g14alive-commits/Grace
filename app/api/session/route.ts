@@ -95,6 +95,8 @@ Return this exact JSON:
         const themes = userProfile.recurringThemes || [];
         const signals = userProfile.growthSignals || [];
 
+        
+
         // Only compress if lists are getting large
         if (facts.length > 10 || themes.length > 8 || signals.length > 10) {
           try {
@@ -154,6 +156,20 @@ Return ONLY valid JSON:
           }
         }
       }
+
+      if (
+  userId &&
+  userProfile &&
+  sessionNumber % 1 === 0
+) {
+  console.log('Compression block entered');
+  const facts = userProfile.relationshipFacts || [];
+  const themes = userProfile.recurringThemes || [];
+  const signals = userProfile.growthSignals || [];
+  console.log('List sizes:', { facts: facts.length, themes: themes.length, signals: signals.length });
+
+  if (facts.length > 10 || themes.length > 8 || signals.length > 10) {
+    console.log('Size check passed — starting compression');
 
       return Response.json({
         ...publicData,
