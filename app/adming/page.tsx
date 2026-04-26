@@ -37,11 +37,9 @@ export default function AdminPage() {
       setAuthed(true);
       setPwError(false);
       setLoading(true);
-      const { data } = await supabase
-        .from("users")
-        .select("id, email, name, user_pattern, session_count, last_seen_at")
-        .order("last_seen_at", { ascending: false });
-      setUsers(data || []);
+      const res = await fetch("/api/admin");
+      const data = await res.json();
+      setUsers(Array.isArray(data) ? data : []);
       setLoading(false);
     } else {
       setPwError(true);
