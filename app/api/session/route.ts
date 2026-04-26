@@ -3,6 +3,10 @@ import { createClient } from "@supabase/supabase-js";
 import { supabase } from "../../../lib/supabase";
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
+const supabaseAdmin = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+);
 
 export async function POST(req: Request) {
   try {
@@ -128,7 +132,7 @@ Return ONLY valid JSON:
 
                 // Save compressed profile back to Supabase
                 
-               const { error: compError } = await supabase
+               const { error: compError } = await supabaseAdmin
                .from('users')
                .update({
                  relationship_facts_summary: compressed.relationship_facts_summary,
