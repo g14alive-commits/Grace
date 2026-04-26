@@ -83,7 +83,7 @@ Return this exact JSON:
       if (
         userId &&
         userProfile &&
-        sessionNumber % 3 === 0
+        sessionNumber % 1 === 0
       ) {
         const facts = userProfile.relationshipFacts || [];
         const themes = userProfile.recurringThemes || [];
@@ -126,20 +126,20 @@ Return ONLY valid JSON:
 
                 // Save compressed profile back to Supabase
                 
-                await supabase
-                  .from('users')
-                  .update({
-                    relationship_facts_summary: compressed.relationship_facts_summary,
-                    recurring_themes_summary: compressed.recurring_themes_summary,
-                    growth_summary: compressed.growth_summary,
-                    // Clear the raw lists after compression
-                    relationship_facts: [],
-                    recurring_themes: [],
-                    growth_signals: [],
-                  })
-                  .eq('id', userId);
+               const { error: compError } = await supabase
+               .from('users')
+               .update({
+                 relationship_facts_summary: compressed.relationship_facts_summary,
+                 recurring_themes_summary: compressed.recurring_themes_summary,
+                 growth_summary: compressed.growth_summary,
+                 relationship_facts: [],
+                 recurring_themes: [],
+                 growth_signals: [],
+                })
+               .eq('id', userId);
 
-                console.log('Profile compressed at session', sessionNumber);
+            if (compError) console.error('Compression save error:', JSON.stringify(compError));
+            else console.log('Profile compressed at session', sessionNumber);
               }
             }
           } catch (e) {
