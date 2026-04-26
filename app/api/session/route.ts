@@ -103,11 +103,11 @@ Return this exact JSON:
                 role: "user",
                 content: `Compress these profile lists into concise summaries. Keep all meaningful patterns and facts. Remove redundancy and repetition. Max 3 sentences per section. Plain language only.
 
-RELATIONSHIP FACTS: ${facts.join(', ')}
+RELATIONSHIP FACTS: ${facts.slice(-20).join(', ')}
 
-RECURRING THEMES: ${themes.join(', ')}
+RECURRING THEMES: ${themes.slice(-15).join(', ')}
 
-GROWTH SIGNALS: ${signals.join(', ')}
+GROWTH SIGNALS: ${signals.slice(-15).join(', ')}
 
 Return ONLY valid JSON:
 {
