@@ -36,7 +36,6 @@ await supabase
     partner_pattern: profile.partnerPattern,
     last_session_summary: profile.lastSessionSummary,
     assessment_complete: profile.assessmentComplete,
-    session_count: profile.sessionCount || 0,
     updated_at: new Date().toISOString(),
   })
   .eq("id", userId);

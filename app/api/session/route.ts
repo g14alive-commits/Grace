@@ -1,5 +1,6 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { createClient } from "@supabase/supabase-js";
+import { supabase } from "../../../lib/supabase";
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
 
@@ -124,11 +125,7 @@ Return ONLY valid JSON:
                 const compressed = JSON.parse(compMatch[0]);
 
                 // Save compressed profile back to Supabase
-                const supabase = createClient(
-                  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-                  process.env.SUPABASE_SERVICE_ROLE_KEY!
-                );
-
+                
                 await supabase
                   .from('users')
                   .update({
