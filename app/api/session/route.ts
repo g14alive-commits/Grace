@@ -85,20 +85,22 @@ Return this exact JSON:
 
       console.log('Session close received:', { userId, sessionNumber, hasProfile: !!userProfile });
 
-      // COMPRESSION — runs every 3 sessions if userProfile has large lists
+// COMPRESSION — runs every 3 sessions if userProfile has large lists
+      console.log('Compression check:', { userId: !!userId, hasProfile: !!userProfile, sessionNumber, mod: sessionNumber % 1 });
       if (
         userId &&
         userProfile &&
         sessionNumber % 1 === 0
       ) {
+        console.log('Compression block entered');
         const facts = userProfile.relationshipFacts || [];
         const themes = userProfile.recurringThemes || [];
         const signals = userProfile.growthSignals || [];
-
-        
+        console.log('List sizes:', { facts: facts.length, themes: themes.length, signals: signals.length });
 
         // Only compress if lists are getting large
         if (facts.length > 10 || themes.length > 8 || signals.length > 10) {
+          console.log('Size check passed — starting compression');
           try {
             const compression = await client.messages.create({
               model: "claude-haiku-4-5-20251001",
@@ -121,6 +123,8 @@ Return ONLY valid JSON:
 }`
               }]
             });
+
+            
 
             const compRaw = compression.content[0].type === "text" 
               ? compression.content[0].text.trim() 
@@ -157,19 +161,6 @@ Return ONLY valid JSON:
         }
       }
 
-      if (
-  userId &&
-  userProfile &&
-  sessionNumber % 1 === 0
-) {
-  console.log('Compression block entered');
-  const facts = userProfile.relationshipFacts || [];
-  const themes = userProfile.recurringThemes || [];
-  const signals = userProfile.growthSignals || [];
-  console.log('List sizes:', { facts: facts.length, themes: themes.length, signals: signals.length });
-
-  if (facts.length > 10 || themes.length > 8 || signals.length > 10) {
-    console.log('Size check passed — starting compression');
 
       return Response.json({
         ...publicData,
