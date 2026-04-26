@@ -49,12 +49,9 @@ export default function AdminPage() {
   const handleSelectUser = async (user: User) => {
     setSelectedUser(user);
     setLogsLoading(true);
-    const { data } = await supabase
-      .from("grace_logs")
-      .select("id, session_number, user_message, grace_response, created_at")
-      .eq("user_id", user.id)
-      .order("created_at", { ascending: true });
-    setLogs(data || []);
+    const res = await fetch(`/api/admin?userId=${encodeURIComponent(user.id)}`);
+    const data = await res.json();
+    setLogs(Array.isArray(data) ? data : []);
     setLogsLoading(false);
   };
 
@@ -398,7 +395,7 @@ export default function AdminPage() {
             {logsLoading ? (
               <div className="loading">Loading conversation…</div>
             ) : logs.length === 0 ? (
-              <div className="empty">No conversation logs found.</div>
+              <div className="empty">No conversations logged yet for this user.</div>
             ) : (
               <div className="chat-thread">
                 {(() => {
