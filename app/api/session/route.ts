@@ -79,6 +79,8 @@ Return this exact JSON:
       const lastTen = messages.slice(-10);
       const { pattern, ...publicData } = parsed;
 
+      console.log('Session close received:', { userId, sessionNumber, hasProfile: !!userProfile });
+
       // COMPRESSION — runs every 3 sessions if userProfile has large lists
       if (
         userId &&
