@@ -3,7 +3,6 @@ import { systemPrompt } from "./system-prompt";
 import { supabase } from "../../../lib/supabase";
 import { buildSessionMemoryBlock, buildUserContextBlock, getOrCreateUser } from "../../../lib/db";
 
-
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
 
 export async function POST(req: Request) {

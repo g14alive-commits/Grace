@@ -164,6 +164,17 @@ export async function closeSession(
     .select("session_count")
     .eq("id", userId)
     .single();
+// After the main users update, sync session_count from sessions table
+const { count } = await supabase
+  .from("sessions")
+  .select("*", { count: 'exact', head: true })
+  .eq("user_id", userId)
+  .eq("is_complete", true);
+
+await supabase
+  .from("users")
+  .update({ session_count: count || 0 })
+  .eq("id", userId);
 
   await supabase
     .from("users")
@@ -172,7 +183,6 @@ export async function closeSession(
       last_session_themes: themes,
       last_session_action: actionTaken && actionTaken !== "none" ? actionTaken : undefined,
       last_session_key_words: keyWords,
-      session_count: (currentUser?.session_count || 0) + 1,
       updated_at: new Date().toISOString(),
       last_seen_at: new Date().toISOString(),
     })

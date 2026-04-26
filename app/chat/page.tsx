@@ -279,6 +279,19 @@ export default function Chat() {
       const newSession = await createSession(userId, sessionNumber);
       if (newSession) { setSessionId(newSession.id); currentSessionId = newSession.id; }
     }
+    if (!sessionId && userId && currentSessionId) {
+  // First message — also save Grace's opening
+  const graceOpening = messages[0]; // Grace's first message
+  if (graceOpening) {
+    await supabase.from('grace_logs').insert({
+      user_id: userId,
+      session_number: sessionNumber,
+      user_message: null,
+      grace_response: graceOpening.replace('Grace: ', ''),
+    });
+  }
+}
+
     if (currentSessionId) await updateSessionMessages(currentSessionId, newCount, updatedMessages.length);
 
     try {
