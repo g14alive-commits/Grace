@@ -84,6 +84,9 @@ export function profileFromDb(dbUser: any) {
     lastSessionSummary: dbUser.last_session_summary,
     assessmentComplete: dbUser.assessment_complete,
     sessionCount: dbUser.session_count || 0,
+    relationship_facts_summary: dbUser.relationship_facts_summary || null,
+    recurring_themes_summary: dbUser.recurring_themes_summary || null,
+    growth_summary: dbUser.growth_summary || null,
   };
 }
 
