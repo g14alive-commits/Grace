@@ -57,14 +57,14 @@ Read this therapy session and extract key information. Return ONLY valid JSON, n
 ${allMessages}
 Return this exact JSON:
 {
-  "summary": "Use this exact format:\nIssue: [one-two line on what they came with]\nGrowth signals: [any positive shifts detected, or 'none']\nAction agreed: [the thing they committed to, or 'none']\nTone shift: [yes / partial / no]\nRelationship facts added: [any new facts about their relationship extracted, or 'none']",
+  "summary": "Use this exact format:\\nIssue: [one-two line on what they came with]\\nGrowth signals: [any positive shifts detected, or 'none']\\nAction agreed: [the thing they committed to, or 'none']\\nTone shift: [yes / partial / no]\\nRelationship facts added: [any new facts about their relationship extracted, or 'none']",
   "pattern": "reaches harder / steps back / balanced — detect from conversation. This is for internal DB only, never display to user.",
   "themes": ["theme1", "theme2"],
   "key_words": ["significant phrase the user said"],
   "action_taken": "Max 2-3 sentences only. The single most specific thing the user committed to doing. Start with 'you' not 'he/she/they'. Example: 'You agreed to send one short message to your partner today without waiting for the perfect words.' If no clear action was agreed, write the key insight in one sentence. Never more than 30 words.",
   "growth_signals": ["any positive shifts detected"],
   "headline": "2-3 words maximum. A chapter-heading style title, self-focused. Examples: 'Why I go quiet', 'Underneath the anger', 'Choosing to stay', 'First time I didn't run'. Never more than 4 words. Never mention the partner by name.",
-  "closing_message": "A warm closing message from Grace. Follow this structure exactly — no more: (1) One plain sentence on why they came today.\n (2)key insight from the session — only include if there was a genuinely meaningful one, skip it entirely if not.\n (3) The action or decision they made. End with one warm human line. Address them by name if provided: ${userName || ""}. No clinical language. No lists. No bullet points. Under 50 words total. Be concise. Should feel like a real person closing a real conversation."
+  "closing_message": "A warm closing message from Grace. Follow this structure exactly — no more: (1) One plain sentence on why they came today.\\n (2)key insight from the session — only include if there was a genuinely meaningful one, skip it entirely if not.\\n (3) The action or decision they made. End with one warm human line. Address them by name if provided: ${userName || ''}. No clinical language. No lists. No bullet points. Under 50 words total. Be concise. Should feel like a real person closing a real conversation."
 }`,
         },
       ],
@@ -84,21 +84,15 @@ Return this exact JSON:
       const { pattern, ...publicData } = parsed;
 
       console.log('Session close received:', { userId, sessionNumber, hasProfile: !!userProfile });
-
-// COMPRESSION — runs every 3 sessions if userProfile has large lists
       console.log('Compression check:', { userId: !!userId, hasProfile: !!userProfile, sessionNumber, mod: sessionNumber % 1 });
-      if (
-        userId &&
-        userProfile &&
-        sessionNumber % 1 === 0
-      ) {
+
+      if (userId && userProfile && sessionNumber % 1 === 0) {
         console.log('Compression block entered');
         const facts = userProfile.relationshipFacts || [];
         const themes = userProfile.recurringThemes || [];
         const signals = userProfile.growthSignals || [];
         console.log('List sizes:', { facts: facts.length, themes: themes.length, signals: signals.length });
 
-        // Only compress if lists are getting large
         if (facts.length > 10 || themes.length > 8 || signals.length > 10) {
           console.log('Size check passed — starting compression');
           try {
@@ -124,8 +118,6 @@ Return ONLY valid JSON:
               }]
             });
 
-            
-
             const compRaw = compression.content[0].type === "text" 
               ? compression.content[0].text.trim() 
               : null;
@@ -135,32 +127,26 @@ Return ONLY valid JSON:
               const compMatch = compCleaned.match(/\{[\s\S]*\}/);
               if (compMatch) {
                 const compressed = JSON.parse(compMatch[0]);
-
-                // Save compressed profile back to Supabase
-                
-               const { error: compError } = await supabaseAdmin
-               .from('users')
-               .update({
-                 relationship_facts_summary: compressed.relationship_facts_summary,
-                 recurring_themes_summary: compressed.recurring_themes_summary,
-                 growth_summary: compressed.growth_summary,
-                 relationship_facts: [],
-                 recurring_themes: [],
-                 growth_signals: [],
-                })
-               .eq('id', userId);
-
-            if (compError) console.error('Compression save error:', JSON.stringify(compError));
-            else console.log('Profile compressed at session', sessionNumber);
+                const { error: compError } = await supabaseAdmin
+                  .from('users')
+                  .update({
+                    relationship_facts_summary: compressed.relationship_facts_summary,
+                    recurring_themes_summary: compressed.recurring_themes_summary,
+                    growth_summary: compressed.growth_summary,
+                    relationship_facts: [],
+                    recurring_themes: [],
+                    growth_signals: [],
+                  })
+                  .eq('id', userId);
+                if (compError) console.error('Compression save error:', JSON.stringify(compError));
+                else console.log('Profile compressed at session', sessionNumber);
               }
             }
           } catch (e) {
-            console.error('Compression failed silently:', e);
-            // Non-fatal — session continues normally
+            console.error('Compression failed:', e);
           }
         }
       }
-
 
       return Response.json({
         ...publicData,
