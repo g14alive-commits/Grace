@@ -41,38 +41,6 @@ await supabase
   .eq("id", userId);
 }
 
-export async function getConversation(userId: string) {
-  const { data } = await supabase
-    .from("conversations")
-    .select("*")
-    .eq("user_id", userId)
-    .order("updated_at", { ascending: false })
-    .limit(1)
-    .single();
-  return data;
-}
-
-export async function saveConversation(userId: string, messages: string[]) {
-  const { data: existing } = await supabase
-    .from("conversations")
-    .select("id")
-    .eq("user_id", userId)
-    .order("updated_at", { ascending: false })
-    .limit(1)
-    .single();
-
-  if (existing) {
-    await supabase
-      .from("conversations")
-      .update({ messages, updated_at: new Date().toISOString() })
-      .eq("id", existing.id);
-  } else {
-    await supabase
-      .from("conversations")
-      .insert({ user_id: userId, messages });
-  }
-}
-
 export function profileFromDb(dbUser: any) {
   if (!dbUser) return {};
   return {

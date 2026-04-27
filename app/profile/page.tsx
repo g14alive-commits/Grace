@@ -78,7 +78,6 @@ setLoading(false);
     const { data } = await supabase.auth.getSession();
     if (!data.session) return;
     const userId = data.session.user.id;
-    await supabase.from("conversations").delete().eq("user_id", userId);
     await supabase.from("sessions").delete().eq("user_id", userId);
     await supabase.from("users").update({
       user_pattern: null,
