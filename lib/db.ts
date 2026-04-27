@@ -112,38 +112,44 @@ export async function closeSession(
   headline: string,
   keyExcerpts: any[],
   sessionNumber?: number,
-  keyInsight?: string
+  keyInsight?: string,
+  newRelationshipFacts?: string[],
+  newRecurringThemes?: string[],
+  newGrowthSignals?: string[]
 ) {
+  // Update session record
   await supabase
-  .from("sessions")
-  .update({ 
-    is_complete: true,
-    summary,
-    themes,
-    key_words: keyWords,
-    action_taken: actionTaken,
-    growth_signals: growthSignals,
-    headline,
-    key_insight: keyInsight || null,
-    key_excerpts: keyExcerpts,
-    completed_at: new Date().toISOString(),
-  })
-  .eq("id", sessionId);
+    .from("sessions")
+    .update({ 
+      is_complete: true,
+      summary,
+      themes,
+      key_words: keyWords,
+      action_taken: actionTaken,
+      growth_signals: growthSignals,
+      headline,
+      key_insight: keyInsight || null,
+      key_excerpts: keyExcerpts,
+      completed_at: new Date().toISOString(),
+    })
+    .eq("id", sessionId);
 
-  // Save to session_summaries for journey/progress page
+  // Save to session_summaries
   if (sessionNumber) {
-    await supabase
-  .from("session_summaries")
-  .insert({
-    user_id: userId,
-    session_number: sessionNumber,
-    summary: summary,
-    themes: themes,
-    growth_signals: growthSignals,
-    action_taken: actionTaken,
-    headline: headline,
-    key_insight: keyInsight || null,
-  });
+    const { error: summaryError } = await supabase
+      .from("session_summaries")
+      .insert({
+        user_id: userId,
+        session_number: sessionNumber,
+        summary: summary,
+        themes: themes,
+        growth_signals: growthSignals,
+        action_taken: actionTaken,
+        headline: headline,
+        key_insight: keyInsight || null,
+      });
+    if (summaryError) console.error('session_summaries error:', JSON.stringify(summaryError));
+    else console.log('session_summaries saved ok');
   }
 
   // Sync session_count from sessions table
@@ -153,11 +159,7 @@ export async function closeSession(
     .eq("user_id", userId)
     .eq("is_complete", true);
 
-  await supabase
-    .from("users")
-    .update({ session_count: count || 0 })
-    .eq("id", userId);
-
+  // Update user quick access fields
   await supabase
     .from("users")
     .update({
@@ -165,10 +167,46 @@ export async function closeSession(
       last_session_themes: themes,
       last_session_action: actionTaken && actionTaken !== "none" ? actionTaken : undefined,
       last_session_key_words: keyWords,
+      session_count: count || 0,
       updated_at: new Date().toISOString(),
       last_seen_at: new Date().toISOString(),
     })
     .eq("id", userId);
+
+  // Append new facts from this session to raw lists
+  if (newRelationshipFacts?.length || newRecurringThemes?.length || newGrowthSignals?.length) {
+    const { data: currentUser } = await supabase
+      .from("users")
+      .select("relationship_facts, recurring_themes, growth_signals")
+      .eq("id", userId)
+      .single();
+
+    const { error: factsError } = await supabase
+      .from("users")
+      .update({
+        relationship_facts: [
+          ...new Set([
+            ...(currentUser?.relationship_facts || []),
+            ...(newRelationshipFacts || [])
+          ])
+        ],
+        recurring_themes: [
+          ...new Set([
+            ...(currentUser?.recurring_themes || []),
+            ...(newRecurringThemes || [])
+          ])
+        ],
+        growth_signals: [
+          ...new Set([
+            ...(currentUser?.growth_signals || []),
+            ...(newGrowthSignals || [])
+          ])
+        ],
+      })
+      .eq("id", userId);
+    if (factsError) console.error('Facts update error:', JSON.stringify(factsError));
+    else console.log('Facts updated ok');
+  }
 }  
 
 export function buildSessionMemoryBlock(dbUser: any): string {

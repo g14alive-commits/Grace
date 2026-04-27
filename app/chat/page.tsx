@@ -108,13 +108,16 @@ export default function Chat() {
 });
 
               const sessionData = await res.json();
-              await closeSession(
+          await closeSession(
   activeSession.id, user.id,
   sessionData.summary || "", sessionData.themes || [],
   sessionData.key_words || [], sessionData.action_taken || "",
   sessionData.growth_signals || [], sessionData.headline || "", [],
   activeSession.session_number,
-  sessionData.key_insight || ""
+  sessionData.key_insight || "",
+  sessionData.new_relationship_facts || [],
+  sessionData.new_recurring_themes || [],
+  sessionData.new_growth_signals || []
 );
             } catch (e) { console.error("Silent close failed:", e); }
           }
@@ -300,8 +303,14 @@ export default function Chat() {
         setSessionEnded(true);
       }
 
-      await closeSession(sId, uId, data.summary || "", data.themes || [], data.key_words || [],
-  data.action_taken || "", data.growth_signals || [], data.headline || "", data.last_ten_messages || [], sessionNumber, data.key_insight || "");
+      await closeSession(
+  sId, uId, data.summary || "", data.themes || [], data.key_words || [],
+  data.action_taken || "", data.growth_signals || [], data.headline || "",
+  data.last_ten_messages || [], sessionNumber, data.key_insight || "",
+  data.new_relationship_facts || [],
+  data.new_recurring_themes || [],
+  data.new_growth_signals || []
+);
 
       if (data.action_taken && data.action_taken !== "none" && uId) {
         await supabase.from("users").update({ last_session_action: data.action_taken }).eq("id", uId);
@@ -423,15 +432,15 @@ export default function Chat() {
           html, body { height: 100%; background: #0d0e1a; -webkit-font-smoothing: antialiased; }
           @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
           .checkin-screen { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #0d0e1a; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 28px; animation: fadeUp 0.35s ease; }
-          .checkin-avatar { width: 52px; height: 52px; border-radius: 50%; background: rgba(150,100,255,0.20); border: 1px solid rgba(150,100,255,0.50); display: flex; align-items: center; justify-content: center; font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 600; color: rgba(200,180,255,0.90); margin-bottom: 10px; }
+          .checkin-avatar { width: 52px; height: 52px; border-radius: 50%; background: rgba(150,100,255,0.20); border: 1px solid rgba(150,100,255,0.70); display: flex; align-items: center; justify-content: center; font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 600; color: rgba(200,180,255,0.90); margin-bottom: 10px; box-shadow: 0 0 20px rgba(160,120,240,0.45); }
           .checkin-name { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 400; color: rgba(245,238,255,0.85); margin-bottom: 36px; }
           .checkin-card { width: 100%; max-width: 360px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.10); border-radius: 18px; padding: 22px 24px; margin-bottom: 28px; }
           .checkin-card-label { font-size: 11px; font-weight: 400; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(160,140,220,0.50); margin-bottom: 10px; }
           .checkin-card-action { font-size: 17px; font-weight: 300; line-height: 1.60; color: rgba(230,222,255,0.90); font-family: 'Cormorant Garamond', serif; font-style: italic; }
           .checkin-buttons { width: 100%; max-width: 360px; display: flex; flex-direction: column; gap: 10px; }
-          .checkin-btn { width: 100%; padding: 15px 20px; border-radius: 14px; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 300; cursor: pointer; transition: all 0.18s; border: 1px solid rgba(255,255,255,0.10); background: rgba(255,255,255,0.04); color: rgba(220,215,245,0.85); letter-spacing: 0.01em; }
+          .checkin-btn { width: 100%; padding: 15px 20px; border-radius: 14px; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 300; cursor: pointer; transition: all 0.18s; border: 1px solid rgba(150,100,255,0.85); background: rgba(255,255,255,0.04); color: rgba(150,100,255,0.85); letter-spacing: 0.01em; }
           .checkin-btn:not(:disabled):active { transform: scale(0.98); }
-          .checkin-btn.yes { background: rgba(110,80,200,0.22); border-color: rgba(140,100,240,0.35); color: rgba(210,195,255,0.92); }
+          .checkin-btn.yes { background: linear-gradient(145deg, #b070ff 0%, #7040e0 50%, #4020c0 100%); border-color: transparent; color: white; box-shadow: 0 0 16px rgba(160,120,240,0.25); }
           .checkin-btn:disabled { opacity: 0.40; cursor: default; }
         `}</style>
         <div className="checkin-screen">
@@ -551,9 +560,9 @@ export default function Chat() {
         .checkin-card-label { font-size: 11px; font-weight: 400; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(160,140,220,0.50); margin-bottom: 10px; }
         .checkin-card-action { font-size: 17px; font-weight: 300; line-height: 1.60; color: rgba(230,222,255,0.90); font-family: 'Cormorant Garamond', serif; font-style: italic; }
         .checkin-buttons { width: 100%; max-width: 360px; display: flex; flex-direction: column; gap: 10px; }
-        .checkin-btn { width: 100%; padding: 15px 20px; border-radius: 14px; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 300; cursor: pointer; transition: all 0.18s; text-align: center; border: 1px solid rgba(255,255,255,0.10); background: rgba(255,255,255,0.04); color: rgba(220,215,245,0.85); letter-spacing: 0.01em; }
+        .checkin-btn { width: 100%; padding: 15px 20px; border-radius: 14px; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 300; cursor: pointer; transition: all 0.18s; text-align: center; border: 1px solid rgba(150,100,255,0.85); background: rgba(255,255,255,0.04); color: rgba(150,100,255,0.85); letter-spacing: 0.01em; }
         .checkin-btn:not(:disabled):active { transform: scale(0.98); }
-        .checkin-btn.yes { background: rgba(110,80,200,0.22); border-color: rgba(140,100,240,0.35); color: rgba(210,195,255,0.92); }
+        .checkin-btn.yes { background: linear-gradient(145deg, #b070ff 0%, #7040e0 50%, #4020c0 100%); border-color: transparent; color: white; box-shadow: 0 0 16px rgba(160,120,240,0.25); }
         .checkin-btn:disabled { opacity: 0.40; cursor: default; }
       `}</style>
 
