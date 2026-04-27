@@ -349,11 +349,8 @@ export default function WaitlistPage() {
             </div>
           ) : (
             <>
-              <div className="headline">
-                Most people keep hoping it fixes itself. You chose something different.
-              </div>
               <div className="subtext">
-                Attune is in early access. We're letting people in slowly — because this kind of work deserves care, not scale. Leave your name and we'll reach out personally when your spot opens.
+                Attune is in early access. We're letting people in slowly — as time passes we will open more spots. Leave your details and we'll reach out personally when your spot opens.
               </div>
 
               <div className="form">
