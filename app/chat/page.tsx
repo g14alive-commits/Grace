@@ -48,9 +48,12 @@ export default function Chat() {
   const [expandedSession, setExpandedSession] = useState<string | null>(null);
   const [showEndSession, setShowEndSession] = useState(false);
   const [sessionEnded, setSessionEnded] = useState(false);
+  const [showCheckin, setShowCheckin] = useState(false);
+  const [checkinSubmitting, setCheckinSubmitting] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
   const initialized = useRef(false);
+  const pendingSessionRef = useRef<{ uid: string; profile: UserProfile; dbUserData: any; sessionNumber: number } | null>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -146,7 +149,55 @@ export default function Chat() {
     setSessionId(null);
     setMessages([]);
     setSessionEnded(false);
+
+    const action = dbUserData?.last_session_action;
+    if (action && action !== "none" && action.trim()) {
+      pendingSessionRef.current = { uid, profile, dbUserData, sessionNumber: newSessionNumber };
+      setShowCheckin(true);
+      return;
+    }
+
     startConversation(profile, dbUserData, newSessionNumber, true);
+  };
+
+  const handleCheckin = async (response: "yes" | "tried" | "not_yet") => {
+    if (!userId || !dbUser) return;
+    setCheckinSubmitting(true);
+    const pending = pendingSessionRef.current;
+    const action = dbUser.last_session_action;
+    const sessNum = pending?.sessionNumber ?? sessionNumber;
+
+    await supabase.from("checkins").insert({
+      user_id: userId,
+      session_number: sessNum,
+      action_text: action,
+      response,
+      created_at: new Date().toISOString(),
+    });
+
+    await supabase.from("users").update({ last_checkin_response: response }).eq("id", userId);
+
+    if (response === "yes") {
+      const { data: lastCompleted } = await supabase
+        .from("sessions")
+        .select("id")
+        .eq("user_id", userId)
+        .eq("is_complete", true)
+        .order("session_number", { ascending: false })
+        .limit(1)
+        .single();
+      if (lastCompleted) {
+        await supabase.from("sessions").update({ action_completed: true }).eq("id", lastCompleted.id);
+      }
+    }
+
+    setShowCheckin(false);
+    setCheckinSubmitting(false);
+    pendingSessionRef.current = null;
+
+    if (pending) {
+      startConversation(pending.profile, pending.dbUserData, pending.sessionNumber, true);
+    }
   };
 
   const loadPastSessions = async (uId: string) => {
@@ -363,6 +414,49 @@ export default function Chat() {
     );
   }
 
+  if (showCheckin && dbUser?.last_session_action) {
+    return (
+      <>
+        <style>{`
+          @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400&display=swap');
+          *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+          html, body { height: 100%; background: #0d0e1a; -webkit-font-smoothing: antialiased; }
+          @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+          .checkin-screen { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #0d0e1a; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 28px; animation: fadeUp 0.35s ease; }
+          .checkin-avatar { width: 52px; height: 52px; border-radius: 50%; background: rgba(150,100,255,0.20); border: 1px solid rgba(150,100,255,0.50); display: flex; align-items: center; justify-content: center; font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 600; color: rgba(200,180,255,0.90); margin-bottom: 10px; }
+          .checkin-name { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 400; color: rgba(245,238,255,0.85); margin-bottom: 36px; }
+          .checkin-card { width: 100%; max-width: 360px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.10); border-radius: 18px; padding: 22px 24px; margin-bottom: 28px; }
+          .checkin-card-label { font-size: 11px; font-weight: 400; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(160,140,220,0.50); margin-bottom: 10px; }
+          .checkin-card-action { font-size: 17px; font-weight: 300; line-height: 1.60; color: rgba(230,222,255,0.90); font-family: 'Cormorant Garamond', serif; font-style: italic; }
+          .checkin-buttons { width: 100%; max-width: 360px; display: flex; flex-direction: column; gap: 10px; }
+          .checkin-btn { width: 100%; padding: 15px 20px; border-radius: 14px; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 300; cursor: pointer; transition: all 0.18s; border: 1px solid rgba(255,255,255,0.10); background: rgba(255,255,255,0.04); color: rgba(220,215,245,0.85); letter-spacing: 0.01em; }
+          .checkin-btn:not(:disabled):active { transform: scale(0.98); }
+          .checkin-btn.yes { background: rgba(110,80,200,0.22); border-color: rgba(140,100,240,0.35); color: rgba(210,195,255,0.92); }
+          .checkin-btn:disabled { opacity: 0.40; cursor: default; }
+        `}</style>
+        <div className="checkin-screen">
+          <div className="checkin-avatar">G</div>
+          <div className="checkin-name">Grace</div>
+          <div className="checkin-card">
+            <div className="checkin-card-label">Last time you decided to</div>
+            <div className="checkin-card-action">{dbUser.last_session_action}</div>
+          </div>
+          <div className="checkin-buttons">
+            <button className="checkin-btn yes" disabled={checkinSubmitting} onClick={() => handleCheckin("yes")}>
+              Yes, I did it
+            </button>
+            <button className="checkin-btn" disabled={checkinSubmitting} onClick={() => handleCheckin("tried")}>
+              I tried
+            </button>
+            <button className="checkin-btn" disabled={checkinSubmitting} onClick={() => handleCheckin("not_yet")}>
+              Not yet
+            </button>
+          </div>
+        </div>
+      </>
+    );
+  }
+
   return (
     <div className="app" style={{ height: appHeight }}>
       <style>{`
@@ -448,6 +542,19 @@ export default function Chat() {
         .detail-section { margin-bottom: 20px; }
         .detail-label { font-size: 9px; font-weight: 500; letter-spacing: 0.09em; text-transform: uppercase; color: rgba(160,140,220,0.40); margin-bottom: 6px; }
         .detail-text { font-size: 15px; font-weight: 300; line-height: 1.70; color: rgba(180,170,220,0.80); }
+
+        /* CHECK-IN SCREEN */
+        .checkin-screen { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #0d0e1a; z-index: 20; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 28px; animation: fadeUp 0.35s ease; }
+        .checkin-avatar { width: 52px; height: 52px; border-radius: 50%; background: rgba(150,100,255,0.20); border: 1px solid rgba(150,100,255,0.50); display: flex; align-items: center; justify-content: center; font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 600; color: rgba(200,180,255,0.90); margin-bottom: 10px; }
+        .checkin-name { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 400; color: rgba(245,238,255,0.85); margin-bottom: 36px; }
+        .checkin-card { width: 100%; max-width: 360px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.10); border-radius: 18px; padding: 22px 24px; margin-bottom: 28px; }
+        .checkin-card-label { font-size: 11px; font-weight: 400; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(160,140,220,0.50); margin-bottom: 10px; }
+        .checkin-card-action { font-size: 17px; font-weight: 300; line-height: 1.60; color: rgba(230,222,255,0.90); font-family: 'Cormorant Garamond', serif; font-style: italic; }
+        .checkin-buttons { width: 100%; max-width: 360px; display: flex; flex-direction: column; gap: 10px; }
+        .checkin-btn { width: 100%; padding: 15px 20px; border-radius: 14px; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 300; cursor: pointer; transition: all 0.18s; text-align: center; border: 1px solid rgba(255,255,255,0.10); background: rgba(255,255,255,0.04); color: rgba(220,215,245,0.85); letter-spacing: 0.01em; }
+        .checkin-btn:not(:disabled):active { transform: scale(0.98); }
+        .checkin-btn.yes { background: rgba(110,80,200,0.22); border-color: rgba(140,100,240,0.35); color: rgba(210,195,255,0.92); }
+        .checkin-btn:disabled { opacity: 0.40; cursor: default; }
       `}</style>
 
       <div className="bg-orbs">
