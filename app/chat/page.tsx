@@ -106,12 +106,13 @@ export default function Chat() {
 
               const sessionData = await res.json();
               await closeSession(
-              activeSession.id, user.id,
-              sessionData.summary || "", sessionData.themes || [],
-              sessionData.key_words || [], sessionData.action_taken || "",
-              sessionData.growth_signals || [], sessionData.headline || "", [],
-              activeSession.session_number
-            );
+  activeSession.id, user.id,
+  sessionData.summary || "", sessionData.themes || [],
+  sessionData.key_words || [], sessionData.action_taken || "",
+  sessionData.growth_signals || [], sessionData.headline || "", [],
+  activeSession.session_number,
+  sessionData.key_insight || ""
+);
             } catch (e) { console.error("Silent close failed:", e); }
           }
           localStorage.removeItem(`grace-session-${activeSession.id}`);
@@ -249,7 +250,7 @@ export default function Chat() {
       }
 
       await closeSession(sId, uId, data.summary || "", data.themes || [], data.key_words || [],
-      data.action_taken || "", data.growth_signals || [], data.headline || "", data.last_ten_messages || [], sessionNumber);
+  data.action_taken || "", data.growth_signals || [], data.headline || "", data.last_ten_messages || [], sessionNumber, data.key_insight || "");
 
       if (data.action_taken && data.action_taken !== "none" && uId) {
         await supabase.from("users").update({ last_session_action: data.action_taken }).eq("id", uId);
@@ -531,9 +532,10 @@ export default function Chat() {
                 {new Date(s.started_at).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}
               </div>
               {s.summary && <div className="detail-section"><div className="detail-label">What you worked through</div><div className="detail-text">{s.summary}</div></div>}
-              {s.action_taken && <div className="detail-section"><div className="detail-label">What you decided</div><div className="detail-text">{s.action_taken}</div></div>}
-              {s.growth_signals?.length > 0 && <div className="detail-section"><div className="detail-label">Growth signals</div><div className="detail-text">{s.growth_signals.join(" · ")}</div></div>}
-              {s.themes?.length > 0 && <div className="detail-section"><div className="detail-label">Themes</div><div className="detail-text">{s.themes.join(", ")}</div></div>}
+              {s.key_insight && s.key_insight !== "none" && <div className="detail-section"><div className="detail-label">What you understood</div><div className="detail-text">{s.key_insight}</div></div>}
+              {s.action_taken && s.action_taken !== "none" && <div className="detail-section"><div className="detail-label">What you decided</div><div className="detail-text">{s.action_taken}</div></div>}
+              {s.growth_signals?.length > 0 && <div className="detail-section"><div className="detail-label">How you showed up differently</div><div className="detail-text">{s.growth_signals.join(" · ")}</div></div>}
+              {s.themes?.length > 0 && <div className="detail-section"><div className="detail-label">What kept coming up</div><div className="detail-text">{s.themes.join(" · ")}</div></div>}
             </div>
           </div>
         );

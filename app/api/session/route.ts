@@ -43,10 +43,11 @@ ${allMessages}
 Return this exact JSON:
 {
   "summary": "2-3 sentences. What they came with and what was unresolved.",
-  "themes": ["theme1"],
+  "themes": ["2-4 themes in plain second-person language the user can read and recognise themselves in. Example: 'Reaching for reassurance when scared', 'Confusing presence with love'. Not clinical observations."],
   "key_words": ["significant phrase the user said"],
-  "action_taken": "The last thing Grace suggested, written to the user in second person. The single most specific thing the user committed to doing. If nothing was agreed, write 'none'.",
-  "growth_signals": ["any positive shifts detected, or none"],
+  "action_taken": "Start with 'You decided to' followed by one specific physical action doable in the next 24 hours. Max 12 words total. Example: 'You decided to send one honest message without waiting for perfect words.' Grace should always find an action — even in exploratory sessions find one small thing. Only write 'none' if the session was purely crisis or safety.",
+  "key_insight": "One plain sentence capturing the most important thing the user understood or named today. Written in second person. Example: 'You realised you were testing him instead of asking directly.' Only include if genuinely meaningful. If nothing significant, write 'none'.",
+  "growth_signals": ["Written in second person. Example: 'You waited before reaching out' not 'User waited'. 2-4 signals only. Write 'none' if no growth signals detected."],
   "headline": "3-4 words max, self-focused",
   "closing_message": "One warm sentence acknowledging what they worked on and inviting them to pick it up next time. Under 30 words."
 }`
@@ -59,10 +60,11 @@ Return this exact JSON:
 {
   "summary": "Use this exact format:\\nIssue: [one-two line on what they came with]\\nGrowth signals: [any positive shifts detected, or 'none']\\nAction agreed: [the thing they committed to, or 'none']\\nTone shift: [yes / partial / no]\\nRelationship facts added: [any new facts about their relationship extracted, or 'none']",
   "pattern": "reaches harder / steps back / balanced — detect from conversation. This is for internal DB only, never display to user.",
-  "themes": ["theme1", "theme2"],
+  "themes": ["2-4 themes in plain second-person language the user can read and recognise themselves in. Example: 'Reaching for reassurance when scared', 'Confusing presence with love'. Not clinical observations."],
   "key_words": ["significant phrase the user said"],
-  "action_taken": "Max 2-3 sentences only. The single most specific thing the user committed to doing. Start with 'you' not 'he/she/they'. Example: 'You agreed to send one short message to your partner today without waiting for the perfect words.' If no clear action was agreed, write the key insight in one sentence. Never more than 30 words.",
-  "growth_signals": ["any positive shifts detected"],
+  "action_taken": "Start with 'You decided to' followed by one specific physical action doable in the next 24 hours. Max 12 words total. Example: 'You decided to send one honest message without waiting for perfect words.' Grace should always find an action — even in exploratory sessions find one small thing. Only write 'none' if the session was purely crisis or safety.",
+  "key_insight": "One plain sentence capturing the most important thing the user understood or named today. Written in second person. Example: 'You realised you were testing him instead of asking directly.' Only include if genuinely meaningful. If nothing significant, write 'none'.",
+  "growth_signals": ["Written in second person. Example: 'You waited before reaching out' not 'User waited'. 2-4 signals only."],
   "headline": "2-3 words maximum. A chapter-heading style title, self-focused. Examples: 'Why I go quiet', 'Underneath the anger', 'Choosing to stay', 'First time I didn't run'. Never more than 4 words. Never mention the partner by name.",
   "closing_message": "A warm closing message from Grace. Follow this structure exactly — no more: (1) One plain sentence on why they came today.\\n (2)key insight from the session — only include if there was a genuinely meaningful one, skip it entirely if not.\\n (3) The action or decision they made. End with one warm human line. Address them by name if provided: ${userName || ''}. No clinical language. No lists. No bullet points. Under 50 words total. Be concise. Should feel like a real person closing a real conversation."
 }`,
@@ -161,6 +163,7 @@ Return ONLY valid JSON:
         themes: [],
         key_words: [],
         action_taken: "",
+
         growth_signals: [],
         headline: "",
         closing_message: "Something went wrong closing this session. Come back in a short while. Take care.",

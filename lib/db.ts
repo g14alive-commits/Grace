@@ -143,36 +143,39 @@ export async function closeSession(
   growthSignals: string[],
   headline: string,
   keyExcerpts: any[],
-  sessionNumber?: number
+  sessionNumber?: number,
+  keyInsight?: string
 ) {
   await supabase
-    .from("sessions")
-    .update({ 
-      is_complete: true,
-      summary,
-      themes,
-      key_words: keyWords,
-      action_taken: actionTaken,
-      growth_signals: growthSignals,
-      headline,
-      key_excerpts: keyExcerpts,
-      completed_at: new Date().toISOString(),
-    })
-    .eq("id", sessionId);
+  .from("sessions")
+  .update({ 
+    is_complete: true,
+    summary,
+    themes,
+    key_words: keyWords,
+    action_taken: actionTaken,
+    growth_signals: growthSignals,
+    headline,
+    key_insight: keyInsight || null,
+    key_excerpts: keyExcerpts,
+    completed_at: new Date().toISOString(),
+  })
+  .eq("id", sessionId);
 
   // Save to session_summaries for journey/progress page
   if (sessionNumber) {
     await supabase
-      .from("session_summaries")
-      .insert({
-        user_id: userId,
-        session_number: sessionNumber,
-        summary: summary,
-        themes: themes,
-        growth_signals: growthSignals,
-        action_taken: actionTaken,
-        headline: headline,
-      });
+  .from("session_summaries")
+  .insert({
+    user_id: userId,
+    session_number: sessionNumber,
+    summary: summary,
+    themes: themes,
+    growth_signals: growthSignals,
+    action_taken: actionTaken,
+    headline: headline,
+    key_insight: keyInsight || null,
+  });
   }
 
   // Sync session_count from sessions table
