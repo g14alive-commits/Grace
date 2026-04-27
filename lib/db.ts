@@ -142,7 +142,8 @@ export async function closeSession(
   actionTaken: string,
   growthSignals: string[],
   headline: string,
-  keyExcerpts: any[]
+  keyExcerpts: any[],
+  sessionNumber?: number
 ) {
   await supabase
     .from("sessions")
@@ -158,23 +159,33 @@ export async function closeSession(
       completed_at: new Date().toISOString(),
     })
     .eq("id", sessionId);
-// Update user's quick access fields and increment session count
-  const { data: currentUser } = await supabase
-    .from("users")
-    .select("session_count")
-    .eq("id", userId)
-    .single();
-// After the main users update, sync session_count from sessions table
-const { count } = await supabase
-  .from("sessions")
-  .select("*", { count: 'exact', head: true })
-  .eq("user_id", userId)
-  .eq("is_complete", true);
 
-await supabase
-  .from("users")
-  .update({ session_count: count || 0 })
-  .eq("id", userId);
+  // Save to session_summaries for journey/progress page
+  if (sessionNumber) {
+    await supabase
+      .from("session_summaries")
+      .insert({
+        user_id: userId,
+        session_number: sessionNumber,
+        summary: summary,
+        themes: themes,
+        growth_signals: growthSignals,
+        action_taken: actionTaken,
+        headline: headline,
+      });
+  }
+
+  // Sync session_count from sessions table
+  const { count } = await supabase
+    .from("sessions")
+    .select("*", { count: 'exact', head: true })
+    .eq("user_id", userId)
+    .eq("is_complete", true);
+
+  await supabase
+    .from("users")
+    .update({ session_count: count || 0 })
+    .eq("id", userId);
 
   await supabase
     .from("users")

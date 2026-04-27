@@ -106,11 +106,12 @@ export default function Chat() {
 
               const sessionData = await res.json();
               await closeSession(
-                activeSession.id, user.id,
-                sessionData.summary || "", sessionData.themes || [],
-                sessionData.key_words || [], sessionData.action_taken || "",
-                sessionData.growth_signals || [], sessionData.headline || "", []
-              );
+              activeSession.id, user.id,
+              sessionData.summary || "", sessionData.themes || [],
+              sessionData.key_words || [], sessionData.action_taken || "",
+              sessionData.growth_signals || [], sessionData.headline || "", [],
+              activeSession.session_number
+            );
             } catch (e) { console.error("Silent close failed:", e); }
           }
           localStorage.removeItem(`grace-session-${activeSession.id}`);
@@ -248,7 +249,7 @@ export default function Chat() {
       }
 
       await closeSession(sId, uId, data.summary || "", data.themes || [], data.key_words || [],
-        data.action_taken || "", data.growth_signals || [], data.headline || "", data.last_ten_messages || []);
+      data.action_taken || "", data.growth_signals || [], data.headline || "", data.last_ten_messages || [], sessionNumber);
 
       if (data.action_taken && data.action_taken !== "none" && uId) {
         await supabase.from("users").update({ last_session_action: data.action_taken }).eq("id", uId);
