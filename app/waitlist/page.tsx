@@ -127,9 +127,12 @@ export default function WaitlistPage() {
           font-family: 'Cormorant Garamond', serif;
           font-size: 44px;
           font-weight: 300;
-          color: rgba(245,238,255,0.95);
+          background: linear-gradient(145deg, #b070ff 0%, #7040e0 50%, #4020c0 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
           letter-spacing: 0.02em;
-          margin-bottom: 6px;
+          margin-bottom: 44px;
         }
 
         .logo-sub {
@@ -313,7 +316,7 @@ export default function WaitlistPage() {
 
         @media (max-width: 480px) {
           .page { padding: 52px 20px 72px; }
-          .logo { font-size: 36px; }
+          .logo { font-size: 36px; margin-bottom: 36px; }
           .headline { font-size: 22px; }
         }
       `}</style>
@@ -327,14 +330,13 @@ export default function WaitlistPage() {
 
         <div className="content">
           <div className="logo">attune</div>
-          <div className="logo-sub">powered by Grace</div>
 
           {status === "success" ? (
             <div className="confirmation">
               <div className="confirmation-icon">G</div>
-              <div className="confirmation-title">You're on the list.</div>
+              <div className="confirmation-title">We have your name.</div>
               <div className="confirmation-body">
-                We'll reach out personally when your spot opens.
+                We'll reach out personally when your spot opens — it won't be long.
               </div>
             </div>
           ) : status === "duplicate" ? (
@@ -342,16 +344,16 @@ export default function WaitlistPage() {
               <div className="confirmation-icon">G</div>
               <div className="confirmation-title">Already saved.</div>
               <div className="already-msg">
-                You're already on the list.<br />We'll be in touch.
+                You're already on our list. We'll be in touch personally.
               </div>
             </div>
           ) : (
             <>
               <div className="headline">
-                Grace is in early access.<br />Request your spot.
+                Most people keep hoping it fixes itself. You chose something different.
               </div>
               <div className="subtext">
-                A small group of people are using Grace right now. We're opening spots carefully — one person at a time.
+                Attune is in early access. We're letting people in slowly — because this kind of work deserves care, not scale. Leave your name and we'll reach out personally when your spot opens.
               </div>
 
               <div className="form">
@@ -386,7 +388,7 @@ export default function WaitlistPage() {
                   <textarea
                     value={reason}
                     onChange={(e) => setReason(e.target.value)}
-                    placeholder="Share as little or as much as you'd like…"
+                    placeholder="What's been hardest in your relationship lately?"
                   />
                 </div>
 
@@ -399,7 +401,7 @@ export default function WaitlistPage() {
                   onClick={handleSubmit}
                   disabled={!name.trim() || !email.trim() || status === "submitting"}
                 >
-                  {status === "submitting" ? "Saving your spot…" : "Request early access"}
+                  {status === "submitting" ? "Saving your spot…" : "I'm ready"}
                 </button>
               </div>
             </>
