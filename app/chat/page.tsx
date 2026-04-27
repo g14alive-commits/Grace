@@ -181,18 +181,37 @@ export default function Chat() {
     await supabase.from("users").update({ last_checkin_response: response }).eq("id", userId);
 
     if (response === "yes") {
-      const { data: lastCompleted } = await supabase
-        .from("sessions")
-        .select("id")
-        .eq("user_id", userId)
-        .eq("is_complete", true)
-        .order("session_number", { ascending: false })
-        .limit(1)
-        .single();
-      if (lastCompleted) {
-        await supabase.from("sessions").update({ action_completed: true }).eq("id", lastCompleted.id);
-      }
+  const { data: lastCompleted } = await supabase
+    .from("sessions")
+    .select("id")
+    .eq("user_id", userId)
+    .eq("is_complete", true)
+    .order("session_number", { ascending: false })
+    .limit(1)
+    .single();
+  if (lastCompleted) {
+    // Mark session action complete
+    await supabase
+      .from("sessions")
+      .update({ action_completed: true })
+      .eq("id", lastCompleted.id);
+
+    // Tick it in commitments page
+    const { data: userData } = await supabase
+      .from("users")
+      .select("completed_actions")
+      .eq("id", userId)
+      .single();
+
+    const existing = userData?.completed_actions || [];
+    if (!existing.includes(lastCompleted.id)) {
+      await supabase
+        .from("users")
+        .update({ completed_actions: [...existing, lastCompleted.id] })
+        .eq("id", userId);
     }
+  }
+}
 
     setShowCheckin(false);
     setCheckinSubmitting(false);
