@@ -34,7 +34,7 @@ export async function POST(req: Request) {
         {
           role: "user",
           content: isAbrupt ?
-`Be concise. Total JSON response must fit within 400 tokens. If space is tight, shorten summary and themes first, never cut closing_message or action_taken.
+`Be concise. Total JSON response must fit within 600 tokens. Keep all arrays to maximum 3 items each. Keep all text fields brief. If space is tight, shorten summary and themes first, never cut closing_message or action_taken.
 
 This session ended mid-conversation. Return ONLY valid JSON, no markdown. The JSON must be complete and properly closed.
 
@@ -55,7 +55,7 @@ Return this exact JSON:
   "closing_message": "One warm sentence acknowledging what they worked on and inviting them to pick it up next time. Under 30 words."
 }`
 :
-`Be concise. Total JSON response must fit within 400 tokens. If space is tight, shorten summary and themes first, never cut closing_message or action_taken.
+`Be concise. Total JSON response must fit within 600 tokens. Keep all arrays to maximum 3 items each. Keep all text fields brief. If space is tight, shorten summary and themes first, never cut closing_message or action_taken.
 
 Read this therapy session and extract key information. Return ONLY valid JSON, no markdown. The JSON must be complete and properly closed with all brackets. Never use clinical words like "nervous system", "dysregulated", "attachment", "anxious", "avoidant". Use plain human language.
 ${allMessages}
