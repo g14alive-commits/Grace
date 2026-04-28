@@ -19,6 +19,7 @@ export default function Profile() {
   const [actions, setActions] = useState<any[]>([]);
   const [completed, setCompleted] = useState<string[]>([]);
   const [pastSessions, setPastSessions] = useState<any[]>([]);
+  const [showSessionDrawer, setShowSessionDrawer] = useState(false);
   const [expandedSession, setExpandedSession] = useState<string | null>(null);
   const [vh, setVh] = useState(0);
   const router = useRouter();
@@ -599,19 +600,15 @@ setLoading(false);
 {/* Past Sessions */}
 {pastSessions.length > 0 && (
   <div className="about-card" style={{ marginBottom: "16px" }}>
-    {pastSessions.map((s) => (
-      <div key={s.id} className="session-item" onClick={() => setExpandedSession(s.id)}>
-        <div className="session-item-header">
-          <span className="session-num">#{s.session_number}</span>
-          <span className="session-date">
-            {new Date(s.started_at).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
-          </span>
-        </div>
-        <div className="session-headline">
-          {s.headline || `Session ${s.session_number}`}
+    <div className="about-row" onClick={() => setShowSessionDrawer(true)}>
+      <div>
+        <span className="about-row-label">Past Sessions</span>
+        <div style={{ fontSize: "12px", color: "rgba(140,130,180,0.45)", fontWeight: 300, marginTop: "2px" }}>
+          {pastSessions.length} session{pastSessions.length === 1 ? "" : "s"} with Grace
         </div>
       </div>
-    ))}
+      <span className="about-row-arrow">›</span>
+    </div>
   </div>
 )}
 
@@ -724,6 +721,34 @@ setLoading(false);
           </div>
         )}
 
+        {/* SESSION LIST DRAWER */}
+        {showSessionDrawer && !expandedSession && (
+          <div className="drawer-screen">
+            <div className="bg-orbs" style={{ zIndex: 0 }}>
+              <div className="orb orb1" /><div className="orb orb2" />
+            </div>
+            <div className="drawer-header">
+              <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "22px", fontWeight: 400, color: "rgba(240,235,255,0.90)" }}>Sessions</div>
+              <button className="drawer-close" onClick={() => setShowSessionDrawer(false)}>×</button>
+            </div>
+            <div style={{ flex: 1, overflowY: "auto", position: "relative", zIndex: 1 }}>
+              {pastSessions.map((s) => (
+                <div key={s.id} className="session-item" onClick={() => setExpandedSession(s.id)}>
+                  <div className="session-item-header">
+                    <span className="session-num">#{s.session_number}</span>
+                    <span className="session-date">
+                      {new Date(s.started_at).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}
+                    </span>
+                  </div>
+                  <div className="session-headline">
+                    {s.headline || `Session ${s.session_number}`}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* SESSION DETAIL DRAWER */}
         {expandedSession && (() => {
           const s = pastSessions.find(x => x.id === expandedSession);
@@ -735,7 +760,7 @@ setLoading(false);
               </div>
               <div className="drawer-header">
                 <button className="drawer-back" onClick={() => setExpandedSession(null)}>← Sessions</button>
-                <button className="drawer-close" onClick={() => setExpandedSession(null)}>×</button>
+                <button className="drawer-close" onClick={() => { setExpandedSession(null); setShowSessionDrawer(false); }}>×</button>
               </div>
               <div className="drawer-detail">
                 <div className="detail-headline">{s.headline || `Session ${s.session_number}`}</div>
