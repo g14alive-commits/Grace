@@ -105,7 +105,10 @@ export default function PendingPage() {
           font-weight: 300;
           line-height: 1.70;
           color: rgba(160,150,200,0.60);
-          max-width: 320px;
+          max-width: 280px;
+          text-align: center;
+          white-space: normal;
+          word-wrap: break-word;
         }
       `}</style>
 

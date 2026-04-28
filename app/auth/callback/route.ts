@@ -1,4 +1,5 @@
 import { createServerClient } from "@supabase/ssr";
+import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
@@ -25,15 +26,34 @@ export async function GET(request: NextRequest) {
 
   const { data: { user } } = await supabase.auth.getUser();
 
-  let redirectPath = "/chat";
-  if (user) {
-    const { data: dbUser } = await supabase
-      .from("users")
-      .select("onboarding_complete")
-      .eq("id", user.id)
+  let redirectPath = "/login";
+
+  if (user?.email) {
+    // Check waitlist approval before deciding where to send the user
+    const admin = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    );
+
+    const { data: entry } = await admin
+      .from("waitlist")
+      .select("approved")
+      .eq("email", user.email.toLowerCase())
       .single();
-    if (!dbUser?.onboarding_complete) {
-      redirectPath = "/onboarding";
+
+    if (!entry) {
+      redirectPath = "/waitlist";
+    } else if (!entry.approved) {
+      redirectPath = "/pending";
+    } else {
+      // Approved — check onboarding status
+      const { data: dbUser } = await supabase
+        .from("users")
+        .select("onboarding_complete")
+        .eq("id", user.id)
+        .single();
+
+      redirectPath = dbUser?.onboarding_complete ? "/profile" : "/onboarding";
     }
   }
 
