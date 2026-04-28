@@ -612,6 +612,29 @@ setLoading(false);
   </div>
 )}
 
+{/* Fix it prompt */}
+{(() => {
+  const completedCount = pastSessions.filter(s => s.is_complete).length;
+  if (![1, 3, 7, 11].includes(completedCount)) return null;
+  const rewriteVisits = typeof window !== "undefined"
+    ? parseInt(localStorage.getItem("rewrite_visit_count") || "0", 10)
+    : 0;
+  if (rewriteVisits > 3) return null;
+  return (
+    <div style={{ padding: "2px 4px 20px", textAlign: "center" }}>
+      <div style={{ fontSize: "13px", fontWeight: 300, color: "rgba(150,140,190,0.50)", marginBottom: "7px", lineHeight: 1.5 }}>
+        Something you wish you'd said differently?
+      </div>
+      <button
+        onClick={() => router.push("/rewrite")}
+        style={{ background: "none", border: "none", cursor: "pointer", fontSize: "13px", fontWeight: 400, color: "rgba(150,100,255,0.80)", fontFamily: "'DM Sans', sans-serif", padding: 0, letterSpacing: "0.01em", textShadow: "0 0 10px rgba(150,100,255,0.35)" }}
+      >
+        Fix it →
+      </button>
+    </div>
+  );
+})()}
+
           <div className="divider" />
 
           {/* About Attune */}

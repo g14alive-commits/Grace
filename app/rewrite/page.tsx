@@ -28,6 +28,11 @@ export default function Rewrite() {
   }, []);
 
   useEffect(() => {
+    const prev = parseInt(localStorage.getItem("rewrite_visit_count") || "0", 10);
+    localStorage.setItem("rewrite_visit_count", String(prev + 1));
+  }, []);
+
+  useEffect(() => {
     supabase.auth.getSession().then(async ({ data }) => {
       if (!data.session) return;
       const user = data.session.user;

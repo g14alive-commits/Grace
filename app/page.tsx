@@ -99,7 +99,24 @@ export default function Home() {
   const [taglineVisible, setTaglineVisible] = useState(false);
   const [btnVisible, setBtnVisible] = useState(false);
   const [vh, setVh] = useState(0);
+  const [redirecting, setRedirecting] = useState(true);
   const router = useRouter();
+
+  useEffect(() => {
+    supabase.auth.getSession().then(async ({ data }) => {
+      if (!data.session) { setRedirecting(false); return; }
+      const userId = data.session.user.id;
+      const { count } = await supabase
+        .from("sessions")
+        .select("*", { count: "exact", head: true })
+        .eq("user_id", userId);
+      if ((count ?? 0) === 0) {
+        router.replace("/chat");
+      } else {
+        router.replace("/profile");
+      }
+    });
+  }, []);
 
   const touchStartX = useRef<number | null>(null);
 const mouseStartX = useRef<number | null>(null);
@@ -166,6 +183,10 @@ const onMouseUp = (e: React.MouseEvent) => {
   };
 
   const appHeight = vh > 0 ? `${vh}px` : "100vh";
+
+  if (redirecting) {
+    return <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "#0d0e1a" }} />;
+  }
 
   return (
     <>
