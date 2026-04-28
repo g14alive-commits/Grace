@@ -36,13 +36,13 @@ export async function GET(req: Request) {
     });
   }
 
-  // ── Sessions for a user ────────────────────────────────
+  // ── Grace logs for a user ─────────────────────────────
   if (userId) {
     const { data, error } = await adminSupabase
-      .from("sessions")
-      .select("id, session_number, headline, summary, action_taken, key_insight, growth_signals, is_complete, completed_at, action_completed, started_at")
+      .from("grace_logs")
+      .select("id, session_number, user_message, grace_response, created_at")
       .eq("user_id", userId)
-      .order("session_number", { ascending: true });
+      .order("created_at", { ascending: true });
 
     if (error) return Response.json({ error: error.message }, { status: 500 });
     return Response.json(data);
@@ -51,7 +51,7 @@ export async function GET(req: Request) {
   // ── Users list ─────────────────────────────────────────
   const { data, error } = await adminSupabase
     .from("users")
-    .select("id, email, name, user_pattern, session_count, last_seen_at, last_checkin_response")
+    .select("id, email, name, user_pattern, session_count, last_seen_at, last_checkin_response, recurring_themes_summary, recurring_themes, last_session_action, relationship_facts_summary")
     .order("last_seen_at", { ascending: false });
 
   if (error) return Response.json({ error: error.message }, { status: 500 });
