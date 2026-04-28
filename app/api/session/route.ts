@@ -29,7 +29,7 @@ export async function POST(req: Request) {
 
     const response = await client.messages.create({
       model: "claude-haiku-4-5-20251001",
-      max_tokens: 700,
+      max_tokens: 600,
       messages: [
         {
           role: "user",
@@ -42,17 +42,18 @@ ${allMessages}
 
 Return this exact JSON:
 {
-  "summary": "2-3 sentences. What they came with and what was unresolved.",
-  "themes": ["2-4 themes in plain second-person language the user can read and recognise themselves in. Example: 'Reaching for reassurance when scared', 'Confusing presence with love'. Not clinical observations."],
-  "key_words": ["significant phrase the user said"],
-  "action_taken": "Start with 'You decided to' followed by one specific physical action doable in the next 24 hours. Max 12 words total. Example: 'You decided to send one honest message without waiting for perfect words.' Grace should always find an action — even in exploratory sessions find one small thing. Only write 'none' if the session was purely crisis or safety.",
-  "key_insight": "One plain sentence capturing the most important thing the user understood or named today. Written in second person. Example: 'You realised you were testing him instead of asking directly.' Only include if genuinely meaningful. If nothing significant, write 'none'.",
-  "growth_signals": ["Written in second person. Example: 'You waited before reaching out' not 'User waited'. 2-4 signals only. Write 'none' if no growth signals detected."],
-  "new_relationship_facts": ["max 5 new facts about this user's relationship situation discovered in THIS session only. Plain observations. Not repeated from before. Empty array if none."],
-  "new_recurring_themes": ["max 3 new behavioural themes detected in THIS session only. Plain language. Empty array if none."],
-  "new_growth_signals": ["max 3 growth signals from THIS session only. Second person. Example: 'You waited before reaching out'. Empty array if none."]
   "headline": "3-4 words max, self-focused",
   "closing_message": "One warm sentence acknowledging what they worked on and inviting them to pick it up next time. Under 30 words."
+  "action_taken": "Start with 'You decided to' followed by one specific physical action doable in the next 24 hours. Max 12 words total. Example: 'You decided to send one honest message without waiting for perfect words.' Grace should always find an action — even in exploratory sessions find one small thing. Only write 'none' if the session was purely crisis or safety.",
+  "key_insight": "One plain sentence capturing the most important thing the user understood or named today. Written in second person. Example: 'You realised you were testing him instead of asking directly.' Only include if genuinely meaningful. If nothing significant, write 'none'.",
+  "summary": "2-3 sentences. What they came with and what was unresolved.",
+  "pattern": "reaches harder / steps back / balanced — detect from conversation. This is for internal DB only, never display to user.",
+  "themes": ["2-4 themes in plain second-person language the user can read and recognise themselves in. Example: 'Reaching for reassurance when scared', 'Confusing presence with love'. Not clinical observations."],
+  "growth_signals": ["Written in second person. Example: 'You waited before reaching out' not 'User waited'. 2-4 signals only. Write 'none' if no growth signals detected."],
+  "new_growth_signals": ["max 3 growth signals from THIS session only. Second person. Example: 'You waited before reaching out'. Empty array if none."],
+  "new_relationship_facts": ["max 5 new facts about this user's relationship situation discovered in THIS session only. Plain observations. Not repeated from before. Empty array if none."],
+  "new_recurring_themes": ["max 3 new behavioural themes detected in THIS session only. Plain language. Empty array if none."],
+  "key_words": ["significant phrase the user said"]
 }`
 :
 `Be concise. Total JSON response must fit within 600 tokens. Keep all arrays to maximum 3 items each. Keep all text fields brief. If space is tight, shorten summary and themes first, never cut closing_message or action_taken.
@@ -61,18 +62,18 @@ Read this therapy session and extract key information. Return ONLY valid JSON, n
 ${allMessages}
 Return this exact JSON:
 {
+  "headline": "2-3 words maximum. A chapter-heading style title, self-focused. Examples: 'Why I go quiet', 'Underneath the anger', 'Choosing to stay', 'First time I didn't run'. Never more than 4 words. Never mention the partner by name.",
+  "closing_message": "A warm closing message from Grace. Follow this structure exactly — no more: (1) One plain sentence on why they came today.\\n (2)key insight from the session — only include if there was a genuinely meaningful one, skip it entirely if not.\\n (3) The action or decision they made. End with one warm human line. Address them by name if provided: ${userName || ''}. No clinical language. No lists. No bullet points. Under 50 words total. Be concise. Should feel like a real person closing a real conversation."
+  "action_taken": "Start with 'You decided to' followed by one specific physical action doable in the next 24 hours. Max 12 words total. Example: 'You decided to send one honest message without waiting for perfect words.' Grace should always find an action — even in exploratory sessions find one small thing. Only write 'none' if the session was purely crisis or safety.",
+  "key_insight": "One plain sentence capturing the most important thing the user understood or named today. Written in second person. Example: 'You realised you were testing him instead of asking directly.' Only include if genuinely meaningful. If nothing significant, write 'none'.",
   "summary": "Use this exact format:\\nIssue: [one-two line on what they came with]\\nGrowth signals: [any positive shifts detected, or 'none']\\nAction agreed: [the thing they committed to, or 'none']\\nTone shift: [yes / partial / no]\\nRelationship facts added: [any new facts about their relationship extracted, or 'none']",
   "pattern": "reaches harder / steps back / balanced — detect from conversation. This is for internal DB only, never display to user.",
   "themes": ["2-4 themes in plain second-person language the user can read and recognise themselves in. Example: 'Reaching for reassurance when scared', 'Confusing presence with love'. Not clinical observations."],
-  "key_words": ["significant phrase the user said"],
-  "action_taken": "Start with 'You decided to' followed by one specific physical action doable in the next 24 hours. Max 12 words total. Example: 'You decided to send one honest message without waiting for perfect words.' Grace should always find an action — even in exploratory sessions find one small thing. Only write 'none' if the session was purely crisis or safety.",
-  "key_insight": "One plain sentence capturing the most important thing the user understood or named today. Written in second person. Example: 'You realised you were testing him instead of asking directly.' Only include if genuinely meaningful. If nothing significant, write 'none'.",
   "growth_signals": ["Written in second person. Example: 'You waited before reaching out' not 'User waited'. 2-4 signals only."],
+  "new_growth_signals": ["max 3 growth signals from THIS session only. Second person. Example: 'You waited before reaching out'. Empty array if none."],
   "new_relationship_facts": ["max 5 new facts about this user's relationship situation discovered in THIS session only. Plain observations. Not repeated from before. Empty array if none."],
   "new_recurring_themes": ["max 3 new behavioural themes detected in THIS session only. Plain language. Empty array if none."],
-  "new_growth_signals": ["max 3 growth signals from THIS session only. Second person. Example: 'You waited before reaching out'. Empty array if none."]
-  "headline": "2-3 words maximum. A chapter-heading style title, self-focused. Examples: 'Why I go quiet', 'Underneath the anger', 'Choosing to stay', 'First time I didn't run'. Never more than 4 words. Never mention the partner by name.",
-  "closing_message": "A warm closing message from Grace. Follow this structure exactly — no more: (1) One plain sentence on why they came today.\\n (2)key insight from the session — only include if there was a genuinely meaningful one, skip it entirely if not.\\n (3) The action or decision they made. End with one warm human line. Address them by name if provided: ${userName || ''}. No clinical language. No lists. No bullet points. Under 50 words total. Be concise. Should feel like a real person closing a real conversation."
+  "key_words": ["significant phrase the user said"]
 }`,
         },
       ],
@@ -86,8 +87,27 @@ Return this exact JSON:
     try {
       const cleaned = raw.replace(/```json|```/g, "").trim();
       const jsonMatch = cleaned.match(/\{[\s\S]*\}/);
-      if (!jsonMatch) throw new Error("No JSON found");
-      const parsed = JSON.parse(jsonMatch[0]);
+if (!jsonMatch) throw new Error("No JSON found");
+
+let parsed;
+try {
+  parsed = JSON.parse(jsonMatch[0]);
+} catch {
+  // JSON was cut off — try to salvage what we have
+  const partial = jsonMatch[0];
+  const fixed = partial
+    .replace(/,\s*$/, '')  // remove trailing comma
+    .replace(/:\s*"[^"]*$/, ': ""')  // close unclosed string
+    .replace(/\[\s*"[^"]*$/, '[]')  // close unclosed array
+    + '}';
+  try {
+    parsed = JSON.parse(fixed);
+  } catch {
+    parsed = {};
+  }
+}
+
+if (!parsed || Object.keys(parsed).length === 0) throw new Error("Could not parse session JSON");
       const lastTen = messages.slice(-10);
       const { pattern, ...publicData } = parsed;
 
