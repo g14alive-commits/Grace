@@ -1,32 +1,45 @@
-import { createClient } from "@supabase/supabase-js";
+import { createServerClient } from "@supabase/ssr";
 import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
 
+  const cookiesToSet: Array<{ name: string; value: string; options: any }> = [];
+
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll: () => request.cookies.getAll(),
+        setAll: (cookies) => { cookiesToSet.push(...cookies); },
+      },
+    }
+  );
+
   if (code) {
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-    );
     await supabase.auth.exchangeCodeForSession(code);
   }
 
-  const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
-const { data: { session } } = await supabase.auth.getSession();
-if (session) {
-  const { data: user } = await supabase
-    .from("users")
-    .select("onboarding_complete")
-    .eq("id", session.user.id)
-    .single();
-  if (!user?.onboarding_complete) {
-    return NextResponse.redirect(`${origin}/onboarding`);
+  const { data: { user } } = await supabase.auth.getUser();
+
+  let redirectPath = "/chat";
+  if (user) {
+    const { data: dbUser } = await supabase
+      .from("users")
+      .select("onboarding_complete")
+      .eq("id", user.id)
+      .single();
+    if (!dbUser?.onboarding_complete) {
+      redirectPath = "/onboarding";
+    }
   }
-}
-return NextResponse.redirect(`${origin}/chat`);
+
+  const response = NextResponse.redirect(`${origin}${redirectPath}`);
+  cookiesToSet.forEach(({ name, value, options }) =>
+    response.cookies.set(name, value, options)
+  );
+  return response;
 }
