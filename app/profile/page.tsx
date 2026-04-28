@@ -18,6 +18,8 @@ export default function Profile() {
   const [showAbout, setShowAbout] = useState(false);
   const [actions, setActions] = useState<any[]>([]);
   const [completed, setCompleted] = useState<string[]>([]);
+  const [pastSessions, setPastSessions] = useState<any[]>([]);
+  const [expandedSession, setExpandedSession] = useState<string | null>(null);
   const [vh, setVh] = useState(0);
   const router = useRouter();
 
@@ -49,6 +51,7 @@ const { data: lastSession } = await supabase
 if (user) {
   setDbUser({ ...user, session_count: lastSession?.session_number || 0 });
   setName(user.name || "");
+  loadPastSessions(data.session.user.id);
 }
 setLoading(false);
     });
@@ -110,6 +113,16 @@ setLoading(false);
   const handleSignOut = async () => {
     await supabase.auth.signOut();
     router.replace("/login");
+  };
+
+  const loadPastSessions = async (userId: string) => {
+    const { data } = await supabase
+      .from("sessions")
+      .select("id, session_number, summary, themes, action_taken, growth_signals, key_words, headline, key_insight, started_at, is_complete, user_message_count")
+      .eq("user_id", userId)
+      .gte("user_message_count", 3)
+      .order("session_number", { ascending: false });
+    if (data) setPastSessions(data);
   };
 
   const toggleAction = async (id: string) => {
@@ -482,6 +495,29 @@ setLoading(false);
         }
 
         .tab.active .tab-label { color: rgba(200,180,255,0.90); }
+
+        /* SESSION DRAWER */
+        .drawer-screen { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #0d0e1a; z-index: 11; display: flex; flex-direction: column; animation: slideUp 0.28s ease; }
+        @keyframes slideUp { from { transform: translateY(24px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .drawer-header { padding: 52px 20px 16px; border-bottom: 1px solid rgba(255,255,255,0.07); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; position: relative; z-index: 1; }
+        .drawer-close { background: none; border: none; color: rgba(160,140,220,0.55); font-size: 22px; cursor: pointer; padding: 4px; line-height: 1; }
+        .drawer-back { background: none; border: none; color: rgba(150,100,255,0.85); font-size: 14px; font-weight: 400; cursor: pointer; padding: 0; font-family: 'DM Sans', sans-serif; }
+        .drawer-detail { flex: 1; overflow-y: auto; padding: 28px 24px 40px; position: relative; z-index: 1; }
+        .drawer-detail::-webkit-scrollbar { width: 0; }
+        .detail-headline { font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 400; font-style: italic; color: rgba(220,210,255,0.90); line-height: 1.3; margin-bottom: 6px; }
+        .detail-date { font-size: 11px; font-weight: 300; color: rgba(140,130,180,0.45); margin-bottom: 24px; }
+        .detail-section { margin-bottom: 20px; }
+        .detail-label { font-size: 9px; font-weight: 500; letter-spacing: 0.09em; text-transform: uppercase; color: rgba(160,140,220,0.40); margin-bottom: 6px; }
+        .detail-text { font-size: 15px; font-weight: 300; line-height: 1.70; color: rgba(180,170,220,0.80); }
+
+        /* PAST SESSIONS LIST */
+        .session-item { padding: 14px 16px; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer; transition: background 0.18s; }
+        .session-item:last-child { border-bottom: none; }
+        .session-item:active { background: rgba(150,100,255,0.06); }
+        .session-item-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+        .session-num { font-size: 10px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(160,140,220,0.45); }
+        .session-date { font-size: 11px; font-weight: 300; color: rgba(140,130,180,0.45); }
+        .session-headline { font-family: 'Cormorant Garamond', serif; font-size: 16px; font-weight: 400; font-style: italic; color: rgba(220,210,255,0.82); line-height: 1.3; }
       `}</style>
 
       <div className="page" style={{ height: appHeight }}>
@@ -559,6 +595,25 @@ setLoading(false);
     <span className="about-row-arrow">›</span>
   </div>
 </div>
+
+{/* Past Sessions */}
+{pastSessions.length > 0 && (
+  <div className="about-card" style={{ marginBottom: "16px" }}>
+    {pastSessions.map((s) => (
+      <div key={s.id} className="session-item" onClick={() => setExpandedSession(s.id)}>
+        <div className="session-item-header">
+          <span className="session-num">#{s.session_number}</span>
+          <span className="session-date">
+            {new Date(s.started_at).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
+          </span>
+        </div>
+        <div className="session-headline">
+          {s.headline || `Session ${s.session_number}`}
+        </div>
+      </div>
+    ))}
+  </div>
+)}
 
           <div className="divider" />
 
@@ -668,6 +723,34 @@ setLoading(false);
             </div>
           </div>
         )}
+
+        {/* SESSION DETAIL DRAWER */}
+        {expandedSession && (() => {
+          const s = pastSessions.find(x => x.id === expandedSession);
+          if (!s) return null;
+          return (
+            <div className="drawer-screen">
+              <div className="bg-orbs" style={{ zIndex: 0 }}>
+                <div className="orb orb1" /><div className="orb orb2" />
+              </div>
+              <div className="drawer-header">
+                <button className="drawer-back" onClick={() => setExpandedSession(null)}>← Sessions</button>
+                <button className="drawer-close" onClick={() => setExpandedSession(null)}>×</button>
+              </div>
+              <div className="drawer-detail">
+                <div className="detail-headline">{s.headline || `Session ${s.session_number}`}</div>
+                <div className="detail-date">
+                  {new Date(s.started_at).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}
+                </div>
+                {s.summary && <div className="detail-section"><div className="detail-label">What you worked through</div><div className="detail-text">{s.summary}</div></div>}
+                {s.key_insight && s.key_insight !== "none" && <div className="detail-section"><div className="detail-label">What you took away</div><div className="detail-text">{s.key_insight}</div></div>}
+                {s.action_taken && s.action_taken !== "none" && <div className="detail-section"><div className="detail-label">What you decided</div><div className="detail-text">{s.action_taken}</div></div>}
+                {s.growth_signals?.length > 0 && <div className="detail-section"><div className="detail-label">How you showed up differently</div><div className="detail-text">{s.growth_signals.join(" · ")}</div></div>}
+                {s.themes?.length > 0 && <div className="detail-section"><div className="detail-label">What kept coming up</div><div className="detail-text">{s.themes.join(" · ")}</div></div>}
+              </div>
+            </div>
+          );
+        })()}
 
         <div className="tab-bar">
           <div className="tab" onClick={() => router.push("/chat")}>
