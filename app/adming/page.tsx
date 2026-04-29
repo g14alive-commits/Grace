@@ -262,15 +262,15 @@ export default function AdminPage() {
                     }
                     nodes.push(
                       <div key={log.id ?? i} className="exchange">
-                        {log.grace_response && (
-                          <div className="bubble-row grace">
-                            <div className="bubble grace">{log.grace_response}</div>
-                            <span className="bubble-ts">{fmtTime(log.created_at)}</span>
-                          </div>
-                        )}
                         {log.user_message && (
                           <div className="bubble-row user">
                             <div className="bubble user">{log.user_message}</div>
+                            <span className="bubble-ts">{fmtTime(log.created_at)}</span>
+                          </div>
+                        )}
+                        {log.grace_response && (
+                          <div className="bubble-row grace">
+                            <div className="bubble grace">{log.grace_response}</div>
                             <span className="bubble-ts">{fmtTime(log.created_at)}</span>
                           </div>
                         )}
