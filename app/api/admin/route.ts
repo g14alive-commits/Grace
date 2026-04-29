@@ -38,7 +38,7 @@ export async function GET(req: Request) {
 
   // ── Grace logs for a user ─────────────────────────────
   if (userId) {
-    const [{ data, error }, { count: sessionsCompleted }] = await Promise.all([
+    const [{ data, error }, { data: userSessions }] = await Promise.all([
       adminSupabase
         .from("grace_logs")
         .select("id, session_number, user_message, grace_response, created_at")
@@ -46,38 +46,45 @@ export async function GET(req: Request) {
         .order("created_at", { ascending: true }),
       adminSupabase
         .from("sessions")
-        .select("*", { count: "exact", head: true })
+        .select("session_number")
         .eq("user_id", userId)
-        .eq("is_complete", true),
+        .order("session_number", { ascending: false })
+        .limit(1),
     ]);
 
     if (error) return Response.json({ error: error.message }, { status: 500 });
-    return Response.json({ logs: data, sessionsCompleted: sessionsCompleted ?? 0 });
+
+    const sessionsCompleted = userSessions?.[0]?.session_number ?? 0;
+    return Response.json({ logs: data, sessionsCompleted });
   }
 
   // ── Users list ─────────────────────────────────────────
-  const [{ data, error }, { data: sessionRows }] = await Promise.all([
+  const [{ data, error }, { data: sessionNumbers }] = await Promise.all([
     adminSupabase
       .from("users")
       .select("id, email, name, user_pattern, session_count, last_seen_at, last_checkin_response, recurring_themes_summary, recurring_themes, last_session_action, relationship_facts_summary, relationship_facts, growth_summary")
       .order("last_seen_at", { ascending: false }),
     adminSupabase
       .from("sessions")
-      .select("user_id")
-      .eq("is_complete", true),
+      .select("user_id, session_number")
+      .order("session_number", { ascending: false }),
   ]);
 
   if (error) return Response.json({ error: error.message }, { status: 500 });
 
-  const completedCountByUser: Record<string, number> = {};
-  for (const s of sessionRows ?? []) {
-    completedCountByUser[s.user_id] = (completedCountByUser[s.user_id] ?? 0) + 1;
+  // Build max session_number map per user
+  const sessionMap: Record<string, number> = {};
+  for (const row of sessionNumbers || []) {
+    if (!sessionMap[row.user_id]) {
+      sessionMap[row.user_id] = row.session_number;
+    }
   }
 
-  const usersWithCounts = (data ?? []).map((u) => ({
+  // Join real session number onto each user
+  const usersWithSessions = (data || []).map(u => ({
     ...u,
-    completed_sessions: completedCountByUser[u.id] ?? 0,
+    completed_sessions: sessionMap[u.id] ?? 0,
   }));
 
-  return Response.json(usersWithCounts);
+  return Response.json(usersWithSessions);
 }
