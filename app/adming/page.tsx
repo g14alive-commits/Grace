@@ -10,6 +10,7 @@ type User = {
   name: string | null;
   user_pattern: string | null;
   session_count: number | null;
+  completed_sessions: number | null;
   last_seen_at: string | null;
   last_checkin_response: string | null;
   recurring_themes_summary: string | null;
@@ -210,7 +211,7 @@ export default function AdminPage() {
                   )}
                   <div className="insight-row">
                     <span className="insight-lbl">Sessions</span>
-                    <span className="insight-val">{sessionsCompleted !== null ? sessionsCompleted : "—"} completed</span>
+                    <span className="insight-val">{selectedUser.completed_sessions ?? 0} completed</span>
                   </div>
                   {selectedUser.last_checkin_response && (
                     <div className="insight-row">
@@ -320,7 +321,7 @@ export default function AdminPage() {
                       </div>
                       <div className="user-meta">
                         {user.user_pattern && <span className="meta-pill">{user.user_pattern}</span>}
-                        <span className="meta-pill">{user.session_count ?? 0} sessions</span>
+                        <span className="meta-pill">{user.completed_sessions ?? 0} sessions</span>
                         <span className="meta-pill">Last seen {fmtDate(user.last_seen_at)}</span>
                       </div>
                     </div>

@@ -56,11 +56,28 @@ export async function GET(req: Request) {
   }
 
   // ── Users list ─────────────────────────────────────────
-  const { data, error } = await adminSupabase
-    .from("users")
-    .select("id, email, name, user_pattern, session_count, last_seen_at, last_checkin_response, recurring_themes_summary, recurring_themes, last_session_action, relationship_facts_summary, relationship_facts, growth_summary")
-    .order("last_seen_at", { ascending: false });
+  const [{ data, error }, { data: sessionRows }] = await Promise.all([
+    adminSupabase
+      .from("users")
+      .select("id, email, name, user_pattern, session_count, last_seen_at, last_checkin_response, recurring_themes_summary, recurring_themes, last_session_action, relationship_facts_summary, relationship_facts, growth_summary")
+      .order("last_seen_at", { ascending: false }),
+    adminSupabase
+      .from("sessions")
+      .select("user_id")
+      .eq("is_complete", true),
+  ]);
 
   if (error) return Response.json({ error: error.message }, { status: 500 });
-  return Response.json(data);
+
+  const completedCountByUser: Record<string, number> = {};
+  for (const s of sessionRows ?? []) {
+    completedCountByUser[s.user_id] = (completedCountByUser[s.user_id] ?? 0) + 1;
+  }
+
+  const usersWithCounts = (data ?? []).map((u) => ({
+    ...u,
+    completed_sessions: completedCountByUser[u.id] ?? 0,
+  }));
+
+  return Response.json(usersWithCounts);
 }
