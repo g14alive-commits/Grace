@@ -16,6 +16,8 @@ type User = {
   recurring_themes: string[] | null;
   last_session_action: string | null;
   relationship_facts_summary: string | null;
+  relationship_facts: string[] | null;
+  growth_summary: string | null;
 };
 
 type Log = {
@@ -36,6 +38,7 @@ export default function AdminPage() {
   const [logs, setLogs] = useState<Log[]>([]);
   const [logsLoading, setLogsLoading] = useState(false);
   const [insightOpen, setInsightOpen] = useState(true);
+  const [sessionsCompleted, setSessionsCompleted] = useState<number | null>(null);
 
   const handleLogin = async () => {
     if (password !== ADMIN_PASSWORD) { setPwError(true); return; }
@@ -52,9 +55,11 @@ export default function AdminPage() {
     setSelectedUser(user);
     setInsightOpen(true);
     setLogsLoading(true);
+    setSessionsCompleted(null);
     const res = await fetch(`/api/admin?userId=${encodeURIComponent(user.id)}`);
     const data = await res.json();
-    setLogs(Array.isArray(data) ? data : []);
+    setLogs(Array.isArray(data.logs) ? data.logs : []);
+    setSessionsCompleted(typeof data.sessionsCompleted === "number" ? data.sessionsCompleted : null);
     setLogsLoading(false);
   };
 
@@ -185,7 +190,7 @@ export default function AdminPage() {
           // ── Conversation view ──
           <div className="adm-inner">
             <div className="adm-header">
-              <button className="back-btn" onClick={() => { setSelectedUser(null); setLogs([]); }}>← Users</button>
+              <button className="back-btn" onClick={() => { setSelectedUser(null); setLogs([]); setSessionsCompleted(null); }}>← Users</button>
               <div className="adm-title">{selectedUser.name || selectedUser.email}</div>
             </div>
 
@@ -205,7 +210,7 @@ export default function AdminPage() {
                   )}
                   <div className="insight-row">
                     <span className="insight-lbl">Sessions</span>
-                    <span className="insight-val">{selectedUser.session_count ?? 0} completed</span>
+                    <span className="insight-val">{sessionsCompleted !== null ? sessionsCompleted : "—"} completed</span>
                   </div>
                   {selectedUser.last_checkin_response && (
                     <div className="insight-row">
@@ -230,10 +235,19 @@ export default function AdminPage() {
                       <span className="insight-val">{selectedUser.last_session_action}</span>
                     </div>
                   )}
-                  {selectedUser.relationship_facts_summary && (
+                  {(selectedUser.relationship_facts_summary || selectedUser.relationship_facts?.length) && (
                     <div className="insight-row">
-                      <span className="insight-lbl">Rel. facts</span>
-                      <span className="insight-val">{selectedUser.relationship_facts_summary}</span>
+                      <span className="insight-lbl">Relationship</span>
+                      <span className="insight-val">
+                        {selectedUser.relationship_facts_summary
+                          || selectedUser.relationship_facts!.slice(0, 5).join(", ")}
+                      </span>
+                    </div>
+                  )}
+                  {selectedUser.growth_summary && (
+                    <div className="insight-row">
+                      <span className="insight-lbl">Growth</span>
+                      <span className="insight-val">{selectedUser.growth_summary}</span>
                     </div>
                   )}
                 </div>

@@ -38,20 +38,27 @@ export async function GET(req: Request) {
 
   // ── Grace logs for a user ─────────────────────────────
   if (userId) {
-    const { data, error } = await adminSupabase
-      .from("grace_logs")
-      .select("id, session_number, user_message, grace_response, created_at")
-      .eq("user_id", userId)
-      .order("created_at", { ascending: true });
+    const [{ data, error }, { count: sessionsCompleted }] = await Promise.all([
+      adminSupabase
+        .from("grace_logs")
+        .select("id, session_number, user_message, grace_response, created_at")
+        .eq("user_id", userId)
+        .order("created_at", { ascending: true }),
+      adminSupabase
+        .from("sessions")
+        .select("*", { count: "exact", head: true })
+        .eq("user_id", userId)
+        .eq("is_complete", true),
+    ]);
 
     if (error) return Response.json({ error: error.message }, { status: 500 });
-    return Response.json(data);
+    return Response.json({ logs: data, sessionsCompleted: sessionsCompleted ?? 0 });
   }
 
   // ── Users list ─────────────────────────────────────────
   const { data, error } = await adminSupabase
     .from("users")
-    .select("id, email, name, user_pattern, session_count, last_seen_at, last_checkin_response, recurring_themes_summary, recurring_themes, last_session_action, relationship_facts_summary")
+    .select("id, email, name, user_pattern, session_count, last_seen_at, last_checkin_response, recurring_themes_summary, recurring_themes, last_session_action, relationship_facts_summary, relationship_facts, growth_summary")
     .order("last_seen_at", { ascending: false });
 
   if (error) return Response.json({ error: error.message }, { status: 500 });
