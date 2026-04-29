@@ -112,9 +112,9 @@ if (!parsed || Object.keys(parsed).length === 0) throw new Error("Could not pars
       const { pattern, ...publicData } = parsed;
 
       console.log('Session close received:', { userId, sessionNumber, hasProfile: !!userProfile });
-      console.log('Compression check:', { userId: !!userId, hasProfile: !!userProfile, sessionNumber, mod: sessionNumber % 1 });
+      console.log('Compression check:', { userId: !!userId, hasProfile: !!userProfile, sessionNumber, mod: sessionNumber % 3 });
 
-      if (userId && userProfile && sessionNumber % 1 === 0) {
+      if (userId && userProfile && sessionNumber % 3 === 0) {
         console.log('Compression block entered');
         const facts = userProfile.relationshipFacts || [];
         const themes = userProfile.recurringThemes || [];
