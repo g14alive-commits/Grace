@@ -191,16 +191,16 @@ export default function Commitments() {
         .toggle-option {
           position: relative; z-index: 1;
           font-family: 'DM Sans', sans-serif;
-          font-size: 11px; font-weight: 400;
+          font-size: 9px; font-weight: 400;
           letter-spacing: 0.04em;
           color: rgba(190,170,240,0.55);
-          padding: 4px 12px;
+          padding: 2px 7px;
           border-radius: 16px;
           border: none; background: none;
           cursor: pointer;
           transition: color 0.18s;
           white-space: nowrap;
-          min-width: 52px;
+          min-width: 28px;
           text-align: center;
         }
 
