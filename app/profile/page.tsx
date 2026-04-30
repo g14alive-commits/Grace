@@ -604,7 +604,7 @@ setLoading(false);
       <div>
         <span className="about-row-label">Past Sessions</span>
         <div style={{ fontSize: "12px", color: "rgba(140,130,180,0.45)", fontWeight: 300, marginTop: "2px" }}>
-          {pastSessions.length} session{pastSessions.length === 1 ? "" : "s"} with Grace
+          {dbUser?.session_count} session{dbUser?.session_count === 1 ? "" : "s"} with Grace
         </div>
       </div>
       <span className="about-row-arrow">›</span>

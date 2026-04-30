@@ -150,9 +150,24 @@ export default function Chat() {
 
     const action = dbUserData?.last_session_action;
     if (action && action !== "none" && action.trim()) {
-      pendingSessionRef.current = { uid, profile, dbUserData, sessionNumber: newSessionNumber };
-      setShowCheckin(true);
-      return;
+      // Only show check-in if the action hasn't already been ticked as complete
+      const { data: lastCompletedSession } = await supabase
+        .from("sessions")
+        .select("id")
+        .eq("user_id", uid)
+        .eq("is_complete", true)
+        .order("session_number", { ascending: false })
+        .limit(1)
+        .single();
+
+      const completedActions: string[] = dbUserData?.completed_actions || [];
+      const alreadyTicked = lastCompletedSession && completedActions.includes(lastCompletedSession.id);
+
+      if (!alreadyTicked) {
+        pendingSessionRef.current = { uid, profile, dbUserData, sessionNumber: newSessionNumber };
+        setShowCheckin(true);
+        return;
+      }
     }
 
     startConversation(profile, dbUserData, newSessionNumber, true);
@@ -502,8 +517,8 @@ export default function Chat() {
         .download-btn:disabled { opacity: 0.25; cursor: default; }
         .download-btn:not(:disabled):active { transform: scale(0.9); }
         .online-dot { width: 7px; height: 7px; border-radius: 50%; background: rgba(80,220,140,1.0); box-shadow: 0 0 12px rgba(80,220,140,0.70); flex-shrink: 0; }
-        .new-session-bar { flex-shrink: 0; position: relative; z-index: 2; padding: 7px 16px; background: rgba(13,14,26,0.80); border-top: 1px solid rgba(255,255,255,0.06); display: flex; align-items: center; justify-content: center; backdrop-filter: blur(20px); }
-        .new-session-btn { background: linear-gradient(145deg, #b070ff 0%, #7040e0 50%, #4020c0 100%); border: none; border-radius: 20px; font-size: 13px; color: white; cursor: pointer; padding: 7px 28px; font-family: 'DM Sans', sans-serif; letter-spacing: 0.04em; box-shadow: 0 0 16px rgba(160,120,240,0.25); transition: opacity 0.2s; }
+        .new-session-bar { flex-shrink: 0; position: relative; z-index: 2; padding: 5px 16px; background: rgba(13,14,26,0.80); border-top: 1px solid rgba(255,255,255,0.06); display: flex; align-items: center; justify-content: center; backdrop-filter: blur(20px); }
+        .new-session-btn { background: rgba(120,80,200,0.18); border: 1px solid rgba(150,100,255,0.30); border-radius: 16px; font-size: 11px; color: rgba(180,150,255,0.65); cursor: pointer; padding: 5px 18px; font-family: 'DM Sans', sans-serif; letter-spacing: 0.04em; box-shadow: none; transition: opacity 0.2s, color 0.2s; }
         .new-session-btn:active { opacity: 0.80; }
         .messages { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 20px 16px 16px; display: flex; flex-direction: column; gap: 20px; -webkit-overflow-scrolling: touch; position: relative; z-index: 1; }
         .messages::-webkit-scrollbar { width: 0; }
