@@ -451,7 +451,7 @@ export default function Chat() {
           html, body { height: 100%; background: #0d0e1a; -webkit-font-smoothing: antialiased; }
           @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
           .checkin-screen { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #0d0e1a; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 28px; animation: fadeUp 0.35s ease; }
-          .checkin-avatar { width: 52px; height: 52px; border-radius: 50%; background: rgba(150,100,255,0.20); border: 1px solid rgba(150,100,255,0.70); display: flex; align-items: center; justify-content: center; font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 600; color: rgba(200,180,255,0.90); margin-bottom: 10px; box-shadow: 0 0 20px rgba(160,120,240,0.45); }
+          .checkin-avatar { width: 52px; height: 52px; border-radius: 50%; background: rgba(150,100,255,0.20); border: 1px solid rgba(150,100,255,0.70); display: flex; align-items: center; justify-content: center; font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 600; color: rgba(200,180,255,0.90); margin-bottom: 10px; }
           .checkin-name { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 400; color: rgba(245,238,255,0.85); margin-bottom: 36px; }
           .checkin-card { width: 100%; max-width: 360px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.10); border-radius: 18px; padding: 22px 24px; margin-bottom: 28px; }
           .checkin-card-label { font-size: 11px; font-weight: 400; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(160,140,220,0.50); margin-bottom: 10px; }
