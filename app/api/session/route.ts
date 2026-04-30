@@ -29,7 +29,7 @@ export async function POST(req: Request) {
 
     const response = await client.messages.create({
       model: "claude-haiku-4-5-20251001",
-      max_tokens: 600,
+      max_tokens: 800,
       messages: [
         {
           role: "user",
@@ -96,10 +96,11 @@ try {
   // JSON was cut off — try to salvage what we have
   const partial = jsonMatch[0];
   const fixed = partial
-    .replace(/,\s*$/, '')  // remove trailing comma
-    .replace(/:\s*"[^"]*$/, ': ""')  // close unclosed string
-    .replace(/\[\s*"[^"]*$/, '[]')  // close unclosed array
-    + '}';
+  .replace(/,\s*$/, '')           // trailing comma
+  .replace(/:\s*"[^"]*$/, ': ""') // unclosed string value
+  .replace(/"[^"]*$/, '"')        // unclosed string in array
+  .replace(/\[\s*$/, '[]')        // empty unclosed array
+  + '\n]}';                        // close array + object
   try {
     parsed = JSON.parse(fixed);
   } catch {
