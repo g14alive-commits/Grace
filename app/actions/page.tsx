@@ -11,12 +11,15 @@ interface Action {
   date: string;
 }
 
+type Filter = "todo" | "all" | "done";
+
 export default function Commitments() {
   const [actions, setActions] = useState<Action[]>([]);
   const [completed, setCompleted] = useState<string[]>([]);
   const [userId, setUserId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [vh, setVh] = useState(0);
+  const [filter, setFilter] = useState<Filter>("all");
   const router = useRouter();
 
   useEffect(() => {
@@ -72,6 +75,20 @@ export default function Commitments() {
     await supabase.from("users").update({ completed_actions: newCompleted }).eq("id", userId);
   };
 
+  const filteredActions = actions.filter(action => {
+    const isDone = completed.includes(action.id);
+    if (filter === "todo") return !isDone;
+    if (filter === "done") return isDone;
+    return true;
+  });
+
+  const filterOptions: { key: Filter; label: string }[] = [
+    { key: "todo", label: "To Do" },
+    { key: "all",  label: "All"   },
+    { key: "done", label: "Done"  },
+  ];
+
+  const pillIndex = filterOptions.findIndex(f => f.key === filter);
   const appHeight = vh > 0 ? `${vh}px` : "100vh";
 
   return (
@@ -104,22 +121,22 @@ export default function Commitments() {
         }
 
         .back-btn {
-  background: none; border: none; cursor: pointer;
-  color: rgba(150,100,255,0.85); font-size: 14px;
-  font-family: 'DM Sans', sans-serif; font-weight: 400;
-  padding: 4px 0; display: flex; align-items: center; gap: 4px;
-}
+          background: none; border: none; cursor: pointer;
+          color: rgba(150,100,255,0.85); font-size: 14px;
+          font-family: 'DM Sans', sans-serif; font-weight: 400;
+          padding: 4px 0; display: flex; align-items: center; gap: 4px;
+        }
 
         .header-name {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 18px; font-weight: 600;
-  color: rgba(230,215,255,1.0);
-}
+          font-family: 'Cormorant Garamond', serif;
+          font-size: 18px; font-weight: 600;
+          color: rgba(230,215,255,1.0);
+        }
 
         .header-sub {
-  font-size: 11px; color: rgba(170,150,220,0.80);
-  font-weight: 300; margin-top: 1px;
-}
+          font-size: 11px; color: rgba(170,150,220,0.80);
+          font-weight: 300; margin-top: 1px;
+        }
 
         .scroll-area {
           flex: 1; overflow-y: auto; overflow-x: hidden;
@@ -129,6 +146,69 @@ export default function Commitments() {
         }
         .scroll-area::-webkit-scrollbar { width: 0; }
 
+        .stats-row {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-bottom: 20px;
+        }
+
+        .stats-text {
+          font-size: 12px; font-weight: 400;
+          color: rgba(170,150,220,0.65);
+          letter-spacing: 0.02em;
+        }
+
+        /* ── Toggle ── */
+        .toggle-track {
+          position: relative;
+          display: flex;
+          align-items: center;
+          background: rgba(255,255,255,0.05);
+          border: 1px solid rgba(255,255,255,0.09);
+          border-radius: 20px;
+          padding: 3px;
+          gap: 0;
+        }
+
+        .toggle-pill {
+          position: absolute;
+          top: 3px;
+          left: 3px;
+          height: calc(100% - 6px);
+          width: calc(33.333% - 2px);
+          background: rgba(150,100,255,0.28);
+          border: 1px solid rgba(150,100,255,0.55);
+          border-radius: 16px;
+          transition: transform 0.22s cubic-bezier(0.34, 1.2, 0.64, 1);
+          pointer-events: none;
+        }
+
+        .toggle-pill.pos-0 { transform: translateX(0); }
+        .toggle-pill.pos-1 { transform: translateX(calc(100% + 2px)); }
+        .toggle-pill.pos-2 { transform: translateX(calc(200% + 4px)); }
+
+        .toggle-option {
+          position: relative; z-index: 1;
+          font-family: 'DM Sans', sans-serif;
+          font-size: 11px; font-weight: 400;
+          letter-spacing: 0.04em;
+          color: rgba(190,170,240,0.55);
+          padding: 4px 12px;
+          border-radius: 16px;
+          border: none; background: none;
+          cursor: pointer;
+          transition: color 0.18s;
+          white-space: nowrap;
+          min-width: 52px;
+          text-align: center;
+        }
+
+        .toggle-option.active {
+          color: rgba(220,200,255,0.95);
+        }
+
+        /* ── Action items (unchanged) ── */
         .empty-state {
           display: flex; flex-direction: column;
           align-items: center; justify-content: center;
@@ -148,9 +228,9 @@ export default function Commitments() {
         }
 
         .action-item.done {
-  background: rgba(150,100,255,0.10);
-  border-color: rgba(150,100,255,0.30);
-}
+          background: rgba(150,100,255,0.10);
+          border-color: rgba(150,100,255,0.30);
+        }
 
         .action-item:active { transform: scale(0.99); }
 
@@ -163,9 +243,9 @@ export default function Commitments() {
         }
 
         .action-item.done .checkbox {
-  background: rgba(150,100,255,0.35);
-  border-color: rgba(150,100,255,0.75);
-}
+          background: rgba(150,100,255,0.35);
+          border-color: rgba(150,100,255,0.75);
+        }
 
         .action-content { flex: 1; }
 
@@ -175,10 +255,10 @@ export default function Commitments() {
         }
 
         .action-meta {
-  font-size: 10px; font-weight: 400;
-  letter-spacing: 0.06em; text-transform: uppercase;
-  color: rgba(160,140,210,0.60); margin-top: 5px;
-}
+          font-size: 10px; font-weight: 400;
+          letter-spacing: 0.06em; text-transform: uppercase;
+          color: rgba(160,140,210,0.60); margin-top: 5px;
+        }
       `}</style>
 
       <div className="page" style={{ height: appHeight }}>
@@ -188,12 +268,12 @@ export default function Commitments() {
         </div>
 
         <div className="header">
-  <button className="back-btn" onClick={() => router.push("/profile")}>← </button>
-  <div>
-    <div className="header-name">Commitments</div>
-<div className="header-sub">Feelings follow actions. Keep going.</div>
-  </div>
-</div>
+          <button className="back-btn" onClick={() => router.push("/profile")}>← </button>
+          <div>
+            <div className="header-name">Commitments</div>
+            <div className="header-sub">Feelings follow actions. Keep going.</div>
+          </div>
+        </div>
 
         <div className="scroll-area">
           {loading ? null : actions.length === 0 ? (
@@ -203,36 +283,58 @@ export default function Commitments() {
             </div>
           ) : (
             <>
-              <div style={{
-  fontSize: "12px", fontWeight: 400,
-  color: "rgba(170,150,220,0.65)",
-  marginBottom: "20px",
-  letterSpacing: "0.02em",
-}}>
-                {completed.length} of {actions.length} commitments done
+              {/* Stats row with toggle */}
+              <div className="stats-row">
+                <div className="stats-text">
+                  {completed.length} of {actions.length} commitments done
+                </div>
+
+                <div className="toggle-track">
+                  {/* sliding pill */}
+                  <div className={`toggle-pill pos-${pillIndex}`} />
+
+                  {filterOptions.map((opt) => (
+                    <button
+                      key={opt.key}
+                      className={`toggle-option${filter === opt.key ? " active" : ""}`}
+                      onClick={() => setFilter(opt.key)}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
               </div>
-              {actions.map(action => {
-                const isDone = completed.includes(action.id);
-              return (
-                <div
-                  key={action.id}
-                  className={`action-item${isDone ? " done" : ""}`}
-                  onClick={() => toggleAction(action.id)}
-                >
-                  <div className="checkbox">
-                    {isDone && (
-                      <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-                        <path d="M1.5 5l2.5 2.5 4.5-4.5" stroke="rgba(200,180,255,0.90)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                      </svg>
-                    )}
-                  </div>
-                  <div className="action-content">
-                    <div className="action-text">{action.text}</div>
-                    <div className="action-meta">Session {action.sessionNumber} · {action.date}</div>
+
+              {filteredActions.length === 0 ? (
+                <div className="empty-state" style={{ height: "50%" }}>
+                  <div style={{ fontStyle: "italic" }}>
+                    {filter === "todo" ? "All caught up — nothing left to do." : "Nothing completed yet. You've got this."}
                   </div>
                 </div>
-              );
-            })}
+              ) : (
+                filteredActions.map(action => {
+                  const isDone = completed.includes(action.id);
+                  return (
+                    <div
+                      key={action.id}
+                      className={`action-item${isDone ? " done" : ""}`}
+                      onClick={() => toggleAction(action.id)}
+                    >
+                      <div className="checkbox">
+                        {isDone && (
+                          <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                            <path d="M1.5 5l2.5 2.5 4.5-4.5" stroke="rgba(200,180,255,0.90)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                          </svg>
+                        )}
+                      </div>
+                      <div className="action-content">
+                        <div className="action-text">{action.text}</div>
+                        <div className="action-meta">Session {action.sessionNumber} · {action.date}</div>
+                      </div>
+                    </div>
+                  );
+                })
+              )}
             </>
           )}
         </div>
