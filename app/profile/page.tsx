@@ -616,17 +616,17 @@ setLoading(false);
 {(() => {
   const completedCount = pastSessions.filter(s => s.is_complete).length;
   if (![1, 3, 7, 11].includes(completedCount)) return null;
-  const rewriteVisits = typeof window !== "undefined"
-    ? parseInt(localStorage.getItem("rewrite_visit_count") || "0", 10)
+  const fixitVisits = typeof window !== "undefined"
+    ? parseInt(localStorage.getItem("fixit_visit_count") || "0", 10)
     : 0;
-  if (rewriteVisits > 3) return null;
+  if (fixitVisits > 3) return null;
   return (
     <div style={{ padding: "2px 4px 20px", textAlign: "center" }}>
       <div style={{ fontSize: "13px", fontWeight: 300, color: "rgba(150,140,190,0.50)", marginBottom: "7px", lineHeight: 1.5 }}>
         Something you wish you'd said differently?
       </div>
       <button
-        onClick={() => router.push("/rewrite")}
+        onClick={() => router.push("/fixit")}
         style={{ background: "none", border: "none", cursor: "pointer", fontSize: "13px", fontWeight: 400, color: "rgba(150,100,255,0.80)", fontFamily: "'DM Sans', sans-serif", padding: 0, letterSpacing: "0.01em", textShadow: "0 0 10px rgba(150,100,255,0.35)" }}
       >
         Fix it →
@@ -807,7 +807,7 @@ setLoading(false);
             </svg>
             <span className="tab-label">Grace</span>
           </div>
-          <div className="tab" onClick={() => router.push("/rewrite")}>
+          <div className="tab" onClick={() => router.push("/fixit")}>
             <svg className="tab-icon" viewBox="0 0 24 24" fill="none" stroke="rgba(200,180,255,0.90)" strokeWidth="1.5">
               <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
             </svg>

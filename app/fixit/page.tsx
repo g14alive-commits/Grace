@@ -6,7 +6,7 @@ import { supabase } from "../../lib/supabase";
 import { getOrCreateUser } from "../../lib/db";
 import ReactMarkdown from "react-markdown";
 
-export default function Rewrite() {
+export default function Fixit() {
   const [receivedMessage, setReceivedMessage] = useState("");
   const [message, setMessage] = useState("");
   const [receiverPattern, setReceiverPattern] = useState<"A" | "B" | "C">("C");
@@ -28,8 +28,8 @@ export default function Rewrite() {
   }, []);
 
   useEffect(() => {
-    const prev = parseInt(localStorage.getItem("rewrite_visit_count") || "0", 10);
-    localStorage.setItem("rewrite_visit_count", String(prev + 1));
+    const prev = parseInt(localStorage.getItem("fixit_visit_count") || "0", 10);
+    localStorage.setItem("fixit_visit_count", String(prev + 1));
   }, []);
 
   useEffect(() => {
@@ -62,7 +62,7 @@ export default function Rewrite() {
     setLoading(true);
     setResult("");
     try {
-      const response = await fetch("/api/rewrite", {
+      const response = await fetch("/api/fixit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message, receivedMessage, receiverPattern, senderPattern }),
@@ -74,12 +74,12 @@ export default function Rewrite() {
       if (userId) {
         const { data: userData } = await supabase
           .from("users")
-          .select("rewrite_count")
+          .select("fixit_count")
           .eq("id", userId)
           .single();
         await supabase
           .from("users")
-          .update({ rewrite_count: (userData?.rewrite_count || 0) + 1 })
+          .update({ fixit_count: (userData?.fixit_count || 0) + 1 })
           .eq("id", userId);
       }
     } catch (e) {

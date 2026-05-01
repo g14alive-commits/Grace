@@ -2,7 +2,7 @@ import { createServerClient } from "@supabase/ssr";
 import { createClient } from "@supabase/supabase-js";
 import { NextResponse, type NextRequest } from "next/server";
 
-const PROTECTED = ["/chat", "/profile", "/rewrite", "/actions"];
+const PROTECTED = ["/chat", "/profile", "/fixit", "/actions"];
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -63,5 +63,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/chat/:path*", "/profile/:path*", "/rewrite/:path*", "/actions/:path*"],
+  matcher: ["/chat/:path*", "/profile/:path*", "/fixit/:path*", "/actions/:path*"],
 };
