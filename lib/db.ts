@@ -69,7 +69,7 @@ export async function getActiveSession(userId: string) {
     .gte("started_at", oneDayAgo)
     .order("started_at", { ascending: false })
     .limit(1)
-    .single();
+    .maybeSingle();
 
   return data;
 }
