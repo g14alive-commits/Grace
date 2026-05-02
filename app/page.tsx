@@ -227,12 +227,13 @@ export default function Home() {
 
         .lp-logo {
           font-family: 'Cormorant Garamond', serif;
-          font-size: 44px; font-weight: 300; letter-spacing: 0.02em;
+          font-size: 20px; font-weight: 400; letter-spacing: 0.12em;
           background: linear-gradient(145deg, #b070ff 0%, #7040e0 50%, #4020c0 100%);
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
           background-clip: text;
           display: inline-block;
+          position: relative; top: -6px;
         }
 
         .lp-headline {
