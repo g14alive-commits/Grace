@@ -190,21 +190,21 @@ export default function Fixit() {
         .orb1 {
           width: 392px; height: 392px;
           bottom: -80px; right: -60px;
-          background: radial-gradient(circle, rgba(150,80,220,0.45) 0%, transparent 70%);
+          background: radial-gradient(circle, rgba(150,80,220,0.09) 0%, transparent 70%);
           animation: drift1 20s ease-in-out infinite;
         }
 
         .orb2 {
           width: 308px; height: 308px;
           bottom: 20%; left: -80px;
-          background: radial-gradient(circle, rgba(80,100,240,0.38) 0%, transparent 70%);
+          background: radial-gradient(circle, rgba(80,100,240,0.08) 0%, transparent 70%);
           animation: drift2 25s ease-in-out infinite;
         }
 
         .orb3 {
           width: 224px; height: 224px;
           top: 60%; right: 15%;
-          background: radial-gradient(circle, rgba(200,80,160,0.28) 0%, transparent 70%);
+          background: radial-gradient(circle, rgba(200,80,160,0.06) 0%, transparent 70%);
           animation: drift3 18s ease-in-out infinite;
         }
 
@@ -697,7 +697,23 @@ export default function Fixit() {
         <div className="header">
           <div className="header-left">
 <div className="header-name">
-  <span style={{ color: "rgba(150,100,255,1.0)" }}>Fix</span> the <span style={{ color: "rgba(150,100,255,1.0)" }}>MESS</span>age!
+  <svg width="160" height="32" viewBox="0 0 160 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+    {/* Message envelope - left half */}
+    <path d="M4 8 L4 24 L28 24 L28 8 Z" stroke="rgba(180,140,255,0.75)" strokeWidth="1.5" fill="rgba(150,100,255,0.08)" strokeLinejoin="round"/>
+    <path d="M4 8 L16 17 L28 8" stroke="rgba(180,140,255,0.75)" strokeWidth="1.5" fill="none" strokeLinejoin="round"/>
+    {/* Crack/split line through message */}
+    <path d="M16 6 L13 13 L17 16 L14 26" stroke="rgba(255,180,80,0.90)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+    {/* Axe head */}
+    <path d="M19 2 L26 6 L22 12 L17 10 Z" fill="rgba(200,160,255,0.85)" stroke="rgba(180,140,255,0.9)" strokeWidth="0.75" strokeLinejoin="round"/>
+    {/* Axe blade edge */}
+    <path d="M22 12 L26 6" stroke="rgba(255,255,255,0.5)" strokeWidth="0.75" strokeLinecap="round"/>
+    {/* Axe handle */}
+    <path d="M19 2 L11 18" stroke="rgba(180,140,200,0.60)" strokeWidth="1.5" strokeLinecap="round"/>
+    {/* Title text */}
+    <text x="34" y="20" fontFamily="Cormorant Garamond, serif" fontSize="16" fontWeight="400" fill="rgba(240,235,255,0.95)">
+      Fix the <tspan fill="rgba(170,120,255,1.0)" fontWeight="600">MESS</tspan>age!
+    </text>
+  </svg>
   <button className="info-btn" onClick={() => setShowInfo(true)}>i</button>
 </div>
             <div className="header-sub">Fix your message before you send it</div>
@@ -881,10 +897,19 @@ export default function Fixit() {
             <span className="tab-label">Grace</span>
           </div>
           <div className="tab active">
-            <svg className="tab-icon" viewBox="0 0 24 24" fill="none" stroke="rgba(200,180,255,0.90)" strokeWidth="1.5">
-              <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+            <svg className="tab-icon" viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round">
+              {/* Message bubble left half */}
+              <path d="M2 5a2 2 0 012-2h7v2H4v10l3-2h4v-3" stroke="rgba(200,180,255,0.90)" strokeWidth="1.4"/>
+              {/* Message bubble right half (cracked) */}
+              <path d="M13 13h3l3 2V8a2 2 0 00-2-2h-5" stroke="rgba(200,180,255,0.90)" strokeWidth="1.4"/>
+              {/* Crack/split line */}
+              <path d="M11 3l-1 4 2 1-2 5" stroke="rgba(200,180,255,0.90)" strokeWidth="1.2" strokeDasharray="1.5 0.8"/>
+              {/* Axe handle */}
+              <line x1="17" y1="11" x2="21.5" y2="15.5" stroke="rgba(200,180,255,0.90)" strokeWidth="1.5"/>
+              {/* Axe head */}
+              <path d="M19 9.5 Q22 9 21.5 12 L19 11 Z" fill="rgba(200,180,255,0.70)" stroke="rgba(200,180,255,0.90)" strokeWidth="1"/>
             </svg>
-            <span className="tab-label">Fix it</span>
+            <span className="tab-label">Fix It!</span>
           </div>
           <div className="tab" onClick={() => router.push("/profile")}>
             <svg className="tab-icon" viewBox="0 0 24 24" fill="none" stroke="rgba(200,180,255,0.90)" strokeWidth="1.5">
