@@ -162,11 +162,20 @@ export default function AdminPage() {
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
         html, body { min-height: 100%; background: #0d0e1a; -webkit-font-smoothing: antialiased; }
 
-        .adm-page { min-height: 100vh; background: #0d0e1a; font-family: 'DM Sans', sans-serif; color: rgba(245,238,255,0.95); }
+        .adm-page { min-height: 100vh; background: #0d0e1a; font-family: 'DM Sans', sans-serif; color: rgba(245,238,255,0.95); position: relative; }
+
+        .bg-orbs { position: fixed; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none; z-index: 0; }
+        .orb { position: absolute; border-radius: 50%; }
+        .orb1 { width: 392px; height: 392px; bottom: -80px; right: -80px; background: radial-gradient(circle, rgba(150,80,220,0.45) 0%, transparent 70%); animation: drift1 20s ease-in-out infinite; }
+        .orb2 { width: 308px; height: 308px; bottom: 25%; left: -80px; background: radial-gradient(circle, rgba(80,100,240,0.38) 0%, transparent 70%); animation: drift2 26s ease-in-out infinite; }
+        .orb3 { width: 224px; height: 224px; bottom: 10%; right: 20%; background: radial-gradient(circle, rgba(200,80,160,0.28) 0%, transparent 70%); animation: drift3 18s ease-in-out infinite; }
+        @keyframes drift3 { 0%, 100% { transform: translate(0,0); } 50% { transform: translate(14px,-18px); } }
+        @keyframes drift1 { 0%, 100% { transform: translate(0,0); } 50% { transform: translate(-18px,28px); } }
+        @keyframes drift2 { 0%, 100% { transform: translate(0,0); } 50% { transform: translate(24px,-20px); } }
 
         /* Gate */
-        .gate { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 40px 24px; }
-        .gate-title { font-family: 'Cormorant Garamond', serif; font-size: 32px; font-weight: 300; color: rgba(245,238,255,0.90); margin-bottom: 6px; letter-spacing: 0.02em; }
+        .gate { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 40px 24px; position: relative; z-index: 1; }
+        .gate-title { font-family: 'Cormorant Garamond', serif; font-size: 32px; font-weight: 300; background: linear-gradient(145deg, #b070ff 0%, #7040e0 50%, #4020c0 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 6px; letter-spacing: 0.02em; display: inline-block; }
         .gate-sub { font-size: 13px; color: rgba(160,150,200,0.50); margin-bottom: 36px; letter-spacing: 0.03em; }
         .gate-form { width: 100%; max-width: 340px; display: flex; flex-direction: column; gap: 12px; }
         .input-wrap { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.10); border-radius: 14px; padding: 14px 18px; transition: border-color 0.2s; }
@@ -174,12 +183,12 @@ export default function AdminPage() {
         .input-wrap.err { border-color: rgba(240,100,100,0.50); }
         input { width: 100%; background: transparent; border: none; outline: none; font-family: 'DM Sans', sans-serif; font-size: 16px; font-weight: 300; color: rgba(240,235,255,0.95); }
         input::placeholder { color: rgba(140,130,180,0.55); }
-        .btn { width: 100%; padding: 15px; border-radius: 14px; background: linear-gradient(135deg, rgba(160,120,240,0.25) 0%, rgba(120,80,200,0.20) 100%); border: 1px solid rgba(160,120,240,0.30); color: rgba(210,190,255,0.95); font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 400; cursor: pointer; transition: all 0.2s; letter-spacing: 0.02em; }
+        .btn { width: 100%; padding: 15px; border-radius: 14px; background: linear-gradient(145deg, #b070ff 0%, #7040e0 50%, #4020c0 100%); border: none; color: white; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 400; cursor: pointer; transition: opacity 0.2s, transform 0.15s; letter-spacing: 0.02em; box-shadow: 0 0 16px rgba(160,120,240,0.25); }
         .btn:active { transform: scale(0.98); }
         .error-msg { font-size: 13px; color: rgba(255,130,130,0.80); text-align: center; margin-top: -4px; }
 
         /* Inner */
-        .adm-inner { max-width: 720px; margin: 0 auto; padding: 28px 20px 80px; }
+        .adm-inner { max-width: 720px; margin: 0 auto; padding: 28px 20px 80px; position: relative; z-index: 1; }
 
         /* Header */
         .adm-header { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; }
@@ -268,6 +277,11 @@ export default function AdminPage() {
       `}</style>
 
       <div className="adm-page">
+        <div className="bg-orbs">
+          <div className="orb orb1" />
+          <div className="orb orb2" />
+          <div className="orb orb3" />
+        </div>
         {!authed ? (
           <div className="gate">
             <div className="gate-title">Admin</div>

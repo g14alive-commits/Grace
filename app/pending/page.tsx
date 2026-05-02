@@ -41,21 +41,27 @@ export default function PendingPage() {
         .orb {
           position: absolute;
           border-radius: 50%;
-          filter: blur(80px);
         }
 
         .orb1 {
-          width: 380px; height: 380px;
-          top: -100px; left: -60px;
-          background: radial-gradient(circle, rgba(120,80,200,0.22) 0%, transparent 70%);
+          width: 392px; height: 392px;
+          bottom: -100px; left: -80px;
+          background: radial-gradient(circle, rgba(150,80,220,0.45) 0%, transparent 70%);
           animation: drift1 22s ease-in-out infinite;
         }
 
         .orb2 {
-          width: 300px; height: 300px;
-          bottom: 10%; right: -80px;
-          background: radial-gradient(circle, rgba(80,100,220,0.18) 0%, transparent 70%);
+          width: 308px; height: 308px;
+          bottom: 15%; right: -60px;
+          background: radial-gradient(circle, rgba(80,100,240,0.38) 0%, transparent 70%);
           animation: drift2 26s ease-in-out infinite;
+        }
+
+        .orb3 {
+          width: 224px; height: 224px;
+          top: 55%; left: 20%;
+          background: radial-gradient(circle, rgba(200,80,160,0.28) 0%, transparent 70%);
+          animation: drift3 18s ease-in-out infinite;
         }
 
         @keyframes drift1 {
@@ -66,6 +72,11 @@ export default function PendingPage() {
         @keyframes drift2 {
           0%, 100% { transform: translate(0, 0); }
           50% { transform: translate(-18px, -22px); }
+        }
+
+        @keyframes drift3 {
+          0%, 100% { transform: translate(0, 0); }
+          50% { transform: translate(-18px, -14px); }
         }
 
         .content {
@@ -95,7 +106,7 @@ export default function PendingPage() {
           font-family: 'Cormorant Garamond', serif;
           font-size: 30px;
           font-weight: 400;
-          color: rgba(240,235,255,0.92);
+          color: rgba(245,238,255,0.97);
           margin-bottom: 18px;
           letter-spacing: 0.01em;
         }
@@ -104,7 +115,7 @@ export default function PendingPage() {
           font-size: 15px;
           font-weight: 300;
           line-height: 1.70;
-          color: rgba(160,150,200,0.60);
+          color: rgba(200,185,230,0.80);
           max-width: 280px;
           text-align: center;
           white-space: normal;
@@ -113,9 +124,10 @@ export default function PendingPage() {
       `}</style>
 
       <div className="page">
-        <div className="bg-orbs">
+        <div className="bg-orbs" style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, pointerEvents: "none", zIndex: 0 }}>
           <div className="orb orb1" />
           <div className="orb orb2" />
+          <div className="orb orb3" />
         </div>
 
         <div className="content">

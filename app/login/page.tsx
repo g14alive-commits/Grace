@@ -55,14 +55,14 @@ export default function Login() {
         html, body {
           height: 100%;
           overflow: hidden;
-          background: #110f1e;
+          background: #0d0e1a;
           -webkit-font-smoothing: antialiased;
         }
 
         .page {
           position: fixed;
           top: 0; left: 0; right: 0; bottom: 0;
-          background: #110f1e;
+          background: #0d0e1a;
           display: flex;
           flex-direction: column;
           align-items: center;
@@ -81,21 +81,32 @@ export default function Login() {
         .orb {
           position: absolute;
           border-radius: 50%;
-          filter: blur(80px);
         }
 
         .orb1 {
-          width: 380px; height: 380px;
-          top: -100px; left: -60px;
-          background: radial-gradient(circle, rgba(180,100,120,0.16) 0%, transparent 70%);
+          width: 392px; height: 392px;
+          bottom: -80px; right: -60px;
+          background: radial-gradient(circle, rgba(150,80,220,0.45) 0%, transparent 70%);
           animation: drift1 22s ease-in-out infinite;
         }
 
         .orb2 {
-          width: 300px; height: 300px;
-          bottom: 10%; right: -80px;
-          background: radial-gradient(circle, rgba(120,80,200,0.14) 0%, transparent 70%);
+          width: 308px; height: 308px;
+          bottom: 20%; left: -80px;
+          background: radial-gradient(circle, rgba(80,100,240,0.38) 0%, transparent 70%);
           animation: drift2 26s ease-in-out infinite;
+        }
+
+        .orb3 {
+          width: 224px; height: 224px;
+          top: 60%; right: 15%;
+          background: radial-gradient(circle, rgba(200,80,160,0.28) 0%, transparent 70%);
+          animation: drift3 18s ease-in-out infinite;
+        }
+
+        @keyframes drift3 {
+          0%, 100% { transform: translate(0,0); }
+          50% { transform: translate(-14px, 18px); }
         }
 
         @keyframes drift1 {
@@ -123,15 +134,19 @@ export default function Login() {
           font-family: 'Cormorant Garamond', serif;
           font-size: 42px;
           font-weight: 300;
-          color: rgba(245,238,255,0.95);
+          background: linear-gradient(145deg, #b070ff 0%, #7040e0 50%, #4020c0 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
           letter-spacing: 0.02em;
           margin-bottom: 10px;
+          display: inline-block;
         }
 
         .tagline {
           font-size: 14px;
           font-weight: 300;
-          color: rgba(180,170,220,0.55);
+          color: rgba(200,185,230,0.75);
           margin-bottom: 52px;
           letter-spacing: 0.03em;
         }
@@ -156,7 +171,7 @@ export default function Login() {
         .sent-body {
           font-size: 15px;
           font-weight: 300;
-          color: rgba(180,170,220,0.65);
+          color: rgba(200,185,230,0.80);
           line-height: 1.65;
         }
 
@@ -202,20 +217,22 @@ export default function Login() {
           width: 100%;
           padding: 16px;
           border-radius: 14px;
-          background: linear-gradient(135deg, rgba(160,120,240,0.25) 0%, rgba(120,80,200,0.20) 100%);
-          border: 1px solid rgba(160,120,240,0.30);
-          color: rgba(210,190,255,0.95);
+          background: linear-gradient(145deg, #b070ff 0%, #7040e0 50%, #4020c0 100%);
+          border: none;
+          color: white;
           font-family: 'DM Sans', sans-serif;
           font-size: 15px;
           font-weight: 400;
           cursor: pointer;
-          transition: all 0.2s;
+          transition: opacity 0.2s, transform 0.15s;
           letter-spacing: 0.02em;
+          box-shadow: 0 0 16px rgba(160,120,240,0.25);
         }
 
         .login-btn:disabled {
           opacity: 0.35;
           cursor: default;
+          box-shadow: none;
         }
 
         .login-btn:not(:disabled):active {
@@ -236,6 +253,7 @@ export default function Login() {
         <div className="bg-orbs">
           <div className="orb orb1" />
           <div className="orb orb2" />
+          <div className="orb orb3" />
         </div>
 
         <div className="content">
