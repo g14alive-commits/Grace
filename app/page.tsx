@@ -1,10 +1,10 @@
 "use client";
 
 import { supabase } from "../lib/supabase";
-import { useState, useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
-function RippleCanvas() {
+function RippleCanvas({ orbs }: { orbs: { x: number; y: number; r: number; c: string }[] }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const ripplesRef = useRef<{ x: number; y: number; r: number; alpha: number; speed: number }[]>([]);
   const animRef = useRef<number>(0);
@@ -27,11 +27,25 @@ function RippleCanvas() {
       { x: 0.65, y: 0.45 },
       { x: 0.5, y: 0.70 },
     ];
-
     let lastSpawn = 0;
     let seedIndex = 0;
 
-    const spawn = (time: number) => {
+    const draw = (time: number) => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      orbs.forEach(o => {
+        const grd = ctx.createRadialGradient(
+          o.x * canvas.width, o.y * canvas.height, 0,
+          o.x * canvas.width, o.y * canvas.height, o.r
+        );
+        grd.addColorStop(0, o.c);
+        grd.addColorStop(1, "transparent");
+        ctx.beginPath();
+        ctx.arc(o.x * canvas.width, o.y * canvas.height, o.r, 0, Math.PI * 2);
+        ctx.fillStyle = grd;
+        ctx.fill();
+      });
+
       if (time - lastSpawn > 1800) {
         const s = seeds[seedIndex % seeds.length];
         ripplesRef.current.push({
@@ -44,11 +58,7 @@ function RippleCanvas() {
         seedIndex++;
         lastSpawn = time;
       }
-    };
 
-    const draw = (time: number) => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      spawn(time);
       ripplesRef.current = ripplesRef.current.filter(rip => rip.alpha > 0.005);
       ripplesRef.current.forEach(rip => {
         ctx.beginPath();
@@ -64,6 +74,7 @@ function RippleCanvas() {
         rip.r += rip.speed * 1.4;
         rip.alpha *= 0.985;
       });
+
       animRef.current = requestAnimationFrame(draw);
     };
 
@@ -72,7 +83,7 @@ function RippleCanvas() {
       cancelAnimationFrame(animRef.current);
       window.removeEventListener("resize", resize);
     };
-  }, []);
+  }, [orbs]);
 
   return (
     <canvas
@@ -81,109 +92,86 @@ function RippleCanvas() {
         position: "absolute",
         top: 0, left: 0, right: 0, bottom: 0,
         width: "100%", height: "100%",
-        opacity: 0.6,
         pointerEvents: "none",
       }}
     />
   );
 }
 
-const CARDS = [
-  "You keep replaying the same fight.\nDifferent day, same spiral.\n\nYou know what you should do.\nYet you can't make yourself do it.",
+const ORB_SETS = [
+  [
+    { x: 0.10, y: 0.05, r: 280, c: "rgba(150,80,220,0.45)" },
+    { x: 0.88, y: 0.82, r: 220, c: "rgba(80,100,240,0.38)" },
+    { x: 0.22, y: 0.55, r: 160, c: "rgba(200,80,160,0.28)" },
+  ],
+  [
+    { x: 0.84, y: 0.14, r: 260, c: "rgba(80,20,180,0.40)" },
+    { x: 0.12, y: 0.84, r: 210, c: "rgba(120,50,210,0.30)" },
+  ],
+  [
+    { x: 0.50, y: 0.50, r: 320, c: "rgba(100,40,200,0.30)" },
+    { x: 0.10, y: 0.10, r: 170, c: "rgba(140,60,240,0.22)" },
+    { x: 0.90, y: 0.90, r: 170, c: "rgba(80,30,180,0.20)" },
+  ],
 ];
+
+const TOTAL = 3;
+
 export default function Home() {
-  const [cardIndex, setCardIndex] = useState(0);
-  const [flipping, setFlipping] = useState(false);
-  const [showFinal, setShowFinal] = useState(false);
-  const [bodyVisible, setBodyVisible] = useState(false);
-  const [taglineVisible, setTaglineVisible] = useState(false);
-  const [btnVisible, setBtnVisible] = useState(false);
-  const [vh, setVh] = useState(0);
+  const [current, setCurrent] = useState(0);
   const [redirecting, setRedirecting] = useState(true);
+  const [animKey, setAnimKey] = useState(0);
+  const [dir, setDir] = useState(1);
   const router = useRouter();
+  const touchStartX = useRef<number | null>(null);
+  const mouseStartX = useRef<number | null>(null);
 
   useEffect(() => {
-    supabase.auth.getSession().then(async ({ data }) => {
+    supabase.auth.getSession().then(({ data }) => {
       if (!data.session) { setRedirecting(false); return; }
-      const userId = data.session.user.id;
       router.replace("/profile");
     });
   }, []);
 
-  const touchStartX = useRef<number | null>(null);
-const mouseStartX = useRef<number | null>(null);
-
-const handleTouchStart = (e: React.TouchEvent) => {
-  touchStartX.current = e.touches[0].clientX;
-};
-
-const handleTouchEnd = (e: React.TouchEvent) => {
-  if (touchStartX.current === null) return;
-  const diff = touchStartX.current - e.changedTouches[0].clientX;
-  if (Math.abs(diff) > 50) {
-    if (diff > 0) handleNext();
-    else if (showFinal) {
-      setShowFinal(false);
-      setBodyVisible(false);
-      setTaglineVisible(false);
-      setBtnVisible(false);
-      setCardIndex(0);
-    }
-  }
-  touchStartX.current = null;
-};
-
-const onMouseDown = (e: React.MouseEvent) => {
-  mouseStartX.current = e.clientX;
-};
-
-const onMouseUp = (e: React.MouseEvent) => {
-  if (mouseStartX.current === null) return;
-  const diff = mouseStartX.current - e.clientX;
-  if (Math.abs(diff) > 50) {
-    if (diff > 0) handleNext();
-    else if (showFinal) {
-      setShowFinal(false);
-      setBodyVisible(false);
-      setTaglineVisible(false);
-      setBtnVisible(false);
-      setCardIndex(0);
-    }
-  }
-  mouseStartX.current = null;
-};
-
-  const handleNext = () => {
-    if (flipping) return;
-
-    if (cardIndex < CARDS.length - 1) {
-      setFlipping(true);
-      setTimeout(() => {
-        setCardIndex(cardIndex + 1);
-        setFlipping(false);
-      }, 400);
-    } else {
-      setFlipping(true);
-      setTimeout(() => {
-        setShowFinal(true);
-        setFlipping(false);
-        setTimeout(() => setBodyVisible(true), 100);
-        setTimeout(() => setTaglineVisible(true), 400);
-        setTimeout(() => setBtnVisible(true), 700);
-      }, 400);
-    }
+  const goTo = (idx: number, direction: number) => {
+    if (idx < 0 || idx >= TOTAL) return;
+    setDir(direction);
+    setAnimKey(k => k + 1);
+    setCurrent(idx);
   };
 
-  const appHeight = vh > 0 ? `${vh}px` : "100vh";
+  const goNext = () => goTo(current + 1, 1);
+  const goPrev = () => goTo(current - 1, -1);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX.current === null) return;
+    const diff = touchStartX.current - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 50) { diff > 0 ? goNext() : goPrev(); }
+    touchStartX.current = null;
+  };
+  const onMouseDown = (e: React.MouseEvent) => { mouseStartX.current = e.clientX; };
+  const onMouseUp = (e: React.MouseEvent) => {
+    if (mouseStartX.current === null) return;
+    const diff = mouseStartX.current - e.clientX;
+    if (Math.abs(diff) > 50) { diff > 0 ? goNext() : goPrev(); }
+    mouseStartX.current = null;
+  };
 
   if (redirecting) {
-    return <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "#0d0e1a" }} />;
+    return <div style={{ position: "fixed", inset: 0, background: "#0d0e1a" }} />;
   }
+
+  const slideAnim = dir >= 0
+    ? "lp-slide-in 0.45s cubic-bezier(0.22,1,0.36,1) both"
+    : "lp-slide-back 0.45s cubic-bezier(0.22,1,0.36,1) both";
 
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=DM+Sans:opsz,wght@9..40,300;9..40,400&display=swap');
 
         *, *::before, *::after {
           box-sizing: border-box; margin: 0; padding: 0;
@@ -196,284 +184,310 @@ const onMouseUp = (e: React.MouseEvent) => {
           -webkit-font-smoothing: antialiased;
         }
 
-        .home {
-          position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+        .lp-home {
+          position: fixed; inset: 0;
           background: #0d0e1a;
           color: rgba(245,238,255,0.95);
-          font-family: 'Cormorant Garamond', serif;
           overflow: hidden;
           display: flex; flex-direction: column;
           align-items: center; justify-content: center;
           user-select: none;
         }
 
-        .bg-orbs {
-          position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-          pointer-events: none; z-index: 0;
-        }
-
-        .orb {
-          position: absolute; border-radius: 50%; filter: blur(80px);
-        }
-
-        .orb1 {
-  width: 500px; height: 500px; top: -140px; left: -80px;
-  background: radial-gradient(circle, rgba(150,80,220,0.45) 0%, transparent 70%);
-}
-
-.orb2 {
-  width: 400px; height: 400px; bottom: 5%; right: -100px;
-  background: radial-gradient(circle, rgba(80,100,240,0.38) 0%, transparent 70%);
-}
-
-.orb3 {
-  width: 300px; height: 300px; top: 35%; left: 10%;
-  background: radial-gradient(circle, rgba(200,80,160,0.30) 0%, transparent 70%);
-}
-
-        @keyframes drift1 {
-          0%,100% { transform: translate(0,0) scale(1); }
-          33% { transform: translate(-20px,30px) scale(1.05); }
-          66% { transform: translate(15px,-20px) scale(0.97); }
-        }
-
-        @keyframes drift2 {
-          0%,100% { transform: translate(0,0) scale(1); }
-          40% { transform: translate(30px,-25px) scale(1.08); }
-          70% { transform: translate(-10px,20px) scale(0.95); }
-        }
-
-        @keyframes drift3 {
-          0%,100% { transform: translate(0,0) scale(1); }
-          50% { transform: translate(-25px,-30px) scale(1.1); }
-        }
-
-        .ripple-layer {
-          position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-          z-index: 0; pointer-events: none;
-        }
-
-.brand {
-  position: absolute; top: 32px; left: 0; right: 0;
-  text-align: center;
-  width: 100%;
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 20px; font-weight: 400; letter-spacing: 0.12em;
-  color: rgba(150,100,255,0.80);
-  z-index: 2;
-}
-        .centre {
-  position: relative; z-index: 2;
-  width: 100%; max-width: 480px;
-  padding: 0 36px;
-  display: flex; flex-direction: column;
-  align-items: center;
-  text-align: center;
-}
-
-        .card-scene {
-          width: 100%;
-          perspective: 900px;
-          cursor: pointer;
-        }
-
-        .card-inner {
-          position: relative;
-          width: 100%;
-          transform-style: preserve-3d;
-          transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .card-inner.flipping {
-          transform: rotateY(-90deg);
-        }
-
-        .card-face {
-          width: 100%;
-          backface-visibility: hidden;
-        }
-
-        .card-text {
-          font-family: 'Cormorant Garamond', serif;
-          font-size: 32px;
-          font-weight: 300;
-          line-height: 1.22;
-          color: rgba(245,238,255,0.96);
-          letter-spacing: -0.01em;
-          white-space: pre-line;
-          margin-bottom: 24px;
+        .lp-card {
+          position: absolute; inset: 0;
+          display: flex; flex-direction: column;
+          align-items: center; justify-content: center;
+          padding: 48px 40px 72px;
           text-align: center;
         }
 
-        .tap-hint {
-          font-family: 'DM Sans', sans-serif;
-          font-size: 11px;
-          font-weight: 300;
-          letter-spacing: 0.08em;
-          color: rgba(160,140,220,0.40);
-          margin-top: 8px;
-          text-align: center;
+        @keyframes lp-fadeIn {
+          from { opacity: 0; transform: translateY(16px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes lp-slide-in {
+          from { opacity: 0; transform: translateX(48px); }
+          to   { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes lp-slide-back {
+          from { opacity: 0; transform: translateX(-48px); }
+          to   { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes lp-pulse {
+          0%, 100% { opacity: 0.5; }
+          50% { opacity: 1; }
         }
 
-        .final-wrap {
-          width: 100%;
-        }
+        .lp-a1 { animation: lp-fadeIn 0.5s 0.05s both; }
+        .lp-a2 { animation: lp-fadeIn 0.6s 0.25s both; }
+        .lp-a3 { animation: lp-fadeIn 0.55s 0.50s both; }
+        .lp-a4 { animation: lp-fadeIn 0.5s 0.75s both; }
+        .lp-a5 { animation: lp-fadeIn 0.5s 1.00s both; }
 
-        .final-body {
+        .lp-logo {
           font-family: 'Cormorant Garamond', serif;
-          font-size: 20px;
+          font-size: 20px; font-weight: 400; letter-spacing: 0.12em;
+          color: rgba(150,100,255,0.80);
+        }
+
+        .lp-headline {
+          font-family: 'Cormorant Garamond', serif;
           font-weight: 300;
+          font-size: clamp(34px, 8vw, 60px);
+          line-height: 1.08; letter-spacing: -0.02em;
+          color: rgba(245,238,255,0.97);
+        }
+
+        .lp-headline em {
           font-style: italic;
-          line-height: 1.70;
-          color: rgba(200,185,230,0.75);
-          white-space: pre-line;
-          margin-bottom: 32px;
-          opacity: 0;
-          transform: translateY(12px);
-          transition: opacity 0.6s ease, transform 0.6s ease;
+          color: rgba(180,140,255,0.95);
         }
 
-        .final-body.visible {
-          opacity: 1; transform: translateY(0);
-        }
-
-        .final-tagline {
+        .lp-body {
           font-family: 'Cormorant Garamond', serif;
-          font-size: 30px;
-          font-weight: 400;
-          line-height: 1.2;
-          color: rgba(230,215,255,1.0);
-          margin-bottom: 44px;
-          opacity: 0;
-          transform: translateY(12px);
-          transition: opacity 0.6s ease 0.1s, transform 0.6s ease 0.1s;
+          font-size: clamp(16px, 3.8vw, 20px);
+          font-weight: 300; font-style: italic;
+          line-height: 1.65;
+          color: rgba(200,185,230,0.75);
         }
 
-        .final-tagline.visible {
-          opacity: 1; transform: translateY(0);
+        .lp-prose {
+          font-family: 'Cormorant Garamond', serif;
+          font-weight: 300;
+          font-size: clamp(22px, 5.5vw, 38px);
+          line-height: 1.28; letter-spacing: -0.01em;
+          color: rgba(245,238,255,0.96);
+          text-align: center;
         }
 
-        .cta-btn {
-          display: inline-flex; align-items: center; gap: 12px;
+        .lp-caption {
+          font-family: 'Cormorant Garamond', serif;
+          font-size: 19px; font-weight: 300; font-style: italic;
+          line-height: 1.75;
+          color: rgba(200,185,230,0.75);
+          text-align: center;
+        }
+
+        .lp-attune-inline {
+          font-family: 'Cormorant Garamond', serif;
+          font-style: italic; font-weight: 600;
+          color: rgba(150,100,255,0.80);
+        }
+
+        .lp-btn-primary {
+          display: inline-flex; align-items: center; gap: 10px;
+          background: linear-gradient(135deg, rgba(155,111,255,0.88), rgba(100,36,200,0.92));
+          border: none; border-radius: 50px;
+          padding: 0 32px; min-height: 48px;
+          font-family: 'DM Sans', sans-serif;
+          font-size: 15px; font-weight: 400;
+          color: #fff; cursor: pointer;
+          transition: opacity 0.2s;
+        }
+        .lp-btn-primary:active { opacity: 0.85; transform: scale(0.98); }
+
+        .lp-btn-ghost {
+          display: inline-flex; align-items: center; gap: 8px;
+          background: rgba(150,100,255,0.10);
+          border: 1px solid rgba(150,100,255,0.38);
+          border-radius: 50px; padding: 0 26px; min-height: 44px;
+          font-family: 'DM Sans', sans-serif;
+          font-size: 14px; font-weight: 400;
+          color: rgba(175,140,255,0.9); cursor: pointer;
+          transition: background 0.2s;
+        }
+        .lp-btn-ghost:active { background: rgba(150,100,255,0.20); }
+
+        .lp-btn-cta {
+          display: inline-flex; align-items: center; justify-content: center; gap: 12px;
+          min-height: 52px; width: 100%; max-width: 260px;
           background: rgba(150,100,255,0.15);
           border: 1px solid rgba(150,100,255,0.40);
           border-radius: 50px;
-          padding: 16px 32px;
           font-family: 'DM Sans', sans-serif;
           font-size: 15px; font-weight: 400;
-          color: rgba(210,190,255,0.95);
-          cursor: pointer;
+          color: rgba(210,190,255,0.95); cursor: pointer;
           letter-spacing: 0.02em;
-          opacity: 0;
-          transform: translateY(12px);
-          transition: opacity 0.6s ease 0.2s, transform 0.6s ease 0.2s, background 0.2s;
+          transition: background 0.2s, transform 0.15s;
         }
+        .lp-btn-cta:active { background: rgba(150,100,255,0.28); transform: scale(0.98); }
 
-        .cta-btn.visible {
-          opacity: 1; transform: translateY(0);
-        }
-
-        .cta-btn:active {
-          background: rgba(150,100,255,0.28);
-          transform: scale(0.98);
-        }
-
-        .dots {
+        .lp-dots {
           position: absolute; bottom: 40px; left: 50%;
           transform: translateX(-50%);
           display: flex; gap: 7px; align-items: center;
           z-index: 2;
         }
 
-        .dot {
-          width: 5px; height: 5px; border-radius: 50%;
-          background: rgba(160,140,220,0.22);
+        .lp-dot {
+          height: 6px; border-radius: 3px;
+          border: none; cursor: pointer; padding: 0;
           transition: all 0.3s ease;
         }
 
-        .dot.active {
-          background: rgba(180,160,240,0.75);
-          width: 20px; border-radius: 3px;
+        .lp-chevron {
+          position: absolute; top: 50%; transform: translateY(-50%);
+          z-index: 10;
+          background: rgba(20,15,40,0.55);
+          border: 1px solid rgba(120,80,200,0.22);
+          border-radius: 50%; width: 36px; height: 36px;
+          cursor: pointer; color: rgba(180,160,240,0.6);
+          display: flex; align-items: center; justify-content: center;
         }
 
         @media (max-width: 480px) {
-          .card-text { font-size: 26px; }
-          .final-body { font-size: 17px; }
-          .final-tagline { font-size: 26px; }
-          .centre { padding: 0 28px;
+          .lp-card { padding: 40px 28px 72px; }
         }
       `}</style>
 
       <div
-  className="home"
-  style={{ height: appHeight }}
-  onTouchStart={handleTouchStart}
-  onTouchEnd={handleTouchEnd}
-  onMouseDown={onMouseDown}
-  onMouseUp={onMouseUp}
->
-        <div className="bg-orbs">
-          <div className="orb orb1" />
-          <div className="orb orb2" />
-          <div className="orb orb3" />
-        </div>
+        className="lp-home"
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+        onMouseDown={onMouseDown}
+        onMouseUp={onMouseUp}
+      >
+        {/* Background canvas — changes per card */}
+        <RippleCanvas key={`canvas-${current}`} orbs={ORB_SETS[current]} />
 
-        <div className="ripple-layer">
-          <RippleCanvas />
-        </div>
+        {/* Cards */}
+        <div key={`card-${current}-${animKey}`} style={{ position: "absolute", inset: 0, animation: slideAnim }}>
 
-        <div className="brand">attune</div>
-
-        <div className="centre">
-          {!showFinal ? (
-            <div className="card-scene" onClick={handleNext} style={{ cursor: "default" }}>
-              <div className={`card-inner${flipping ? " flipping" : ""}`}>
-                <div className="card-face">
-                  <div className="card-text">{CARDS[cardIndex]}</div>
-                  <div className="tap-hint">tap to continue →</div>
-                </div>
+          {/* ── CARD 1: BRAND ── */}
+          {current === 0 && (
+            <div className="lp-card">
+              <div className="lp-a1" style={{ marginBottom: 26 }}>
+                <span className="lp-logo">attune</span>
+              </div>
+              <div className="lp-a2" style={{ marginBottom: 28 }}>
+                <h1 className="lp-headline">
+                  Stop reacting.<br />
+                  <em>Start choosing.</em>
+                </h1>
+              </div>
+              <div className="lp-a3" style={{ marginBottom: 34 }}>
+                <p className="lp-body">
+                  Every dynamic starts with one person. You.<br />
+                  Attune is a relationship app that focuses on you.
+                </p>
+              </div>
+              <div className="lp-a4" style={{ marginBottom: 14 }}>
+                <button className="lp-btn-primary" onClick={goNext}>
+                  See how it works
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
+                </button>
+              </div>
+              <div className="lp-a5" style={{ display: "flex", alignItems: "center", gap: 7, justifyContent: "center" }}>
+                <div style={{ width: 5, height: 5, borderRadius: "50%", background: "rgba(150,100,255,0.5)", animation: "lp-pulse 2s infinite" }} />
+                <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, color: "rgba(160,140,220,0.40)", letterSpacing: "0.06em" }}>
+                  Beta · Free to try
+                </span>
               </div>
             </div>
-          ) : (
-            <div className="final-wrap">
-              <div className={`final-body${bodyVisible ? " visible" : ""}`}>
-                {"That gap between knowing and doing —\nthat's where it gets stuck.\nAnd that's exactly where it can be built stronger."}
-              </div>
-              <div className={`final-tagline${taglineVisible ? " visible" : ""}`}>
-                {"Don't react.\nGet it right."}
-              </div>
-              <button
-                className={`cta-btn${btnVisible ? " visible" : ""}`}
-                onClick={async () => {
-                  const { data } = await supabase.auth.getSession();
-                  if (data.session) {
-                    const { count } = await supabase
-                      .from("sessions")
-                      .select("*", { count: "exact", head: true })
-                      .eq("user_id", data.session.user.id);
-                    router.push((count ?? 0) > 0 ? "/profile" : "/chat");
-                  } else {
-                    router.push("/login");
-                  }
-                }}
-              >
+          )}
 
-                Talk to Grace
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                  <path d="M5 12h14M12 5l7 7-7 7"/>
-                </svg>
-              </button>
+          {/* ── CARD 2: PROBLEM ── */}
+          {current === 1 && (
+            <div className="lp-card">
+              <div className="lp-a1" style={{ marginBottom: 32, width: "100%" }}>
+                <p className="lp-prose">
+                  You keep replaying the same fight.<br />
+                  Different words. Same spiral.<br />
+                  <br />
+                  You know what you should do.<br />
+                  Yet you can&apos;t make yourself do it.
+                </p>
+              </div>
+              <div className="lp-a2" style={{ marginBottom: 28, width: "100%" }}>
+                <p className="lp-caption">
+                  That gap between knowing and doing —<br />
+                  that&apos;s exactly where{" "}
+                  <span className="lp-attune-inline">attune</span> works.
+                </p>
+              </div>
+              <div className="lp-a3">
+                <button className="lp-btn-ghost" onClick={goNext}>
+                  What can I do about it
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* ── CARD 3: CTA ── */}
+          {current === 2 && (
+            <div className="lp-card">
+              <div className="lp-a1" style={{ marginBottom: 24 }}>
+                <span className="lp-logo">attune</span>
+              </div>
+              <div className="lp-a2" style={{ marginBottom: 18 }}>
+                <h2 className="lp-headline">
+                  Don&apos;t react.<br />
+                  <em>Get it right.</em>
+                </h2>
+              </div>
+              <div className="lp-a3" style={{ marginBottom: 32 }}>
+                <p className="lp-body" style={{ fontSize: "clamp(15px, 3.5vw, 18px)" }}>
+                  Show up a tiny bit better.<br />
+                  It&apos;s more than enough than you imagine.
+                </p>
+              </div>
+              <div className="lp-a4" style={{ display: "flex", justifyContent: "center", marginBottom: 14 }}>
+                <button
+                  className="lp-btn-cta"
+                  onClick={() => router.push("/waitlist")}
+                >
+                  Get early access
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
+                </button>
+              </div>
+              <div className="lp-a5" style={{ display: "flex", gap: 20, justifyContent: "center" }}>
+                <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, color: "rgba(160,140,220,0.25)" }}>Privacy</span>
+                <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, color: "rgba(160,140,220,0.25)" }}>Contact</span>
+              </div>
             </div>
           )}
         </div>
 
-        {!showFinal && (
-          <div className="dots">
-            {[...Array(CARDS.length + 1)].map((_, i) => (
-              <div key={i} className={`dot${i === cardIndex ? " active" : ""}`} />
-            ))}
-          </div>
+        {/* Chevron prev */}
+        {current > 0 && (
+          <button className="lp-chevron" onClick={goPrev} style={{ left: 16 }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M15 18l-6-6 6-6" />
+            </svg>
+          </button>
         )}
+
+        {/* Chevron next */}
+        {current < TOTAL - 1 && (
+          <button className="lp-chevron" onClick={goNext} style={{ right: 16 }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M9 18l6-6-6-6" />
+            </svg>
+          </button>
+        )}
+
+        {/* Dot indicators */}
+        <div className="lp-dots">
+          {Array.from({ length: TOTAL }).map((_, i) => (
+            <button
+              key={i}
+              className="lp-dot"
+              onClick={() => goTo(i, i > current ? 1 : -1)}
+              style={{
+                width: i === current ? 20 : 5,
+                background: i === current ? "rgba(180,160,240,0.75)" : "rgba(160,140,220,0.22)",
+              }}
+            />
+          ))}
+        </div>
       </div>
     </>
   );
