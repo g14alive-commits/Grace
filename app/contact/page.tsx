@@ -52,11 +52,13 @@ export default function Contact() {
         }
 
         .bg-orbs { position: fixed; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none; z-index: 0; }
-        .orb { position: absolute; border-radius: 50%; filter: blur(70px); }
-        .orb1 { width: 340px; height: 340px; top: -80px; right: -60px; background: radial-gradient(circle, rgba(120,80,200,0.22) 0%, transparent 70%); animation: drift1 20s ease-in-out infinite; }
-        .orb2 { width: 280px; height: 280px; bottom: 20%; left: -80px; background: radial-gradient(circle, rgba(60,120,220,0.18) 0%, transparent 70%); animation: drift2 24s ease-in-out infinite; }
+        .orb { position: absolute; border-radius: 50%; }
+        .orb1 { width: 392px; height: 392px; bottom: -80px; left: -60px; background: radial-gradient(circle, rgba(150,80,220,0.45) 0%, transparent 70%); animation: drift1 20s ease-in-out infinite; }
+        .orb2 { width: 308px; height: 308px; bottom: 20%; right: -80px; background: radial-gradient(circle, rgba(80,100,240,0.38) 0%, transparent 70%); animation: drift2 24s ease-in-out infinite; }
+        .orb3 { width: 224px; height: 224px; top: 58%; left: 20%; background: radial-gradient(circle, rgba(200,80,160,0.28) 0%, transparent 70%); animation: drift3 17s ease-in-out infinite; }
         @keyframes drift1 { 0%,100% { transform: translate(0,0); } 50% { transform: translate(-15px,20px); } }
         @keyframes drift2 { 0%,100% { transform: translate(0,0); } 50% { transform: translate(20px,-15px); } }
+        @keyframes drift3 { 0%,100% { transform: translate(0,0); } 50% { transform: translate(14px,18px); } }
 
         .header {
           flex-shrink: 0; position: relative; z-index: 2;
@@ -124,16 +126,18 @@ export default function Contact() {
 
         .send-btn {
           width: 100%; padding: 16px; border-radius: 14px;
-          background: rgba(150,100,255,0.20);
-          border: 1px solid rgba(150,100,255,0.45);
-          color: rgba(220,200,255,1.0);
+          background: linear-gradient(145deg, #b070ff 0%, #7040e0 50%, #4020c0 100%);
+          border: none;
+          color: white;
           font-family: 'DM Sans', sans-serif;
           font-size: 15px; font-weight: 400;
-          cursor: pointer; transition: all 0.2s;
+          cursor: pointer; transition: opacity 0.2s, transform 0.15s;
+          letter-spacing: 0.02em;
+          box-shadow: 0 0 16px rgba(160,120,240,0.25);
           margin-top: 8px;
         }
 
-        .send-btn:disabled { opacity: 0.35; cursor: default; }
+        .send-btn:disabled { opacity: 0.35; cursor: default; box-shadow: none; }
         .send-btn:not(:disabled):active { transform: scale(0.98); }
 
         .sent-state {
@@ -163,6 +167,7 @@ export default function Contact() {
         <div className="bg-orbs">
           <div className="orb orb1" />
           <div className="orb orb2" />
+          <div className="orb orb3" />
         </div>
 
         <div className="header">
@@ -230,4 +235,4 @@ export default function Contact() {
       </div>
     </>
   );
-} 
+}
