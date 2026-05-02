@@ -127,14 +127,14 @@ setLoading(false);
   };
 
   const toggleAction = async (id: string) => {
-  const { data } = await supabase.auth.getSession();
-  if (!data.session) return;
-  const newCompleted = completed.includes(id)
-    ? completed.filter(c => c !== id)
-    : [...completed, id];
-  setCompleted(newCompleted);
-  await supabase.from("users").update({ completed_actions: newCompleted }).eq("id", data.session.user.id);
-};
+    const { data } = await supabase.auth.getSession();
+    if (!data.session) return;
+    const newCompleted = completed.includes(id)
+      ? completed.filter(c => c !== id)
+      : [...completed, id];
+    setCompleted(newCompleted);
+    await supabase.from("users").update({ completed_actions: newCompleted }).eq("id", data.session.user.id);
+  };
 
   const appHeight = vh > 0 ? `${vh}px` : "100vh";
 
@@ -182,22 +182,29 @@ setLoading(false);
           pointer-events: none; z-index: 0;
         }
 
-        .orb { position: absolute; border-radius: 50%; filter: blur(60px); }
+        .orb { position: absolute; border-radius: 50%; }
 
         .orb1 {
-          width: 300px; height: 300px; top: -60px; right: -40px;
-          background: radial-gradient(circle, rgba(120,80,200,0.18) 0%, transparent 70%);
+          width: 392px; height: 392px; bottom: -80px; right: -60px;
+          background: radial-gradient(circle, rgba(150,80,220,0.45) 0%, transparent 70%);
           animation: drift1 20s ease-in-out infinite;
         }
 
         .orb2 {
-          width: 250px; height: 250px; bottom: 15%; left: -60px;
-          background: radial-gradient(circle, rgba(60,120,220,0.14) 0%, transparent 70%);
+          width: 308px; height: 308px; bottom: 20%; left: -80px;
+          background: radial-gradient(circle, rgba(80,100,240,0.38) 0%, transparent 70%);
           animation: drift2 24s ease-in-out infinite;
+        }
+
+        .orb3 {
+          width: 224px; height: 224px; top: 55%; right: 15%;
+          background: radial-gradient(circle, rgba(200,80,160,0.28) 0%, transparent 70%);
+          animation: drift3 18s ease-in-out infinite;
         }
 
         @keyframes drift1 { 0%,100% { transform: translate(0,0); } 50% { transform: translate(-15px,20px); } }
         @keyframes drift2 { 0%,100% { transform: translate(0,0); } 50% { transform: translate(20px,-15px); } }
+        @keyframes drift3 { 0%,100% { transform: translate(0,0); } 50% { transform: translate(-14px,18px); } }
 
         .header {
           flex-shrink: 0; position: relative; z-index: 2;
@@ -208,15 +215,20 @@ setLoading(false);
           backdrop-filter: blur(20px);
         }
 
-        .header-name {
+        .header-logo {
           font-family: 'Cormorant Garamond', serif;
-          font-size: 21px; font-weight: 500; color: var(--text-primary);
+          font-size: 20px; font-weight: 400; letter-spacing: 0.12em;
+          background: linear-gradient(145deg, #b070ff 0%, #7040e0 50%, #4020c0 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+          display: inline-block;
         }
 
         .signout-btn {
-  font-size: 13px; font-weight: 400; color: rgba(150,100,255,0.70);
-  background: none; border: none; cursor: pointer; padding: 6px 0;
-}
+          font-size: 13px; font-weight: 400; color: rgba(150,100,255,0.70);
+          background: none; border: none; cursor: pointer; padding: 6px 0;
+        }
 
         .scroll {
           flex: 1; overflow-y: auto; padding: 20px 20px 24px;
@@ -226,10 +238,10 @@ setLoading(false);
         .scroll::-webkit-scrollbar { width: 0; }
 
         .greeting {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 26px; font-weight: 400;
-  color: rgba(240,230,255,1.0); margin-bottom: 4px; line-height: 1.2;
-}
+          font-family: 'Cormorant Garamond', serif;
+          font-size: 26px; font-weight: 400;
+          color: rgba(240,230,255,1.0); margin-bottom: 4px; line-height: 1.2;
+        }
 
         .greeting-sub {
           font-size: 14px; font-weight: 300;
@@ -282,10 +294,10 @@ setLoading(false);
         }
 
         .action-text {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 19px; font-weight: 400; font-style: italic;
-  line-height: 1.55; color: rgba(230,220,255,0.95);
-}
+          font-family: 'Cormorant Garamond', serif;
+          font-size: 19px; font-weight: 400; font-style: italic;
+          line-height: 1.55; color: rgba(230,220,255,0.95);
+        }
 
         .action-empty {
           font-size: 14px; font-weight: 300;
@@ -299,18 +311,10 @@ setLoading(false);
           justify-content: space-between;
         }
 
-        .stat-label-text {
-          font-size: 14px; font-weight: 300; color: var(--text-secondary);
-        }
+        .stat-label-text { font-size: 14px; font-weight: 300; color: var(--text-secondary); }
+        .stat-value { font-family: 'DM Sans', sans-serif; font-size: 24px; font-weight: 400; color: var(--text-primary); }
 
-        .stat-value {
-          font-family: 'DM Sans', sans-serif;
-          font-size: 24px; font-weight: 400; color: var(--text-primary);
-        }
-
-        .divider {
-          height: 1px; background: var(--divider); margin: 4px 0 24px;
-        }
+        .divider { height: 1px; background: var(--divider); margin: 4px 0 24px; }
 
         .section-title {
           font-size: 10px; font-weight: 500; letter-spacing: 0.10em;
@@ -318,9 +322,9 @@ setLoading(false);
         }
 
         .about-card {
-  background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.14);
-  border-radius: 18px; overflow: hidden; margin-bottom: 28px;
-}
+          background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.14);
+          border-radius: 18px; overflow: hidden; margin-bottom: 28px;
+        }
 
         .about-row {
           padding: 12px 16px;
@@ -331,40 +335,23 @@ setLoading(false);
 
         .about-row:last-child { border-bottom: none; }
         .about-row:active { background: rgba(150,100,255,0.08); }
-
-        .about-row-label {
-          font-size: 15px; font-weight: 300; color: var(--text-primary);
-        }
-
-        .about-row-arrow {
-  font-size: 12px; color: rgba(150,100,255,0.70);
-}
+        .about-row-label { font-size: 15px; font-weight: 300; color: var(--text-primary); }
+        .about-row-arrow { font-size: 12px; color: rgba(150,100,255,0.70); }
 
         .about-content {
           padding: 0 20px 20px;
           font-size: 14px; font-weight: 300; line-height: 1.70;
           color: var(--text-secondary);
         }
-.about-content strong {
-  font-weight: 500;
-  color: rgba(220,205,255,0.90);
-}
-.about-content em {
-  font-style: italic;
-  color: rgba(160,140,200,0.50);
-  font-size: 13px;
-}
+        .about-content strong { font-weight: 500; color: rgba(220,205,255,0.90); }
+        .about-content em { font-style: italic; color: rgba(160,140,200,0.50); font-size: 13px; }
 
         .account-card {
-  background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.14);
-  border-radius: 18px; overflow: hidden; margin-bottom: 12px;
-}
-
-        .account-row {
-          padding: 12px 16px;
-          border-bottom: 1px solid var(--divider);
+          background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.14);
+          border-radius: 18px; overflow: hidden; margin-bottom: 12px;
         }
 
+        .account-row { padding: 12px 16px; border-bottom: 1px solid var(--divider); }
         .account-row:last-child { border-bottom: none; }
 
         .account-row-label {
@@ -372,37 +359,26 @@ setLoading(false);
           text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px;
         }
 
-        .account-row-value {
-          font-size: 15px; font-weight: 300; color: var(--text-secondary);
-        }
+        .account-row-value { font-size: 15px; font-weight: 300; color: var(--text-secondary); }
 
         .change-link {
-          font-size: 13px; font-weight: 300;
-          color: rgba(160,140,220,0.70);
-          background: none; border: none;
-          cursor: pointer; padding: 0; margin-top: 4px;
-          display: block;
+          font-size: 13px; font-weight: 300; color: rgba(160,140,220,0.70);
+          background: none; border: none; cursor: pointer; padding: 0; margin-top: 4px; display: block;
         }
 
         .email-input {
           width: 100%; margin-top: 10px;
-          background: rgba(255,255,255,0.06);
-          border: 1px solid rgba(255,255,255,0.12);
+          background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);
           border-radius: 10px; padding: 10px 14px;
-          font-family: 'DM Sans', sans-serif;
-          font-size: 14px; font-weight: 300; color: var(--text-primary);
+          font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 300; color: var(--text-primary);
           outline: none;
         }
-
         .email-input:focus { border-color: rgba(160,120,240,0.45); }
 
         .confirm-btn {
           margin-top: 8px; padding: 9px 18px; border-radius: 10px;
-          background: rgba(160,120,240,0.12);
-          border: 1px solid rgba(160,120,240,0.25);
-          color: rgba(200,180,255,0.90);
-          font-family: 'DM Sans', sans-serif;
-          font-size: 13px; cursor: pointer;
+          background: rgba(160,120,240,0.12); border: 1px solid rgba(160,120,240,0.25);
+          color: rgba(200,180,255,0.90); font-family: 'DM Sans', sans-serif; font-size: 13px; cursor: pointer;
         }
 
         .danger-card {
@@ -411,41 +387,28 @@ setLoading(false);
         }
 
         .danger-row {
-          padding: 12px 16px;
-          border-bottom: 1px solid var(--divider);
+          padding: 12px 16px; border-bottom: 1px solid var(--divider);
           cursor: pointer; transition: background 0.2s;
         }
-
         .danger-row:last-child { border-bottom: none; }
         .danger-row:active { background: rgba(240,80,80,0.05); }
-
-        .danger-label {
-         font-size: 15px; font-weight: 400; color: rgba(200,185,240,0.75);
-        }
-
-        .danger-sub {
-          font-size: 12px; font-weight: 300; color: var(--text-muted);
-          margin-top: 3px;
-        }
+        .danger-label { font-size: 15px; font-weight: 400; color: rgba(200,185,240,0.75); }
+        .danger-sub { font-size: 12px; font-weight: 300; color: var(--text-muted); margin-top: 3px; }
 
         .confirm-overlay {
           position: fixed; top: 0; left: 0; right: 0; bottom: 0;
           background: rgba(10,10,20,0.88); z-index: 10;
-          display: flex; flex-direction: column;
-          justify-content: flex-end;
+          display: flex; flex-direction: column; justify-content: flex-end;
           backdrop-filter: blur(8px);
         }
 
         .confirm-sheet {
-          background: #16142a;
-          border-top: 1px solid rgba(255,255,255,0.10);
-          border-radius: 24px 24px 0 0;
-          padding: 28px 24px 40px;
+          background: #16142a; border-top: 1px solid rgba(255,255,255,0.10);
+          border-radius: 24px 24px 0 0; padding: 28px 24px 40px;
         }
 
         .confirm-title {
-          font-family: 'Cormorant Garamond', serif;
-          font-size: 22px; font-weight: 400;
+          font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 400;
           color: var(--text-primary); margin-bottom: 10px;
         }
 
@@ -458,28 +421,20 @@ setLoading(false);
 
         .cancel-btn {
           flex: 1; padding: 14px; border-radius: 14px;
-          background: rgba(255,255,255,0.06);
-          border: 1px solid rgba(255,255,255,0.12);
-          color: var(--text-secondary);
-          font-family: 'DM Sans', sans-serif;
-          font-size: 15px; cursor: pointer;
+          background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);
+          color: var(--text-secondary); font-family: 'DM Sans', sans-serif; font-size: 15px; cursor: pointer;
         }
 
         .danger-confirm-btn {
           flex: 1; padding: 14px; border-radius: 14px;
-          background: rgba(240,80,80,0.12);
-          border: 1px solid rgba(240,80,80,0.25);
-          color: rgba(240,120,120,0.95);
-          font-family: 'DM Sans', sans-serif;
-          font-size: 15px; cursor: pointer;
+          background: rgba(240,80,80,0.12); border: 1px solid rgba(240,80,80,0.25);
+          color: rgba(240,120,120,0.95); font-family: 'DM Sans', sans-serif; font-size: 15px; cursor: pointer;
         }
 
         .tab-bar {
           flex-shrink: 0; position: relative; z-index: 3;
-          background: rgba(13,14,26,0.92);
-          border-top: 1px solid rgba(255,255,255,0.07);
-          backdrop-filter: blur(20px);
-          display: flex; padding: 2px 0 4px;
+          background: rgba(13,14,26,0.92); border-top: 1px solid rgba(255,255,255,0.07);
+          backdrop-filter: blur(20px); display: flex; padding: 2px 0 4px;
         }
 
         .tab {
@@ -489,15 +444,9 @@ setLoading(false);
 
         .tab-icon { width: 20px; height: 20px; opacity: 0.40; transition: opacity 0.2s; }
         .tab.active .tab-icon { opacity: 1; }
-
-        .tab-label {
-          font-size: 9px; font-weight: 400; letter-spacing: 0.04em;
-          color: rgba(140,130,180,0.50); transition: color 0.2s;
-        }
-
+        .tab-label { font-size: 9px; font-weight: 400; letter-spacing: 0.04em; color: rgba(140,130,180,0.50); transition: color 0.2s; }
         .tab.active .tab-label { color: rgba(200,180,255,0.90); }
 
-        /* SESSION DRAWER */
         .drawer-screen { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #0d0e1a; z-index: 11; display: flex; flex-direction: column; animation: slideUp 0.28s ease; }
         @keyframes slideUp { from { transform: translateY(24px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         .drawer-header { padding: 52px 20px 16px; border-bottom: 1px solid rgba(255,255,255,0.07); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; position: relative; z-index: 1; }
@@ -511,7 +460,6 @@ setLoading(false);
         .detail-label { font-size: 9px; font-weight: 500; letter-spacing: 0.09em; text-transform: uppercase; color: rgba(160,140,220,0.40); margin-bottom: 6px; }
         .detail-text { font-size: 15px; font-weight: 300; line-height: 1.70; color: rgba(180,170,220,0.80); }
 
-        /* PAST SESSIONS LIST */
         .session-item { padding: 14px 16px; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer; transition: background 0.18s; }
         .session-item:last-child { border-bottom: none; }
         .session-item:active { background: rgba(150,100,255,0.06); }
@@ -525,10 +473,11 @@ setLoading(false);
         <div className="bg-orbs">
           <div className="orb orb1" />
           <div className="orb orb2" />
+          <div className="orb orb3" />
         </div>
 
         <div className="header">
-          <div className="header-name">Profile</div>
+          <div className="header-logo">attune</div>
           <button className="signout-btn" onClick={handleSignOut}>Sign out</button>
         </div>
 
@@ -542,7 +491,6 @@ setLoading(false);
               : "Your journey with Grace starts here."}
           </div>
 
-          {/* Name */}
           <div className="field-label">Your name</div>
           <div className="name-row">
             <input
@@ -560,108 +508,101 @@ setLoading(false);
             </button>
           </div>
 
-          {/* Last action */}
           <div className="action-card">
             <div className="action-label">Your next step</div>
             {(() => {
-  const action = dbUser?.last_session_action;
-  const lastSeen = dbUser?.last_seen_at;
-  const daysSince = lastSeen
-    ? Math.floor((Date.now() - new Date(lastSeen).getTime()) / (1000 * 60 * 60 * 24))
-    : null;
-  const expired = daysSince !== null && daysSince > 14;
-
-  if (action && !expired) {
-    return <div className="action-text">"{action}"</div>;
-  }
-  return (
-    <div className="action-empty">
-      {expired
-        ? "It's been a while. Come back to Grace when you're ready."
-        : "Complete a session with Grace and she'll leave you with something to work on."}
-    </div>
-  );
-})()}
+              const action = dbUser?.last_session_action;
+              const lastSeen = dbUser?.last_seen_at;
+              const daysSince = lastSeen
+                ? Math.floor((Date.now() - new Date(lastSeen).getTime()) / (1000 * 60 * 60 * 24))
+                : null;
+              const expired = daysSince !== null && daysSince > 14;
+              if (action && !expired) {
+                return <div className="action-text">"{action}"</div>;
+              }
+              return (
+                <div className="action-empty">
+                  {expired
+                    ? "It's been a while. Come back to Grace when you're ready."
+                    : "Complete a session with Grace and she'll leave you with something to work on."}
+                </div>
+              );
+            })()}
           </div>
-          
-{/* Commitments */}
-<div className="about-card" style={{ marginBottom: "16px" }}>
-  <div className="about-row" onClick={() => router.push("/actions")}>
-    <div>
-      <span className="about-row-label">Commitments</span>
-      <div style={{ fontSize: "12px", color: "rgba(140,130,180,0.45)", fontWeight: 300, marginTop: "2px" }}>
-        Things you're moving toward
-      </div>
-    </div>
-    <span className="about-row-arrow">›</span>
-  </div>
-</div>
 
-{/* Past Sessions */}
-{pastSessions.length > 0 && (
-  <div className="about-card" style={{ marginBottom: "16px" }}>
-    <div className="about-row" onClick={() => setShowSessionDrawer(true)}>
-      <div>
-        <span className="about-row-label">Past Sessions</span>
-        <div style={{ fontSize: "12px", color: "rgba(140,130,180,0.45)", fontWeight: 300, marginTop: "2px" }}>
-          {dbUser?.session_count} session{dbUser?.session_count === 1 ? "" : "s"} with Grace
-        </div>
-      </div>
-      <span className="about-row-arrow">›</span>
-    </div>
-  </div>
-)}
+          <div className="about-card" style={{ marginBottom: "16px" }}>
+            <div className="about-row" onClick={() => router.push("/actions")}>
+              <div>
+                <span className="about-row-label">Commitments</span>
+                <div style={{ fontSize: "12px", color: "rgba(140,130,180,0.45)", fontWeight: 300, marginTop: "2px" }}>
+                  Things you're moving toward
+                </div>
+              </div>
+              <span className="about-row-arrow">›</span>
+            </div>
+          </div>
 
-{/* Fix it prompt */}
-{(() => {
-  const completedCount = pastSessions.filter(s => s.is_complete).length;
-  if (![1, 3, 7, 11].includes(completedCount)) return null;
-  const fixitVisits = typeof window !== "undefined"
-    ? parseInt(localStorage.getItem("fixit_visit_count") || "0", 10)
-    : 0;
-  if (fixitVisits > 3) return null;
-  return (
-    <div style={{ padding: "2px 4px 20px", textAlign: "center" }}>
-      <div style={{ fontSize: "13px", fontWeight: 300, color: "rgba(150,140,190,0.50)", marginBottom: "7px", lineHeight: 1.5 }}>
-        Something you wish you'd said differently?
-      </div>
-      <button
-        onClick={() => router.push("/fixit")}
-        style={{ background: "none", border: "none", cursor: "pointer", fontSize: "13px", fontWeight: 400, color: "rgba(150,100,255,0.80)", fontFamily: "'DM Sans', sans-serif", padding: 0, letterSpacing: "0.01em", textShadow: "0 0 10px rgba(150,100,255,0.35)" }}
-      >
-        Fix it →
-      </button>
-    </div>
-  );
-})()}
+          {pastSessions.length > 0 && (
+            <div className="about-card" style={{ marginBottom: "16px" }}>
+              <div className="about-row" onClick={() => setShowSessionDrawer(true)}>
+                <div>
+                  <span className="about-row-label">Past Sessions</span>
+                  <div style={{ fontSize: "12px", color: "rgba(140,130,180,0.45)", fontWeight: 300, marginTop: "2px" }}>
+                    {dbUser?.session_count} session{dbUser?.session_count === 1 ? "" : "s"} with Grace
+                  </div>
+                </div>
+                <span className="about-row-arrow">›</span>
+              </div>
+            </div>
+          )}
+
+          {(() => {
+            const completedCount = pastSessions.filter(s => s.is_complete).length;
+            if (![1, 3, 7, 11].includes(completedCount)) return null;
+            const fixitVisits = typeof window !== "undefined"
+              ? parseInt(localStorage.getItem("fixit_visit_count") || "0", 10)
+              : 0;
+            if (fixitVisits > 3) return null;
+            return (
+              <div style={{ padding: "2px 4px 20px", textAlign: "center" }}>
+                <div style={{ fontSize: "13px", fontWeight: 300, color: "rgba(150,140,190,0.50)", marginBottom: "7px", lineHeight: 1.5 }}>
+                  Something you wish you'd said differently?
+                </div>
+                <button
+                  onClick={() => router.push("/fixit")}
+                  style={{ background: "none", border: "none", cursor: "pointer", fontSize: "13px", fontWeight: 400, color: "rgba(150,100,255,0.80)", fontFamily: "'DM Sans', sans-serif", padding: 0, letterSpacing: "0.01em", textShadow: "0 0 10px rgba(150,100,255,0.35)" }}
+                >
+                  Fix it →
+                </button>
+              </div>
+            );
+          })()}
 
           <div className="divider" />
 
-          {/* About Attune */}
           <div className="section-title">About Attune</div>
           <div className="about-card">
             <div className="about-row" onClick={() => setShowAbout(!showAbout)}>
               <span className="about-row-label">The idea behind Attune</span>
               <span className="about-row-arrow">{showAbout ? "▴" : "▾"}</span>
             </div>
-{showAbout && (
-<div className="about-content">
-<br /> <strong>Attune is built on a simple idea:</strong> <br />
-  Most relationship damage doesn't come from lack of love. It comes from how we react when things get hard.<br />
-  In those moments, we often don't say what we mean. We defend, withdraw, over-explain, or shut down. And over time, those patterns create distance and damage.<br />
-  You can't change the dynamic without understanding your part in it.<br /><br />
-  <strong>Attune</strong> focuses on that moment — helping you slow down before you react, and respond more clearly.<br /><br />
-  <strong>Grace</strong> is for people in relationship who want to understand their patterns and strengthen what they have. <br /><br />
-  <strong>FixtheMESSage!</strong> is for the moment before you send something — not to win, but to say what you mean without the damage.<br /><br />
-  It's not about getting it right every time. Just about not repeating the same damage again.<br /><br />
-  <em>Attune is not a substitute for professional therapy. If you're in crisis or need clinical support, please reach out to a mental health professional.</em><br /><br />
-</div>
-)}
-
-<div className="about-row" onClick={() => router.push("/contact")}>
-  <span className="about-row-label">Contact us</span>
-  <span className="about-row-arrow">›</span>
-</div>
+            {showAbout && (
+              <div className="about-content">
+                <br /><strong>Attune is built on a simple idea:</strong><br />
+                Most relationship damage doesn't come from lack of love. It comes from how we react when things get hard.<br />
+                In those moments, we often don't say what we mean. We defend, withdraw, over-explain, or shut down. And over time, those patterns create distance and damage.<br />
+                You can't change the dynamic without understanding your part in it.<br /><br />
+                <strong>Attune</strong> focuses on that moment — helping you slow down before you react, and respond more clearly.<br /><br />
+                <strong>Grace</strong> is for people in relationship who want to understand their patterns and strengthen what they have.<br /><br />
+                <strong>FixtheMESSage!</strong> is for the moment before you send something — not to win, but to say what you mean without the damage.<br /><br />
+                It's not about getting it right every time. Just about not repeating the same damage again.<br /><br />
+                <em>Attune is not a substitute for professional therapy. If you're in crisis or need clinical support, please reach out to a mental health professional.</em><br /><br />
+              </div>
+            )}
+            <div className="about-row" onClick={() => router.push("/contact")}>
+              <span className="about-row-label">Contact us</span>
+              <span className="about-row-arrow">›</span>
+            </div>
             <div className="about-row" onClick={() => router.push("/privacy")}>
               <span className="about-row-label">Privacy policy</span>
               <span className="about-row-arrow">›</span>
@@ -674,7 +615,6 @@ setLoading(false);
 
           <div className="divider" />
 
-          {/* Account */}
           <div className="section-title">Account</div>
           <div className="account-card">
             <div className="account-row">
@@ -712,7 +652,6 @@ setLoading(false);
           </div>
         </div>
 
-        {/* Remove history confirmation */}
         {showRemoveConfirm && (
           <div className="confirm-overlay" onClick={() => setShowRemoveConfirm(false)}>
             <div className="confirm-sheet" onClick={(e) => e.stopPropagation()}>
@@ -728,7 +667,6 @@ setLoading(false);
           </div>
         )}
 
-        {/* Delete account confirmation */}
         {showDeleteConfirm && (
           <div className="confirm-overlay" onClick={() => setShowDeleteConfirm(false)}>
             <div className="confirm-sheet" onClick={(e) => e.stopPropagation()}>
@@ -744,11 +682,10 @@ setLoading(false);
           </div>
         )}
 
-        {/* SESSION LIST DRAWER */}
         {showSessionDrawer && !expandedSession && (
           <div className="drawer-screen">
             <div className="bg-orbs" style={{ zIndex: 0 }}>
-              <div className="orb orb1" /><div className="orb orb2" />
+              <div className="orb orb1" /><div className="orb orb2" /><div className="orb orb3" />
             </div>
             <div className="drawer-header">
               <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "22px", fontWeight: 400, color: "rgba(240,235,255,0.90)" }}>Sessions</div>
@@ -763,23 +700,20 @@ setLoading(false);
                       {new Date(s.started_at).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}
                     </span>
                   </div>
-                  <div className="session-headline">
-                    {s.headline || `Session ${s.session_number}`}
-                  </div>
+                  <div className="session-headline">{s.headline || `Session ${s.session_number}`}</div>
                 </div>
               ))}
             </div>
           </div>
         )}
 
-        {/* SESSION DETAIL DRAWER */}
         {expandedSession && (() => {
           const s = pastSessions.find(x => x.id === expandedSession);
           if (!s) return null;
           return (
             <div className="drawer-screen">
               <div className="bg-orbs" style={{ zIndex: 0 }}>
-                <div className="orb orb1" /><div className="orb orb2" />
+                <div className="orb orb1" /><div className="orb orb2" /><div className="orb orb3" />
               </div>
               <div className="drawer-header">
                 <button className="drawer-back" onClick={() => setExpandedSession(null)}>← Sessions</button>
