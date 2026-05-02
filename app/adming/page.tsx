@@ -151,9 +151,8 @@ export default function AdminPage() {
   const totalUsers = users.length;
   const returned = users.filter(u => (u.completed_sessions ?? 0) >= 2).length;
   const returnRate = totalUsers > 0 ? Math.round((returned / totalUsers) * 100) : 0;
-  const avgSessions = totalUsers > 0
-    ? (users.reduce((s, u) => s + (u.completed_sessions ?? 0), 0) / totalUsers).toFixed(1)
-    : "—";
+  const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+  const activeThisWeek = users.filter(u => u.last_seen_at && u.last_seen_at > oneWeekAgo).length;
   const pendingWaitlist = waitlist.filter(w => !w.approved).length;
 
   return (
@@ -421,8 +420,8 @@ export default function AdminPage() {
                 {totalUsers > 0 && (
                   <div className="retention-bar">
                     <div className="stat-pill">
-                      <span className="stat-val">{totalUsers}</span>
-                      <span className="stat-lbl">Users</span>
+                      <span className="stat-val">{activeThisWeek}</span>
+                      <span className="stat-lbl">Active this week</span>
                     </div>
                     <div className="stat-pill">
                       <span className="stat-val">{avgSessions}</span>
