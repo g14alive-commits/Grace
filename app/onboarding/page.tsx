@@ -63,6 +63,12 @@ export default function Onboarding() {
       country,
     });
 
+    // Mark onboarding complete
+    await supabase
+      .from("users")
+      .update({ onboarding_complete: true })
+      .eq("id", data.session.user.id);
+
     router.replace("/chat");
   };
 
@@ -80,49 +86,50 @@ export default function Onboarding() {
 
         html, body {
           height: 100%; overflow: hidden;
-          background: #110f1e;
+          background: #0d0e1a;
           -webkit-font-smoothing: antialiased;
         }
 
         .page {
           position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-          background: #110f1e;
+          background: #0d0e1a;
           color: rgba(245,238,255,0.95);
           display: flex; flex-direction: column;
           font-family: 'DM Sans', sans-serif;
           overflow: hidden;
         }
 
-        .bg-warm {
+        .bg-orbs {
           position: fixed; top: 0; left: 0; right: 0; bottom: 0;
           pointer-events: none; z-index: 0;
         }
 
-        .warm-orb {
-          position: absolute; border-radius: 50%; filter: blur(80px);
+        .orb { position: absolute; border-radius: 50%; }
+
+        .orb1 {
+          width: 392px; height: 392px;
+          bottom: -80px; right: -60px;
+          background: radial-gradient(circle, rgba(150,80,220,0.45) 0%, transparent 70%);
+          animation: drift1 20s ease-in-out infinite;
         }
 
-        .warm-orb1 {
-          width: 380px; height: 380px; top: -100px; left: -60px;
-          background: radial-gradient(circle, rgba(180,100,120,0.18) 0%, transparent 70%);
-          animation: wo1 22s ease-in-out infinite;
+        .orb2 {
+          width: 308px; height: 308px;
+          bottom: 20%; left: -80px;
+          background: radial-gradient(circle, rgba(80,100,240,0.38) 0%, transparent 70%);
+          animation: drift2 26s ease-in-out infinite;
         }
 
-        .warm-orb2 {
-          width: 300px; height: 300px; bottom: 10%; right: -80px;
-          background: radial-gradient(circle, rgba(120,80,200,0.16) 0%, transparent 70%);
-          animation: wo2 26s ease-in-out infinite;
+        .orb3 {
+          width: 224px; height: 224px;
+          top: 58%; right: 15%;
+          background: radial-gradient(circle, rgba(200,80,160,0.28) 0%, transparent 70%);
+          animation: drift3 18s ease-in-out infinite;
         }
 
-        @keyframes wo1 {
-          0%,100% { transform: translate(0,0); }
-          50% { transform: translate(20px,30px); }
-        }
-
-        @keyframes wo2 {
-          0%,100% { transform: translate(0,0); }
-          50% { transform: translate(-20px,-25px); }
-        }
+        @keyframes drift1 { 0%,100% { transform: translate(0,0); } 50% { transform: translate(-15px,20px); } }
+        @keyframes drift2 { 0%,100% { transform: translate(0,0); } 50% { transform: translate(20px,-15px); } }
+        @keyframes drift3 { 0%,100% { transform: translate(0,0); } 50% { transform: translate(14px,18px); } }
 
         .progress-bar {
           position: relative; z-index: 2;
@@ -154,7 +161,7 @@ export default function Onboarding() {
         .question {
           font-family: 'Cormorant Garamond', serif;
           font-size: 30px; font-weight: 300;
-          color: rgba(245,238,255,0.95); line-height: 1.25;
+          color: rgba(245,238,255,0.97); line-height: 1.25;
           margin-bottom: 28px; letter-spacing: -0.01em;
         }
 
@@ -184,14 +191,14 @@ export default function Onboarding() {
           border: 1px solid rgba(255,255,255,0.12);
           font-family: 'DM Sans', sans-serif;
           font-size: 14px; font-weight: 300;
-          color: rgba(180,170,220,0.80);
+          color: rgba(200,185,230,0.80);
           cursor: pointer; transition: all 0.2s;
         }
 
         .option-btn.selected {
-          background: rgba(160,120,240,0.15);
-          border-color: rgba(160,120,240,0.40);
-          color: rgba(210,190,255,0.95);
+          background: rgba(160,120,240,0.18);
+          border-color: rgba(160,120,240,0.50);
+          color: rgba(220,200,255,0.97);
         }
 
         .option-btn:active { transform: scale(0.97); }
@@ -213,7 +220,7 @@ export default function Onboarding() {
         }
 
         select:focus { border-color: rgba(160,120,240,0.45); }
-        select option { background: #1a1628; }
+        select option { background: #0d0e1a; }
 
         .select-arrow {
           position: absolute; right: 16px; top: 50%;
@@ -234,32 +241,34 @@ export default function Onboarding() {
           display: flex; align-items: center; justify-content: space-between;
         }
 
-        .skip-btn {
+        .back-btn {
           font-size: 13px; font-weight: 300;
-          color: rgba(140,130,180,0.45);
+          color: rgba(150,100,255,0.70);
           background: none; border: none;
           cursor: pointer; padding: 8px 0;
         }
 
         .next-btn {
-          padding: 14px 32px; border-radius: 50px;
-          background: rgba(160,120,240,0.15);
-          border: 1px solid rgba(160,120,240,0.30);
-          color: rgba(210,190,255,0.95);
+          padding: 14px 32px; border-radius: 14px;
+          background: linear-gradient(145deg, #b070ff 0%, #7040e0 50%, #4020c0 100%);
+          border: none;
+          color: white;
           font-family: 'DM Sans', sans-serif;
           font-size: 15px; font-weight: 400;
-          cursor: pointer; transition: all 0.2s;
+          cursor: pointer; transition: opacity 0.2s, transform 0.15s;
           letter-spacing: 0.02em;
+          box-shadow: 0 0 16px rgba(160,120,240,0.25);
         }
 
-        .next-btn:disabled { opacity: 0.30; cursor: default; }
-        .next-btn:not(:disabled):active { transform: scale(0.97); }
+        .next-btn:disabled { opacity: 0.30; cursor: default; box-shadow: none; }
+        .next-btn:not(:disabled):active { transform: scale(0.97); opacity: 0.9; }
       `}</style>
 
       <div className="page" style={{ height: appHeight }}>
-        <div className="bg-warm">
-          <div className="warm-orb warm-orb1" />
-          <div className="warm-orb warm-orb2" />
+        <div className="bg-orbs">
+          <div className="orb orb1" />
+          <div className="orb orb2" />
+          <div className="orb orb3" />
         </div>
 
         <div className="progress-bar">
@@ -282,8 +291,8 @@ export default function Onboarding() {
                 autoFocus
               />
               <div className="question" style={{ fontSize: "22px", marginBottom: "16px" }}>
-  How do you identify?
-             </div>
+                How do you identify?
+              </div>
               <div className="options-grid">
                 {["Woman", "Man", "Non-binary", "Prefer not to say"].map((g) => (
                   <button
@@ -294,17 +303,16 @@ export default function Onboarding() {
                     {g}
                   </button>
                 ))}
-
               </div>
-<div style={{
-  fontSize: "11px",
-  color: "rgba(140,130,180,0.40)",
-  fontWeight: 300,
-  marginTop: "16px",
-  textAlign: "center",
-}}>
-  Attune is intended for adults 18 and over.
-</div>
+              <div style={{
+                fontSize: "11px",
+                color: "rgba(140,130,180,0.40)",
+                fontWeight: 300,
+                marginTop: "16px",
+                textAlign: "center",
+              }}>
+                Attune is intended for adults 18 and over.
+              </div>
             </>
           )}
 
@@ -357,10 +365,7 @@ export default function Onboarding() {
               </div>
               <div className="optional-label" style={{ marginTop: "20px" }}>Where are you from? (optional)</div>
               <div className="select-wrap">
-                <select
-                  value={country}
-                  onChange={(e) => setCountry(e.target.value)}
-                >
+                <select value={country} onChange={(e) => setCountry(e.target.value)}>
                   <option value="">Select your country</option>
                   {COUNTRIES.map((c) => (
                     <option key={c} value={c}>{c}</option>
@@ -374,9 +379,7 @@ export default function Onboarding() {
 
         <div className="bottom">
           {step > 1 ? (
-            <button className="skip-btn" onClick={() => setStep(step - 1)}>
-              Back
-            </button>
+            <button className="back-btn" onClick={() => setStep(step - 1)}>Back</button>
           ) : (
             <div />
           )}
@@ -395,7 +398,7 @@ export default function Onboarding() {
               onClick={handleFinish}
               disabled={loading || !canProceed()}
             >
-              {loading ? "Starting..." : "Meet Grace"}
+              {loading ? "Starting..." : "Meet Grace →"}
             </button>
           )}
         </div>
