@@ -459,10 +459,7 @@ export default function Home() {
                   </svg>
                 </button>
               </div>
-              <div className="lp-a5" style={{ display: "flex", gap: 20, justifyContent: "center" }}>
-                <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, color: "rgba(160,140,220,0.25)" }}>Privacy</span>
-                <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, color: "rgba(160,140,220,0.25)" }}>Contact</span>
-              </div>
+
             </div>
           )}
         </div>
