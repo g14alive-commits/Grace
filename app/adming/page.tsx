@@ -420,8 +420,8 @@ export default function AdminPage() {
                 {totalUsers > 0 && (
                   <div className="retention-bar">
                     <div className="stat-pill">
-                      <span className="stat-val">{activeThisWeek}</span>
-                      <span className="stat-lbl">Active this week</span>
+                      <span className="stat-val">{totalUsers}</span>
+                      <span className="stat-lbl">Users</span>
                     </div>
                     <div className="stat-pill">
                       <span className="stat-val">{activeThisWeek}</span>
