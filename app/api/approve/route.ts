@@ -48,22 +48,31 @@ export async function POST(req: NextRequest) {
     const { error: emailError } = await resend.emails.send({
       from: "Attune <team@heyattune.app>",
       to: email,
-      subject: "Your spot on Attune is ready",
+      subject: "Your Attune access",
+      text: `Hi${name ? ` ${name.split(" ")[0]}` : ""},\n\nYour spot on Attune is ready.\n\nEnter Attune: ${loginLink}\n\nReady whenever you are.\n\nIf this landed in spam, mark it as not spam so future emails reach you.\n\n— Team Attune\nheyattune.app`,
       html: `
-        <div style="background:#0d0e1a;padding:48px 32px;font-family:'DM Sans',sans-serif;max-width:480px;margin:0 auto;">
-          <p style="font-family:Georgia,serif;font-size:28px;font-weight:400;color:rgba(245,238,255,0.92);margin:0 0 24px;">Your spot is ready.</p>
-          <p style="font-size:15px;font-weight:300;line-height:1.7;color:rgba(170,160,210,0.80);margin:0 0 12px;">
-            We're glad you stuck around${name ? `, ${name.split(" ")[0]}` : ""}. Click below to get in — takes 30 seconds.
+        <div style="background:#ffffff;padding:48px 32px;font-family:Georgia,serif;max-width:480px;margin:0 auto;">
+          <p style="font-size:13px;font-family:'Helvetica Neue',Arial,sans-serif;font-weight:400;color:#9070cc;letter-spacing:0.08em;text-transform:uppercase;margin:0 0 32px;">attune</p>
+          <p style="font-size:26px;font-weight:400;color:#1a1a2e;margin:0 0 24px;line-height:1.3;">Your spot is ready${name ? `, ${name.split(" ")[0]}` : ""}.</p>
+          <p style="font-size:15px;font-weight:400;line-height:1.75;color:#4a4a6a;margin:0 0 32px;font-family:'Helvetica Neue',Arial,sans-serif;">
+            We've been looking forward to this. Click the link below to get in — it only takes a moment.
           </p>
-          <p style="margin:32px 0;">
-            <a href="${loginLink}" style="display:inline-block;background:linear-gradient(135deg,#b070ff,#4020c0);color:white;text-decoration:none;padding:14px 28px;border-radius:12px;font-size:15px;font-weight:400;letter-spacing:0.02em;">
-              Get started →
+          <p style="margin:0 0 36px;">
+            <a href="${loginLink}" style="display:inline-block;background:#7040e0;color:#ffffff;text-decoration:none;padding:14px 32px;border-radius:10px;font-size:15px;font-weight:400;font-family:'Helvetica Neue',Arial,sans-serif;letter-spacing:0.02em;">
+              Enter Attune →
             </a>
           </p>
-          <p style="font-size:14px;font-weight:300;line-height:1.7;color:rgba(150,140,190,0.60);margin:0 0 32px;">
-            Take your time once you're inside. No pressure to have it all figured out.
+          <p style="font-size:14px;font-weight:400;line-height:1.75;color:#6a6a8a;margin:0 0 40px;font-family:'Helvetica Neue',Arial,sans-serif;">
+            Ready whenever you are.
           </p>
-          <p style="font-size:13px;color:rgba(120,110,160,0.50);margin:0;">— Team Attune</p>
+          <hr style="border:none;border-top:1px solid #ebebf0;margin:0 0 24px;" />
+          <p style="font-size:12px;color:#a0a0b8;margin:0 0 8px;font-family:'Helvetica Neue',Arial,sans-serif;line-height:1.6;">
+            — Team Attune<br/>
+            <a href="https://heyattune.app" style="color:#9070cc;text-decoration:none;">heyattune.app</a>
+          </p>
+          <p style="font-size:11px;color:#c0c0d0;margin:0;font-family:'Helvetica Neue',Arial,sans-serif;line-height:1.6;">
+            If this landed in spam, mark it as not spam so future emails reach you.
+          </p>
         </div>
       `,
     });

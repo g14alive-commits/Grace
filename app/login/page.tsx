@@ -270,7 +270,7 @@ export default function Login() {
                 <br /><br />
                 Tap the link in the email to enter Attune.
                 <br />
-                The link expires in 24 hours.
+                Can't find it? Check your spam or junk folder.
               </div>
             </div>
           ) : (
@@ -295,9 +295,9 @@ export default function Login() {
                 </button>
               </div>
               <div className="privacy">
-                No password needed. We'll send you a secure link.
+                No password needed — we'll send you a link.
                 <br />
-                Your data is private and never shared.
+                Check spam if it doesn't arrive in a minute.
               </div>
             </>
           )}
