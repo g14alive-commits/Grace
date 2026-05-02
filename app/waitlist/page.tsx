@@ -75,27 +75,26 @@ export default function WaitlistPage() {
         .orb {
           position: absolute;
           border-radius: 50%;
-          filter: blur(80px);
         }
 
         .orb1 {
-          width: 380px; height: 380px;
-          top: -120px; right: -80px;
-          background: radial-gradient(circle, rgba(150,80,220,0.30) 0%, transparent 70%);
+          width: 560px; height: 560px;
+          top: -180px; left: -60px;
+          background: radial-gradient(circle, rgba(150,80,220,0.45) 0%, transparent 70%);
           animation: drift1 20s ease-in-out infinite;
         }
 
         .orb2 {
-          width: 300px; height: 300px;
-          bottom: 0%; left: -80px;
-          background: radial-gradient(circle, rgba(80,100,240,0.25) 0%, transparent 70%);
+          width: 440px; height: 440px;
+          bottom: -100px; right: -80px;
+          background: radial-gradient(circle, rgba(80,100,240,0.38) 0%, transparent 70%);
           animation: drift2 26s ease-in-out infinite;
         }
 
         .orb3 {
-          width: 220px; height: 220px;
-          bottom: 25%; right: 0%;
-          background: radial-gradient(circle, rgba(200,80,160,0.18) 0%, transparent 70%);
+          width: 320px; height: 320px;
+          top: 40%; left: 10%;
+          background: radial-gradient(circle, rgba(200,80,160,0.28) 0%, transparent 70%);
           animation: drift3 18s ease-in-out infinite;
         }
 
