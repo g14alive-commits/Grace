@@ -190,21 +190,21 @@ export default function Fixit() {
         .orb1 {
           width: 392px; height: 392px;
           bottom: -80px; right: -60px;
-          background: radial-gradient(circle, rgba(150,80,220,0.45) 0%, transparent 70%);
+          background: radial-gradient(circle, rgba(150,80,220,0.32) 0%, transparent 70%);
           animation: drift1 20s ease-in-out infinite;
         }
 
         .orb2 {
           width: 308px; height: 308px;
           bottom: 20%; left: -80px;
-          background: radial-gradient(circle, rgba(80,100,240,0.38) 0%, transparent 70%);
+          background: radial-gradient(circle, rgba(80,100,240,0.27) 0%, transparent 70%);
           animation: drift2 25s ease-in-out infinite;
         }
 
         .orb3 {
           width: 224px; height: 224px;
           top: 60%; right: 15%;
-          background: radial-gradient(circle, rgba(200,80,160,0.28) 0%, transparent 70%);
+          background: radial-gradient(circle, rgba(200,80,160,0.20) 0%, transparent 70%);
           animation: drift3 18s ease-in-out infinite;
         }
 
