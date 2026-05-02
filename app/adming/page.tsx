@@ -21,6 +21,15 @@ type User = {
   growth_summary: string | null;
 };
 
+type WaitlistEntry = {
+  id: string;
+  name: string | null;
+  email: string;
+  reason: string | null;
+  created_at: string;
+  approved: boolean;
+};
+
 type Log = {
   id: string;
   session_number: number;
@@ -29,27 +38,57 @@ type Log = {
   created_at: string;
 };
 
+type Tab = "users" | "waitlist";
+
 export default function AdminPage() {
   const [authed, setAuthed] = useState(false);
   const [password, setPassword] = useState("");
   const [pwError, setPwError] = useState(false);
+  const [tab, setTab] = useState<Tab>("users");
+
+  // Users
   const [users, setUsers] = useState<User[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [usersLoading, setUsersLoading] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [logs, setLogs] = useState<Log[]>([]);
   const [logsLoading, setLogsLoading] = useState(false);
   const [insightOpen, setInsightOpen] = useState(true);
   const [sessionsCompleted, setSessionsCompleted] = useState<number | null>(null);
 
+  // Waitlist
+  const [waitlist, setWaitlist] = useState<WaitlistEntry[]>([]);
+  const [waitlistLoading, setWaitlistLoading] = useState(false);
+  const [approvingId, setApprovingId] = useState<string | null>(null);
+  const [approveStatus, setApproveStatus] = useState<Record<string, "success" | "error">>({});
+
   const handleLogin = async () => {
     if (password !== ADMIN_PASSWORD) { setPwError(true); return; }
     setAuthed(true);
     setPwError(false);
-    setLoading(true);
+    loadUsers();
+  };
+
+  const loadUsers = async () => {
+    setUsersLoading(true);
     const res = await fetch("/api/admin");
     const data = await res.json();
     setUsers(Array.isArray(data) ? data : []);
-    setLoading(false);
+    setUsersLoading(false);
+  };
+
+  const loadWaitlist = async () => {
+    setWaitlistLoading(true);
+    const res = await fetch("/api/admin?type=waitlist");
+    const data = await res.json();
+    setWaitlist(Array.isArray(data.waitlist) ? data.waitlist : []);
+    setWaitlistLoading(false);
+  };
+
+  const handleTabChange = (t: Tab) => {
+    setTab(t);
+    setSelectedUser(null);
+    if (t === "waitlist" && waitlist.length === 0) loadWaitlist();
+    if (t === "users" && users.length === 0) loadUsers();
   };
 
   const handleSelectUser = async (user: User) => {
@@ -62,6 +101,27 @@ export default function AdminPage() {
     setLogs(Array.isArray(data.logs) ? data.logs : []);
     setSessionsCompleted(typeof data.sessionsCompleted === "number" ? data.sessionsCompleted : null);
     setLogsLoading(false);
+  };
+
+  const handleApprove = async (entry: WaitlistEntry) => {
+    setApprovingId(entry.id);
+    try {
+      const res = await fetch("/api/approve", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: entry.id, email: entry.email, name: entry.name }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setApproveStatus(s => ({ ...s, [entry.id]: "success" }));
+        setWaitlist(w => w.map(e => e.id === entry.id ? { ...e, approved: true } : e));
+      } else {
+        setApproveStatus(s => ({ ...s, [entry.id]: "error" }));
+      }
+    } catch {
+      setApproveStatus(s => ({ ...s, [entry.id]: "error" }));
+    }
+    setApprovingId(null);
   };
 
   const fmtDate = (iso: string | null) => {
@@ -87,6 +147,15 @@ export default function AdminPage() {
     return null;
   };
 
+  // Retention stats
+  const totalUsers = users.length;
+  const returned = users.filter(u => (u.completed_sessions ?? 0) >= 2).length;
+  const returnRate = totalUsers > 0 ? Math.round((returned / totalUsers) * 100) : 0;
+  const avgSessions = totalUsers > 0
+    ? (users.reduce((s, u) => s + (u.completed_sessions ?? 0), 0) / totalUsers).toFixed(1)
+    : "—";
+  const pendingWaitlist = waitlist.filter(w => !w.approved).length;
+
   return (
     <>
       <style>{`
@@ -111,11 +180,27 @@ export default function AdminPage() {
         .error-msg { font-size: 13px; color: rgba(255,130,130,0.80); text-align: center; margin-top: -4px; }
 
         /* Inner */
-        .adm-inner { max-width: 720px; margin: 0 auto; padding: 36px 20px 80px; }
-        .adm-header { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; }
+        .adm-inner { max-width: 720px; margin: 0 auto; padding: 28px 20px 80px; }
+
+        /* Header */
+        .adm-header { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; }
         .adm-title { font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 300; color: rgba(245,238,255,0.90); letter-spacing: 0.02em; }
         .back-btn { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); border-radius: 10px; padding: 7px 14px; color: rgba(200,190,240,0.80); font-family: 'DM Sans', sans-serif; font-size: 13px; cursor: pointer; white-space: nowrap; flex-shrink: 0; }
         .back-btn:active { transform: scale(0.97); }
+
+        /* Tabs */
+        .tabs { display: flex; gap: 4px; margin-bottom: 20px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); border-radius: 12px; padding: 4px; width: fit-content; }
+        .tab-btn { padding: 8px 20px; border-radius: 9px; border: none; background: transparent; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 300; color: rgba(160,150,210,0.55); cursor: pointer; transition: all 0.18s; position: relative; }
+        .tab-btn.active { background: rgba(160,120,240,0.18); color: rgba(210,190,255,0.95); border: 1px solid rgba(160,120,240,0.25); }
+        .tab-badge { display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; border-radius: 50%; background: rgba(200,100,100,0.70); color: white; font-size: 10px; margin-left: 6px; vertical-align: middle; }
+
+        /* Retention bar */
+        .retention-bar { display: flex; gap: 10px; margin-bottom: 18px; flex-wrap: wrap; }
+        .stat-pill { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 10px 16px; display: flex; flex-direction: column; gap: 3px; min-width: 90px; }
+        .stat-val { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 400; color: rgba(230,220,255,0.92); line-height: 1; }
+        .stat-val.green { color: rgba(100,220,140,0.85); }
+        .stat-val.amber { color: rgba(220,180,80,0.85); }
+        .stat-lbl { font-size: 10px; letter-spacing: 0.07em; text-transform: uppercase; color: rgba(140,130,180,0.45); }
 
         /* User list */
         .user-list { display: flex; flex-direction: column; gap: 8px; }
@@ -129,6 +214,21 @@ export default function AdminPage() {
         .ci-yes { font-size: 11px; color: rgba(100,220,140,0.80); background: rgba(80,200,120,0.08); border: 1px solid rgba(80,200,120,0.20); border-radius: 7px; padding: 2px 9px; }
         .ci-tried { font-size: 11px; color: rgba(220,180,80,0.80); background: rgba(200,160,60,0.08); border: 1px solid rgba(200,160,60,0.20); border-radius: 7px; padding: 2px 9px; }
         .ci-no { font-size: 11px; color: rgba(200,90,90,0.70); background: rgba(200,80,80,0.06); border: 1px solid rgba(200,80,80,0.15); border-radius: 7px; padding: 2px 9px; }
+
+        /* Waitlist */
+        .waitlist-list { display: flex; flex-direction: column; gap: 8px; }
+        .wl-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.09); border-radius: 14px; padding: 14px 16px; transition: border-color 0.18s; }
+        .wl-card.approved { opacity: 0.45; }
+        .wl-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 6px; }
+        .wl-name { font-size: 15px; font-weight: 400; color: rgba(240,235,255,0.90); }
+        .wl-email { font-size: 12px; color: rgba(150,140,195,0.55); margin-bottom: 6px; }
+        .wl-reason { font-size: 13px; font-weight: 300; color: rgba(180,170,220,0.65); line-height: 1.55; margin-bottom: 10px; font-style: italic; }
+        .wl-meta { font-size: 11px; color: rgba(130,120,170,0.40); }
+        .approve-btn { flex-shrink: 0; padding: 7px 16px; border-radius: 9px; border: 1px solid rgba(100,200,140,0.35); background: rgba(80,180,120,0.10); color: rgba(100,220,150,0.85); font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 400; cursor: pointer; transition: all 0.18s; white-space: nowrap; }
+        .approve-btn:hover { background: rgba(80,180,120,0.20); border-color: rgba(100,200,140,0.55); }
+        .approve-btn:disabled { opacity: 0.4; cursor: default; }
+        .approved-tag { font-size: 11px; color: rgba(100,200,140,0.65); background: rgba(80,180,120,0.08); border: 1px solid rgba(80,180,120,0.20); border-radius: 7px; padding: 3px 10px; flex-shrink: 0; }
+        .error-tag { font-size: 11px; color: rgba(255,130,130,0.75); flex-shrink: 0; }
 
         /* Insight panel */
         .insight-panel { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 12px 16px; margin-bottom: 20px; }
@@ -159,10 +259,12 @@ export default function AdminPage() {
         .empty { text-align: center; padding: 60px 0; color: rgba(160,150,200,0.40); font-size: 14px; }
 
         @media (max-width: 480px) {
-          .adm-inner { padding: 24px 14px 60px; }
+          .adm-inner { padding: 20px 14px 60px; }
           .bubble { max-width: 88%; font-size: 13px; }
           .adm-title { font-size: 19px; }
           .insight-lbl { width: 74px; }
+          .retention-bar { gap: 8px; }
+          .stat-pill { padding: 8px 12px; min-width: 76px; }
         }
       `}</style>
 
@@ -195,7 +297,6 @@ export default function AdminPage() {
               <div className="adm-title">{selectedUser.name || selectedUser.email}</div>
             </div>
 
-            {/* Insight panel */}
             <div className="insight-panel">
               <button className="insight-toggle" onClick={() => setInsightOpen(o => !o)}>
                 <span className="insight-toggle-label">User snapshot</span>
@@ -240,8 +341,7 @@ export default function AdminPage() {
                     <div className="insight-row">
                       <span className="insight-lbl">Relationship</span>
                       <span className="insight-val">
-                        {selectedUser.relationship_facts_summary
-                          || selectedUser.relationship_facts!.slice(0, 5).join(", ")}
+                        {selectedUser.relationship_facts_summary || selectedUser.relationship_facts!.slice(0, 5).join(", ")}
                       </span>
                     </div>
                   )}
@@ -258,7 +358,7 @@ export default function AdminPage() {
             {logsLoading ? (
               <div className="loading">Loading conversation…</div>
             ) : logs.length === 0 ? (
-              <div className="empty">No conversations logged yet for this user.</div>
+              <div className="empty">No conversations logged yet.</div>
             ) : (
               <div className="chat-thread">
                 {(() => {
@@ -299,35 +399,109 @@ export default function AdminPage() {
           </div>
 
         ) : (
-          // ── User list ──
+          // ── Main tabbed view ──
           <div className="adm-inner">
             <div className="adm-header">
-              <div className="adm-title">Users ({users.length})</div>
+              <div className="adm-title">attune admin</div>
             </div>
 
-            {loading ? (
-              <div className="loading">Loading users…</div>
-            ) : users.length === 0 ? (
-              <div className="empty">No users found.</div>
-            ) : (
-              <div className="user-list">
-                {users.map((user) => {
-                  const ci = checkinLabel(user.last_checkin_response);
-                  return (
-                    <div key={user.id} className="user-card" onClick={() => handleSelectUser(user)}>
-                      <div className="user-top">
-                        <div className="user-name">{user.name || user.email}</div>
-                        {ci && <span className={ci.cls}>{ci.text}</span>}
-                      </div>
-                      <div className="user-meta">
-                        {user.user_pattern && <span className="meta-pill">{user.user_pattern}</span>}
-                        <span className="meta-pill">{user.completed_sessions ?? 0} sessions</span>
-                        <span className="meta-pill">Last seen {fmtDate(user.last_seen_at)}</span>
-                      </div>
+            <div className="tabs">
+              <button className={`tab-btn${tab === "users" ? " active" : ""}`} onClick={() => handleTabChange("users")}>
+                Users {totalUsers > 0 && `(${totalUsers})`}
+              </button>
+              <button className={`tab-btn${tab === "waitlist" ? " active" : ""}`} onClick={() => handleTabChange("waitlist")}>
+                Waitlist
+                {pendingWaitlist > 0 && <span className="tab-badge">{pendingWaitlist}</span>}
+              </button>
+            </div>
+
+            {tab === "users" && (
+              <>
+                {/* Retention bar */}
+                {totalUsers > 0 && (
+                  <div className="retention-bar">
+                    <div className="stat-pill">
+                      <span className="stat-val">{totalUsers}</span>
+                      <span className="stat-lbl">Users</span>
                     </div>
-                  );
-                })}
-              </div>
+                    <div className="stat-pill">
+                      <span className="stat-val">{avgSessions}</span>
+                      <span className="stat-lbl">Avg sessions</span>
+                    </div>
+                    <div className="stat-pill">
+                      <span className={`stat-val ${returnRate >= 50 ? "green" : returnRate >= 30 ? "amber" : ""}`}>
+                        {returnRate}%
+                      </span>
+                      <span className="stat-lbl">Returned 2+</span>
+                    </div>
+                  </div>
+                )}
+
+                {usersLoading ? (
+                  <div className="loading">Loading users…</div>
+                ) : users.length === 0 ? (
+                  <div className="empty">No users yet.</div>
+                ) : (
+                  <div className="user-list">
+                    {users.map((user) => {
+                      const ci = checkinLabel(user.last_checkin_response);
+                      return (
+                        <div key={user.id} className="user-card" onClick={() => handleSelectUser(user)}>
+                          <div className="user-top">
+                            <div className="user-name">{user.name || user.email}</div>
+                            {ci && <span className={ci.cls}>{ci.text}</span>}
+                          </div>
+                          <div className="user-meta">
+                            {user.user_pattern && <span className="meta-pill">{user.user_pattern}</span>}
+                            <span className="meta-pill">{user.completed_sessions ?? 0} sessions</span>
+                            <span className="meta-pill">Last seen {fmtDate(user.last_seen_at)}</span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </>
+            )}
+
+            {tab === "waitlist" && (
+              <>
+                {waitlistLoading ? (
+                  <div className="loading">Loading waitlist…</div>
+                ) : waitlist.length === 0 ? (
+                  <div className="empty">No one on the waitlist yet.</div>
+                ) : (
+                  <div className="waitlist-list">
+                    {waitlist.map((entry) => {
+                      const status = approveStatus[entry.id];
+                      const isApproved = entry.approved || status === "success";
+                      return (
+                        <div key={entry.id} className={`wl-card${isApproved ? " approved" : ""}`}>
+                          <div className="wl-top">
+                            <div className="wl-name">{entry.name || "—"}</div>
+                            {isApproved ? (
+                              <span className="approved-tag">✓ approved</span>
+                            ) : status === "error" ? (
+                              <span className="error-tag">failed — retry</span>
+                            ) : (
+                              <button
+                                className="approve-btn"
+                                disabled={approvingId === entry.id}
+                                onClick={() => handleApprove(entry)}
+                              >
+                                {approvingId === entry.id ? "Approving…" : "Approve"}
+                              </button>
+                            )}
+                          </div>
+                          <div className="wl-email">{entry.email}</div>
+                          {entry.reason && <div className="wl-reason">"{entry.reason}"</div>}
+                          <div className="wl-meta">Joined {fmtDate(entry.created_at)}</div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </>
             )}
           </div>
         )}

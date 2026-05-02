@@ -9,6 +9,7 @@ export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const userId = searchParams.get("userId");
   const stats = searchParams.get("stats");
+  const type = searchParams.get("type");
 
   // ── Stats ──────────────────────────────────────────────
   if (stats === "true") {
@@ -34,6 +35,17 @@ export async function GET(req: Request) {
       tried,
       notYet,
     });
+  }
+
+  // ── Waitlist ───────────────────────────────────────────
+  if (type === "waitlist") {
+    const { data, error } = await adminSupabase
+      .from("waitlist")
+      .select("id, name, email, reason, created_at, approved")
+      .order("created_at", { ascending: false });
+
+    if (error) return Response.json({ error: error.message }, { status: 500 });
+    return Response.json({ waitlist: data });
   }
 
   // ── Grace logs for a user ─────────────────────────────
@@ -72,7 +84,6 @@ export async function GET(req: Request) {
 
   if (error) return Response.json({ error: error.message }, { status: 500 });
 
-  // Build max session_number map per user
   const sessionMap: Record<string, number> = {};
   for (const row of sessionNumbers || []) {
     if (!sessionMap[row.user_id]) {
@@ -80,7 +91,6 @@ export async function GET(req: Request) {
     }
   }
 
-  // Join real session number onto each user
   const usersWithSessions = (data || []).map(u => ({
     ...u,
     completed_sessions: sessionMap[u.id] ?? 0,
