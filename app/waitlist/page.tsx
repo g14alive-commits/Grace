@@ -62,7 +62,6 @@ export default function WaitlistPage() {
           padding: 60px 28px 80px;
           font-family: 'DM Sans', sans-serif;
           position: relative;
-          overflow: hidden;
         }
 
         .bg-orbs {
