@@ -227,8 +227,12 @@ export default function Home() {
 
         .lp-logo {
           font-family: 'Cormorant Garamond', serif;
-          font-size: 20px; font-weight: 400; letter-spacing: 0.12em;
-          color: rgba(150,100,255,0.80);
+          font-size: 44px; font-weight: 300; letter-spacing: 0.02em;
+          background: linear-gradient(145deg, #b070ff 0%, #7040e0 50%, #4020c0 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+          display: inline-block;
         }
 
         .lp-headline {
@@ -277,39 +281,44 @@ export default function Home() {
 
         .lp-btn-primary {
           display: inline-flex; align-items: center; gap: 10px;
-          background: linear-gradient(135deg, rgba(155,111,255,0.88), rgba(100,36,200,0.92));
-          border: none; border-radius: 50px;
-          padding: 0 32px; min-height: 48px;
+          background: linear-gradient(145deg, #b070ff 0%, #7040e0 50%, #4020c0 100%);
+          border: none; border-radius: 14px;
+          padding: 16px 32px;
           font-family: 'DM Sans', sans-serif;
           font-size: 15px; font-weight: 400;
           color: #fff; cursor: pointer;
-          transition: opacity 0.2s;
+          letter-spacing: 0.02em;
+          box-shadow: 0 0 16px rgba(160,120,240,0.25);
+          transition: opacity 0.2s, transform 0.15s;
         }
         .lp-btn-primary:active { opacity: 0.85; transform: scale(0.98); }
 
         .lp-btn-ghost {
           display: inline-flex; align-items: center; gap: 8px;
-          background: linear-gradient(135deg, rgba(155,111,255,0.88), rgba(100,36,200,0.92));
+          background: linear-gradient(145deg, #b070ff 0%, #7040e0 50%, #4020c0 100%);
           border: none;
-          border-radius: 50px; padding: 0 32px; min-height: 44px;
+          border-radius: 14px; padding: 16px 32px;
           font-family: 'DM Sans', sans-serif;
-          font-size: 14px; font-weight: 400;
+          font-size: 15px; font-weight: 400;
           color: #fff; cursor: pointer;
-          transition: opacity 0.2s;
+          letter-spacing: 0.02em;
+          box-shadow: 0 0 16px rgba(160,120,240,0.25);
+          transition: opacity 0.2s, transform 0.15s;
         }
         .lp-btn-ghost:active { opacity: 0.85; transform: scale(0.98); }
 
         .lp-btn-cta {
           display: inline-flex; align-items: center; justify-content: center; gap: 12px;
-          min-height: 52px; width: 100%; max-width: 280px;
-          background: linear-gradient(135deg, rgba(155,111,255,0.88), rgba(100,36,200,0.92));
+          width: 100%; max-width: 280px;
+          background: linear-gradient(145deg, #b070ff 0%, #7040e0 50%, #4020c0 100%);
           border: none;
-          border-radius: 50px;
-          padding: 0 44px;
+          border-radius: 14px;
+          padding: 16px 44px;
           font-family: 'DM Sans', sans-serif;
           font-size: 15px; font-weight: 400;
           color: #fff; cursor: pointer;
           letter-spacing: 0.02em;
+          box-shadow: 0 0 16px rgba(160,120,240,0.25);
           transition: opacity 0.2s, transform 0.15s;
         }
         .lp-btn-cta:active { opacity: 0.85; transform: scale(0.98); }
