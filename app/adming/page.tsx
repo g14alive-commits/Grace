@@ -424,8 +424,8 @@ export default function AdminPage() {
                       <span className="stat-lbl">Active this week</span>
                     </div>
                     <div className="stat-pill">
-                      <span className="stat-val">{avgSessions}</span>
-                      <span className="stat-lbl">Avg sessions</span>
+                      <span className="stat-val">{activeThisWeek}</span>
+                      <span className="stat-lbl">Active this week</span>
                     </div>
                     <div className="stat-pill">
                       <span className={`stat-val ${returnRate >= 50 ? "green" : returnRate >= 30 ? "amber" : ""}`}>
