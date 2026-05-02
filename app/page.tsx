@@ -289,29 +289,30 @@ export default function Home() {
 
         .lp-btn-ghost {
           display: inline-flex; align-items: center; gap: 8px;
-          background: rgba(150,100,255,0.10);
-          border: 1px solid rgba(150,100,255,0.38);
-          border-radius: 50px; padding: 0 26px; min-height: 44px;
+          background: linear-gradient(135deg, rgba(155,111,255,0.88), rgba(100,36,200,0.92));
+          border: none;
+          border-radius: 50px; padding: 0 32px; min-height: 44px;
           font-family: 'DM Sans', sans-serif;
           font-size: 14px; font-weight: 400;
-          color: rgba(175,140,255,0.9); cursor: pointer;
-          transition: background 0.2s;
+          color: #fff; cursor: pointer;
+          transition: opacity 0.2s;
         }
-        .lp-btn-ghost:active { background: rgba(150,100,255,0.20); }
+        .lp-btn-ghost:active { opacity: 0.85; transform: scale(0.98); }
 
         .lp-btn-cta {
           display: inline-flex; align-items: center; justify-content: center; gap: 12px;
-          min-height: 52px; width: 100%; max-width: 260px;
-          background: rgba(150,100,255,0.15);
-          border: 1px solid rgba(150,100,255,0.40);
+          min-height: 52px; width: 100%; max-width: 280px;
+          background: linear-gradient(135deg, rgba(155,111,255,0.88), rgba(100,36,200,0.92));
+          border: none;
           border-radius: 50px;
+          padding: 0 44px;
           font-family: 'DM Sans', sans-serif;
           font-size: 15px; font-weight: 400;
-          color: rgba(210,190,255,0.95); cursor: pointer;
+          color: #fff; cursor: pointer;
           letter-spacing: 0.02em;
-          transition: background 0.2s, transform 0.15s;
+          transition: opacity 0.2s, transform 0.15s;
         }
-        .lp-btn-cta:active { background: rgba(150,100,255,0.28); transform: scale(0.98); }
+        .lp-btn-cta:active { opacity: 0.85; transform: scale(0.98); }
 
         .lp-dots {
           position: absolute; bottom: 40px; left: 50%;
