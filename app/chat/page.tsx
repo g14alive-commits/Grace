@@ -501,10 +501,10 @@ export default function Chat() {
         }
         .app { display: flex; flex-direction: column; background: var(--bg-deep); color: var(--text-primary); font-family: 'DM Sans', sans-serif; overflow: hidden; position: fixed; top: 0; left: 0; right: 0; bottom: 0; }
         .bg-orbs { position: fixed; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none; z-index: 0; overflow: hidden; }
-        .orb { position: absolute; border-radius: 50%; filter: blur(60px); }
-        .orb1 { width: 340px; height: 340px; top: -80px; right: -60px; background: radial-gradient(circle, rgba(120,80,200,0.30) 0%, transparent 70%); animation: drift1 18s ease-in-out infinite; }
-        .orb2 { width: 280px; height: 280px; bottom: 20%; left: -80px; background: radial-gradient(circle, rgba(60,120,220,0.24) 0%, transparent 70%); animation: drift2 22s ease-in-out infinite; }
-        .orb3 { width: 200px; height: 200px; bottom: 10%; right: 10%; background: radial-gradient(circle, rgba(200,100,150,0.20) 0%, transparent 70%); animation: drift3 16s ease-in-out infinite; }
+        .orb { position: absolute; border-radius: 50%; }
+        .orb1 { width: 392px; height: 392px; bottom: -80px; left: -60px; background: radial-gradient(circle, rgba(150,80,220,0.45) 0%, transparent 70%); animation: drift1 18s ease-in-out infinite; }
+        .orb2 { width: 308px; height: 308px; bottom: 15%; right: -80px; background: radial-gradient(circle, rgba(80,100,240,0.38) 0%, transparent 70%); animation: drift2 22s ease-in-out infinite; }
+        .orb3 { width: 224px; height: 224px; top: 60%; left: 20%; background: radial-gradient(circle, rgba(200,80,160,0.28) 0%, transparent 70%); animation: drift3 16s ease-in-out infinite; }
         @keyframes drift1 { 0%,100% { transform: translate(0,0) scale(1); } 33% { transform: translate(-20px,30px) scale(1.05); } 66% { transform: translate(15px,-20px) scale(0.97); } }
         @keyframes drift2 { 0%,100% { transform: translate(0,0) scale(1); } 40% { transform: translate(30px,-25px) scale(1.08); } 70% { transform: translate(-10px,20px) scale(0.95); } }
         @keyframes drift3 { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(-25px,-30px) scale(1.1); } }

@@ -107,11 +107,13 @@ export default function Commitments() {
         }
 
         .bg-orbs { position: fixed; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none; z-index: 0; overflow: hidden; }
-        .orb { position: absolute; border-radius: 50%; filter: blur(60px); }
-        .orb1 { width: 340px; height: 340px; top: -80px; right: -60px; background: radial-gradient(circle, rgba(120,80,200,0.18) 0%, transparent 70%); animation: drift1 18s ease-in-out infinite; }
-        .orb2 { width: 280px; height: 280px; bottom: 20%; left: -80px; background: radial-gradient(circle, rgba(60,120,220,0.14) 0%, transparent 70%); animation: drift2 22s ease-in-out infinite; }
+        .orb { position: absolute; border-radius: 50%; }
+        .orb1 { width: 392px; height: 392px; bottom: -80px; right: -60px; background: radial-gradient(circle, rgba(150,80,220,0.45) 0%, transparent 70%); animation: drift1 18s ease-in-out infinite; }
+        .orb2 { width: 308px; height: 308px; bottom: 20%; left: -80px; background: radial-gradient(circle, rgba(80,100,240,0.38) 0%, transparent 70%); animation: drift2 22s ease-in-out infinite; }
+        .orb3 { width: 224px; height: 224px; top: 60%; right: 20%; background: radial-gradient(circle, rgba(200,80,160,0.28) 0%, transparent 70%); animation: drift3 16s ease-in-out infinite; }
         @keyframes drift1 { 0%,100% { transform: translate(0,0); } 50% { transform: translate(-20px,30px); } }
         @keyframes drift2 { 0%,100% { transform: translate(0,0); } 50% { transform: translate(25px,-20px); } }
+        @keyframes drift3 { 0%,100% { transform: translate(0,0); } 50% { transform: translate(-14px,18px); } }
 
         .header {
           flex-shrink: 0; position: relative; z-index: 2;
@@ -265,6 +267,7 @@ export default function Commitments() {
         <div className="bg-orbs">
           <div className="orb orb1" />
           <div className="orb orb2" />
+          <div className="orb orb3" />
         </div>
 
         <div className="header">

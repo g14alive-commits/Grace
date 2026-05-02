@@ -185,21 +185,27 @@ export default function Fixit() {
         .orb {
           position: absolute;
           border-radius: 50%;
-          filter: blur(70px);
         }
 
         .orb1 {
-          width: 300px; height: 300px;
-          top: -60px; left: -40px;
-          background: radial-gradient(circle, rgba(80,200,180,0.14) 0%, transparent 70%);
+          width: 392px; height: 392px;
+          bottom: -80px; right: -60px;
+          background: radial-gradient(circle, rgba(150,80,220,0.45) 0%, transparent 70%);
           animation: drift1 20s ease-in-out infinite;
         }
 
         .orb2 {
-          width: 260px; height: 260px;
-          bottom: 20%; right: -60px;
-          background: radial-gradient(circle, rgba(120,80,200,0.14) 0%, transparent 70%);
+          width: 308px; height: 308px;
+          bottom: 20%; left: -80px;
+          background: radial-gradient(circle, rgba(80,100,240,0.38) 0%, transparent 70%);
           animation: drift2 25s ease-in-out infinite;
+        }
+
+        .orb3 {
+          width: 224px; height: 224px;
+          top: 60%; right: 15%;
+          background: radial-gradient(circle, rgba(200,80,160,0.28) 0%, transparent 70%);
+          animation: drift3 18s ease-in-out infinite;
         }
 
         @keyframes drift1 {
@@ -210,6 +216,11 @@ export default function Fixit() {
         @keyframes drift2 {
           0%, 100% { transform: translate(0,0); }
           50% { transform: translate(-20px,-25px); }
+        }
+
+        @keyframes drift3 {
+          0%, 100% { transform: translate(0,0); }
+          50% { transform: translate(14px,-18px); }
         }
 
         .header {
@@ -680,6 +691,7 @@ export default function Fixit() {
         <div className="bg-orbs">
           <div className="orb orb1" />
           <div className="orb orb2" />
+          <div className="orb orb3" />
         </div>
 
         <div className="header">
