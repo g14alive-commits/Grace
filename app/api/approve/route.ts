@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
       type: "magiclink",
       email,
       options: {
-        redirectTo: "https://heyattune.app/profile",
+        redirectTo: "https://heyattune.app/onboarding",
       },
     });
 

@@ -29,12 +29,12 @@ export async function GET(request: NextRequest) {
   let redirectPath = "/login";
 
   if (user?.email) {
-    // Check waitlist approval before deciding where to send the user
     const admin = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.SUPABASE_SERVICE_ROLE_KEY!
     );
 
+    // 1. Check waitlist approval
     const { data: entry } = await admin
       .from("waitlist")
       .select("approved")
@@ -46,14 +46,31 @@ export async function GET(request: NextRequest) {
     } else if (!entry.approved) {
       redirectPath = "/pending";
     } else {
-      // Approved — check onboarding status
-      const { data: dbUser } = await supabase
+      // 2. Approved — check onboarding status
+      const { data: dbUser } = await admin
         .from("users")
         .select("onboarding_complete")
         .eq("id", user.id)
         .single();
 
-      redirectPath = dbUser?.onboarding_complete ? "/profile" : "/onboarding";
+      if (!dbUser?.onboarding_complete) {
+        // Not onboarded yet → onboarding
+        redirectPath = "/onboarding";
+      } else {
+        // 3. Onboarded — check if they have any sessions with Grace
+        const { data: lastSession } = await admin
+          .from("sessions")
+          .select("session_number")
+          .eq("user_id", user.id)
+          .order("session_number", { ascending: false })
+          .limit(1)
+          .single();
+
+        const hasSessions = (lastSession?.session_number ?? 0) > 0;
+
+        // Has sessions → profile, no sessions → chat
+        redirectPath = hasSessions ? "/profile" : "/chat";
+      }
     }
   }
 
