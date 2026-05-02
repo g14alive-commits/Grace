@@ -262,23 +262,6 @@ export default function WaitlistPage() {
           to { opacity: 1; transform: translateY(0); }
         }
 
-        .confirmation-icon {
-          width: 52px;
-          height: 52px;
-          border-radius: 50%;
-          background: rgba(150,100,255,0.18);
-          border: 1px solid rgba(150,100,255,0.60);
-          box-shadow: 0 0 20px rgba(160,120,240,0.35);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-family: 'Cormorant Garamond', serif;
-          font-size: 24px;
-          font-weight: 600;
-          color: rgba(200,180,255,0.90);
-          margin-bottom: 8px;
-        }
-
         .confirmation-title {
           font-family: 'Cormorant Garamond', serif;
           font-size: 28px;
@@ -331,15 +314,13 @@ export default function WaitlistPage() {
 
           {status === "success" ? (
             <div className="confirmation">
-              <div className="confirmation-icon">G</div>
-              <div className="confirmation-title">We have your name.</div>
+              <div className="confirmation-title">We have your details.</div>
               <div className="confirmation-body">
                 We'll reach out personally when your spot opens — it won't be long.
               </div>
             </div>
           ) : status === "duplicate" ? (
             <div className="confirmation">
-              <div className="confirmation-icon">G</div>
               <div className="confirmation-title">Already saved.</div>
               <div className="already-msg">
                 You're already on our list. We'll be in touch personally.
