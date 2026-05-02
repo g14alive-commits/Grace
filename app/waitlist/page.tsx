@@ -78,22 +78,22 @@ export default function WaitlistPage() {
         }
 
         .orb1 {
-          width: 560px; height: 560px;
-          top: -180px; left: -60px;
+          width: 280px; height: 280px;
+          top: 40%; left: -60px;
           background: radial-gradient(circle, rgba(150,80,220,0.45) 0%, transparent 70%);
           animation: drift1 20s ease-in-out infinite;
         }
 
         .orb2 {
-          width: 440px; height: 440px;
-          bottom: -100px; right: -80px;
+          width: 220px; height: 220px;
+          bottom: -60px; right: -40px;
           background: radial-gradient(circle, rgba(80,100,240,0.38) 0%, transparent 70%);
           animation: drift2 26s ease-in-out infinite;
         }
 
         .orb3 {
-          width: 320px; height: 320px;
-          top: 40%; left: 10%;
+          width: 160px; height: 160px;
+          top: 55%; left: 15%;
           background: radial-gradient(circle, rgba(200,80,160,0.28) 0%, transparent 70%);
           animation: drift3 18s ease-in-out infinite;
         }
